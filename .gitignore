@@ -1,0 +1,24 @@
+# Build directories
+build/
+out/
+bin/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Executables
+*.exe
+*.out
+
+# Objets et libs
+*.o
+*.a
+*.so
+*.dll
+
+# OS
+.DS_Store
