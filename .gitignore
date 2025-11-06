@@ -24,3 +24,6 @@ Makefile
 .DS_Store
 
 debug.cpp
+
+russell/
+.vscode/
