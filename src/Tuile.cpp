@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Utils.hpp"
 
+using namespace Utils;
 Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
 {
     if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && couleur== Couleur::nulle))

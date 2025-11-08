@@ -8,8 +8,8 @@ int main(){
 
     //Joueur a{"A", 3, nullptr};
 
-    Hexagone hex1{Type::Quartier, Couleur::Rouge};
-    Hexagone hex2{Type::Carriere, Couleur::nulle};
+    Hexagone hex1{Type::Place, Couleur::Rouge};
+    Hexagone hex2{Type::Place, Couleur::Bleu};
     Hexagone hex3{Type::Place, Couleur::Jaune};
     
     Hexagone hexN{Type::Place, Couleur::Vert};
@@ -19,15 +19,20 @@ int main(){
     Hexagone hexSE{Type::Place, Couleur::Vert};
     Hexagone hexSO{Type::Place, Couleur::Violet};
 
-    Tuile tl1{hex1, hex2, hex3};
-    tl1.afficherData();
+    Hexagone hexNONO{Type::Place, Couleur::Violet};
+    Hexagone hexNOSO{Type::Place, Couleur::Violet};
+    hexNO.setVoisinsNO(&hexNONO);
+    hexNONO.setVoisinsSO(&hexNOSO);
 
-    hex1.setVoisinsN(&hexN);
-    hex1.setVoisinsNE(&hexNE);
-    hex1.setVoisinsNO(&hexNO);
-    hex1.setVoisinsS(&hexS);
-    hex1.setVoisinsSE(&hexSE);
-    hex1.setVoisinsSO(&hexSO);
+    Tuile tl1{hex1, hex2, hex3};
+    //tl1.afficherData();
+
+    //hex1.setVoisinsN(&hexN);
+    //hex1.setVoisinsNE(&hexNE);
+    //hex1.setVoisinsNO(&hexNO);
+    //hex1.setVoisinsS(&hexS);
+    //hex1.setVoisinsSE(&hexSE);
+    //hex1.setVoisinsSO(&hexSO);
     //hex1.setVoisinsO(&hex4);
     //hex4.setVoisinsNE(&hex1);
     
