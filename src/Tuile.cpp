@@ -41,13 +41,13 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3){
     hexagones.push_back(&hex3);
 
     hex1.setVoisinsSO(&hex2);
-    hex1.setVoisinsSE(&hex3);
+    hex1.setVoisinsS(&hex3);
 
-    hex2.setVoisinsNE(&hex1);
-    hex2.setVoisinsSE(&hex3);
+    hex2.setVoisinsNO(&hex1);
+    hex2.setVoisinsSO(&hex3);
 
-    hex3.setVoisinsNO(&hex1);
-    hex3.setVoisinsSO(&hex2);
+    hex3.setVoisinsN(&hex1);
+    hex3.setVoisinsNE(&hex2);
 
 };
 
@@ -69,7 +69,7 @@ void Tuile::afficherData() const
         std::cout << "============================" << std::endl;
     }
 
-Tuile Tuile::rotation()
+Tuile* Tuile::rotate()
 {
     /*permet la rotation de la tuile en invertissant les hexagones */
     /*Hexagone* copie[2];
@@ -86,6 +86,7 @@ Tuile Tuile::rotation()
 
     // autre solution :
     *this = Tuile(*hexagones[1], *hexagones[2], *hexagones[0]);
+    return this;
 };
 
 //TuileDepart::TuileDepart() : Tuile(Hexagone(Type::Carriere, Couleur::nulle),

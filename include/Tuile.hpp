@@ -70,7 +70,7 @@ class Tuile
 {
 public:
     Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3);
-    Tuile rotation();
+    Tuile* rotate();
 
     inline const std::vector<Hexagone *> &get_hexagones() const { return hexagones; }
 
