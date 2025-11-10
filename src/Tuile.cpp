@@ -55,8 +55,6 @@ void Tuile::afficherData() const
     {
         std::cout << "=== DONNEES DE LA TUILE ===" << std::endl;
 
-        // Afficher les hexagones
-        const std::vector<Hexagone *> &hexagones = get_hexagones();
         std::cout << "Nombre d'hexagones: " << hexagones.size() << std::endl;
 
         for (size_t i = 0; i < hexagones.size(); ++i)

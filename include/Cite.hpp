@@ -28,12 +28,14 @@ class Cite{
     void print_hex(Hexagone*hex, int x, int y, strCalc& calc) const;
     void increase_calc_size_H(strCalc& calc, uint32_t size) const;
     void increase_calc_size_V(strCalc& calc, uint32_t size) const;
-    void add_hex_data(Hexagone *hex, int x, int y, strCalc& calc) const;
-    //void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones) const;
-    void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones, int depth) const;
-    
-   
 
+    //clac est un tableau de chaîne de caractères sur lequel on dessine les hexagones, il est passé en paramètre des fonctions pour être modifié
+    
+    //ajoute le texte dans les hexagones(PLA pour place, CAR pour carriere...)
+    void add_hex_data(Hexagone *hex, int x, int y, strCalc& calc) const;
+
+    // Dessines les hexagones recursivement, les hexagones deja dessine sont dans drawnHexagones.
+    void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones) const; //, int depth) const;
 
 };
 

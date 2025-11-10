@@ -3,6 +3,7 @@
 #include <optional>
 #include <iostream>
 #include <vector>
+#include <array>
 
 enum class Couleur
 {
@@ -39,7 +40,7 @@ public:
     const Hexagone *getVoisinsTOP() const { return voisins[6]; };
     const Hexagone *getVoisinsBOT() const { return voisins[7]; };
 
-    Hexagone *getVoisins() const { return (Hexagone *)voisins; }
+    const std::array<const Hexagone*,8>& getVoisins() const { return voisins; }
     // accesseurs écriture
 
     inline void setVoisinsNE(const Hexagone *hex) { voisins[0] = hex; };
@@ -62,7 +63,7 @@ public:
 private:
     Type type;
     Couleur couleur;
-    const Hexagone *voisins[8]; // cotes dans l'UML, peut être mettre plutôt un vecteur qu'un tableau?
+    std::array<const Hexagone*, 8> voisins;
     const Tuile *parent;
 };
 
@@ -81,6 +82,7 @@ protected:
     //  Hexagone* hexagones[2]; // peut être mettre un tableau d'hexagone directement car normalement une fois creer, les hexagones restent dans la même tuile ?
     //   tab de pointeurs permet de simplifier pour la fonction rotation
     std::vector<Hexagone *> hexagones;
+    
 };
 
 // class TuileDepart : public Tuile

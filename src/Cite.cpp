@@ -80,7 +80,7 @@ void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc) const
 }
 
 void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
-                              std::unordered_set<Hexagone *> &drawnHexagones, int depth) const
+                              std::unordered_set<Hexagone *> &drawnHexagones) const//, int depth) const
 {
     if (!hex || drawnHexagones.count(hex))
         return;
@@ -115,7 +115,7 @@ void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
             Hexagone *neighbor = const_cast<Hexagone *>(neighbors[i]);
             int newX = x + directionOffsets[i].first;
             int newY = y + directionOffsets[i].second;
-            draw_hex_recursive(neighbor, newX, newY, calc, drawnHexagones, depth + 1);
+            draw_hex_recursive(neighbor, newX, newY, calc, drawnHexagones);//, depth + 1);
         }
     }
 }
@@ -202,7 +202,7 @@ void Cite::afficher() const
     Hexagone *startHex = firstHexagones[0];
     std::unordered_set<Hexagone *> drawnHexagones;
 
-    draw_hex_recursive(startHex, 50, 10, calc, drawnHexagones, 0);
+    draw_hex_recursive(startHex, 50, 10, calc, drawnHexagones);
     
     for (auto &line : calc)
     {
