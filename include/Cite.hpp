@@ -29,7 +29,7 @@ class Cite{
     void increase_calc_size_H(strCalc& calc, uint32_t size) const;
     void increase_calc_size_V(strCalc& calc, uint32_t size) const;
 
-    //clac est un tableau de chaîne de caractères sur lequel on dessine les hexagones, il est passé en paramètre des fonctions pour être modifié
+    //calc est un tableau de chaîne de caractères sur lequel on dessine les hexagones, il est passé en paramètre des fonctions pour être modifié
     
     //ajoute le texte dans les hexagones(PLA pour place, CAR pour carriere...)
     void add_hex_data(Hexagone *hex, int x, int y, strCalc& calc) const;

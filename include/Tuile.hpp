@@ -23,7 +23,6 @@ enum class Type
 };
 
 class Tuile;
-// pour la classe hexagone c'est surement mieux de faire un héritage pour chaque hexagone est sa méthode de comptage de point ?
 class Hexagone
 {
 public:
@@ -41,8 +40,8 @@ public:
     const Hexagone *getVoisinsBOT() const { return voisins[7]; };
 
     const std::array<const Hexagone*,8>& getVoisins() const { return voisins; }
-    // accesseurs écriture
 
+    // accesseurs écriture
     inline void setVoisinsNE(const Hexagone *hex) { voisins[0] = hex; };
     inline void setVoisinsS(const Hexagone *hex) { voisins[1] = hex; };
     inline void setVoisinsSE(const Hexagone *hex) { voisins[2] = hex; };
@@ -53,7 +52,7 @@ public:
     inline void setVoisinsBOT(const Hexagone *hex) { voisins[7] = hex; };
 
     inline void setTuileParent(Tuile *tl) { parent = tl; }
-    inline const Tuile *getTuileParent() { return parent; }
+    inline const Tuile *getTuileParent() const { return parent; }
 
     Type getType() const { return type; }
     Couleur getCouleur() const { return couleur; }
@@ -78,17 +77,6 @@ public:
     void afficherData() const;
 
 protected:
-    // int position[3]; // à voir avec ce qui existe dans la librairie standart
-    //  Hexagone* hexagones[2]; // peut être mettre un tableau d'hexagone directement car normalement une fois creer, les hexagones restent dans la même tuile ?
-    //   tab de pointeurs permet de simplifier pour la fonction rotation
     std::vector<Hexagone *> hexagones;
     
 };
-
-// class TuileDepart : public Tuile
-//{
-// public:
-//     TuileDepart();
-//
-// private:
-// };
