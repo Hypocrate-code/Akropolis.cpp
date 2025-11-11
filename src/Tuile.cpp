@@ -6,7 +6,7 @@
 using namespace Utils;
 Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
 {
-    if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && couleur== Couleur::nulle))
+    if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && couleur == Couleur::nulle))
     {
         throw Exception("le type ne correspond pas à la couleur indiquée");
     }
@@ -16,26 +16,26 @@ Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
     }
 };
 
-
 void Hexagone::afficherData() const
-    {
-        std::cout << "  Type: " << type_to_string(getType())
-                  << ", Couleur: " << color_to_string(getCouleur()) << std::endl;
+{
+    std::cout << "  Type: " << type_to_string(getType())
+              << ", Couleur: " << color_to_string(getCouleur()) << std::endl;
 
-        // Afficher les voisins
-        std::cout << "  Voisins: ";
-        std::cout << "NE:" << (getVoisinsNE() ? "O" : "X");
-        std::cout << " S:" << (getVoisinsS() ? "O" : "X");
-        std::cout << " SE:" << (getVoisinsSE() ? "O" : "X");
-        std::cout << " SO:" << (getVoisinsSO() ? "O" : "X");
-        std::cout << " N:" << (getVoisinsN() ? "O" : "X");
-        std::cout << " NO:" << (getVoisinsNO() ? "O" : "X");
-        std::cout << " TOP:" << (getVoisinsTOP() ? "O" : "X");
-        std::cout << " BOT:" << (getVoisinsBOT() ? "O" : "X");
-        std::cout << std::endl;
-    }
+    // Afficher les voisins
+    std::cout << "  Voisins: ";
+    std::cout << "NE:" << (getVoisinsNE() ? "O" : "X");
+    std::cout << " S:" << (getVoisinsS() ? "O" : "X");
+    std::cout << " SE:" << (getVoisinsSE() ? "O" : "X");
+    std::cout << " SO:" << (getVoisinsSO() ? "O" : "X");
+    std::cout << " N:" << (getVoisinsN() ? "O" : "X");
+    std::cout << " NO:" << (getVoisinsNO() ? "O" : "X");
+    std::cout << " TOP:" << (getVoisinsTOP() ? "O" : "X");
+    std::cout << " BOT:" << (getVoisinsBOT() ? "O" : "X");
+    std::cout << std::endl;
+}
 
-Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3){
+Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
+{
     hexagones.push_back(&hex1);
     hexagones.push_back(&hex2);
     hexagones.push_back(&hex3);
@@ -48,26 +48,25 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3){
 
     hex3.setVoisinsN(&hex1);
     hex3.setVoisinsNE(&hex2);
-
 };
 
 void Tuile::afficherData() const
+{
+    std::cout << "=== DONNEES DE LA TUILE ===" << std::endl;
+
+    std::cout << "Nombre d'hexagones: " << hexagones.size() << std::endl;
+
+    for (size_t i = 0; i < hexagones.size(); ++i)
     {
-        std::cout << "=== DONNEES DE LA TUILE ===" << std::endl;
-
-        std::cout << "Nombre d'hexagones: " << hexagones.size() << std::endl;
-
-        for (size_t i = 0; i < hexagones.size(); ++i)
-        {
-            std::cout << "Hexagone " << i + 1 << ":" << std::endl;
-            if (hexagones[i])
-                hexagones[i]->afficherData();
-        }
-
-        std::cout << "============================" << std::endl;
+        std::cout << "Hexagone " << i + 1 << ":" << std::endl;
+        if (hexagones[i])
+            hexagones[i]->afficherData();
     }
 
-Tuile* Tuile::rotate()
+    std::cout << "============================" << std::endl;
+}
+
+Tuile *Tuile::rotate()
 {
     /*permet la rotation de la tuile en invertissant les hexagones */
     /*Hexagone* copie[2];
@@ -87,27 +86,33 @@ Tuile* Tuile::rotate()
     return this;
 };
 
-//TuileDepart::TuileDepart() : Tuile(Hexagone(Type::Carriere, Couleur::nulle),
-//                                   Hexagone(Type::Carriere, Couleur::nulle),
-//                                   Hexagone(Type::Carriere, Couleur::nulle))
-//{
-//    this->hexagones.push_back(new Hexagone(Type::Place, Couleur::Bleu)); // rajout du centre de la tuile
-//
-//    // on gère les voisins :
-//    // redéfinition voisins hex1
-//    hexagones[0]->setVoisinsSO(hexagones[3]);
-//    hexagones[0]->setVoisinsSE(nullptr);
-//
-//    // reéfinition voisins hex2
-//    hexagones[1]->setVoisinsNE(nullptr);
-//    hexagones[1]->setVoisinsE(hexagones[3]);
-//
-//    // redéfinition voisins hex3
-//    hexagones[2]->setVoisinsNO(hexagones[3]);
-//    hexagones[2]->setVoisinsO(nullptr);
-//
-//    // définition voisins hexgone/place centrale hex4
-//    hexagones[3]->setVoisinsO(hexagones[0]);
-//    hexagones[3]->setVoisinsNE(hexagones[1]);
-//    hexagones[3]->setVoisinsSE(hexagones[2]);
-/////////};
+void Tuile::reset_hex_links()
+{
+    for (auto &hex : hexagones)
+    {
+        hex->setVoisins(nullptr);
+    }
+}
+
+TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagone &hexCentre) : Tuile(hex1, hex2, hex3)
+{
+
+    this->hexagones.push_back(&hexCentre); // rajout du centre de la tuile
+    reset_hex_links();
+    // On gère les voisins :
+
+    // Redéfinition voisins hex1
+    hexagones[0]->setVoisinsS(hexagones[3]);
+
+    // Redéfinition voisins hex2
+    hexagones[1]->setVoisinsNE(hexagones[3]);
+
+    // Redéfinition voisins hex3
+    hexagones[2]->setVoisinsNO(hexagones[3]);
+
+    // Définition voisins hexgone/place centrale hex4
+    hexagones[3]->setVoisinsN(hexagones[0]);
+    hexagones[3]->setVoisinsSO(hexagones[1]);
+    hexagones[3]->setVoisinsSE(hexagones[2]);
+    hexagones[3]->setVoisinsNE(nullptr);
+};

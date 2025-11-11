@@ -1,48 +1,52 @@
-#include "Joueur.hpp"
-#include "Exception.hpp"
+//
+// Created by thiba on 06/11/2025.
+//
 #include <iostream>
 #include "Tuile.hpp"
 
+#include "Exception.hpp"
+#include "Jeu.hpp"
+#include "Tuile.hpp"
+#include "Cite.hpp"
+
 int main(){
-    try{
+    try {
+        std::cout << "Start of program." << std::endl << std::endl;
+        Jeu* j = Jeu::getInstance();
+        int nJoueur;
+        std::cout << "=============================" << std::endl;
+        std::cout << "Welcome to Akropolis.cpp !" << std::endl;
+        std::cout << "=============================" << std::endl << std::endl;
+        std::cout << "A game is about to launch, how many are you :  ";
+        std::cin >> nJoueur;
+        j->Initialiser(nJoueur);
+        std::cout << std::endl << "Program correctly ended." << std::endl;
+        return 0;
 
-    //Joueur a{"A", 3, nullptr};
 
-    Hexagone hex1{Type::Place, Couleur::Rouge};
-    Hexagone hex2{Type::Place, Couleur::Bleu};
-    Hexagone hex3{Type::Place, Couleur::Jaune};
-    
-    Hexagone hexN{Type::Place, Couleur::Vert};
-    Hexagone hexS{Type::Place, Couleur::Jaune};
-    Hexagone hexNE{Type::Place, Couleur::Violet};
-    Hexagone hexNO{Type::Place, Couleur::Violet};
-    Hexagone hexSE{Type::Place, Couleur::Vert};
-    Hexagone hexSO{Type::Place, Couleur::Violet};
+        // Hexagone hex1{Type::Place, Couleur::Rouge};
+        // Hexagone hex2{Type::Place, Couleur::Bleu};
+        // Hexagone hex3{Type::Place, Couleur::Jaune};
+        //
+        // Tuile tl1{hex2, hex1, hex3};
+        //tl1.afficherData();
 
-    Hexagone hexNONO{Type::Place, Couleur::Violet};
-    Hexagone hexNOSO{Type::Place, Couleur::Violet};
-    hexNO.setVoisinsNO(&hexNONO);
-    hexNONO.setVoisinsSO(&hexNOSO);
+        //hex1.setVoisinsN(&hexN);
+        //hex1.setVoisinsNE(&hexNE);
+        //hex1.setVoisinsNO(&hexNO);
+        //hex1.setVoisinsS(&hexS);
+        //hex1.setVoisinsSE(&hexSE);
+        //hex1.setVoisinsSO(&hexSO);
+        //hex1.setVoisinsO(&hex4);
+        //hex4.setVoisinsNE(&hex1);
 
-    Tuile tl1{hex1, hex2, hex3};
-    //tl1.afficherData();
+        // CiteJoueur cite1{&tl1};
+        // cite1.afficher();
 
-    //hex1.setVoisinsN(&hexN);
-    //hex1.setVoisinsNE(&hexNE);
-    //hex1.setVoisinsNO(&hexNO);
-    //hex1.setVoisinsS(&hexS);
-    //hex1.setVoisinsSE(&hexSE);
-    //hex1.setVoisinsSO(&hexSO);
-    //hex1.setVoisinsO(&hex4);
-    //hex4.setVoisinsNE(&hex1);
-    
-    CiteJoueur cite1{&tl1};
-
-    cite1.afficher();
-
-    }catch (Exception e) {
-        std::cout << e.getInfo() << std::endl;
     }
-
-    return 0;
+    catch (Exception& e) {
+        std::cout << "Test222";
+        std::cout << e.getInfo();
+        return 1;
+    }
 }

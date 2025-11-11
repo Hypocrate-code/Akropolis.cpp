@@ -51,6 +51,8 @@ public:
     inline void setVoisinsTOP(const Hexagone *hex) { voisins[6] = hex; };
     inline void setVoisinsBOT(const Hexagone *hex) { voisins[7] = hex; };
 
+    inline void setVoisins(const Hexagone* hexs) { voisins.fill(hexs); }
+
     inline void setTuileParent(Tuile *tl) { parent = tl; }
     inline const Tuile *getTuileParent() const { return parent; }
 
@@ -74,9 +76,20 @@ public:
 
     inline const std::vector<Hexagone *> &get_hexagones() const { return hexagones; }
 
+    void reset_hex_links();
+
     void afficherData() const;
+
 
 protected:
     std::vector<Hexagone *> hexagones;
     
 };
+
+ class TuileDepart : public Tuile
+{
+ public:
+    TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagone &hexCentre);
+
+ private:
+ };
