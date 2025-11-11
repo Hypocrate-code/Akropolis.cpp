@@ -1,106 +1,118 @@
 #include "Tuile.hpp"
 #include "Exception.hpp"
 #include <iostream>
+#include "Utils.hpp"
 
-Hexagone::Hexagone(Type t, Couleur c):type(t),couleur(c){
-    if((type==Type::Carriere && couleur!=Couleur::nulle)||(type!=Type::Carriere && couleur==Couleur::nulle)){
-        throw Exception("le type ne correspond pas à la couleur indiquée"); 
+using namespace Utils;
+Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
+{
+    if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && couleur == Couleur::nulle))
+    {
+        throw Exception("le type ne correspond pas à la couleur indiquée");
     }
-    for(int i=0; i<6; i++){
-        voisins[i]=nullptr; // à la creation des hexagones, pas de voisins ne font pas encore partie des tuiles
+    for (int i = 0; i < 6; i++)
+    {
+        voisins[i] = nullptr; // à la creation des hexagones, pas de voisins ne font pas encore partie des tuiles
     }
+};
 
-}; 
+void Hexagone::afficherData() const
+{
+    std::cout << "  Type: " << type_to_string(getType())
+              << ", Couleur: " << color_to_string(getCouleur()) << std::endl;
 
-Tuile::Tuile(const Hexagone& hex1,const Hexagone& hex2,const Hexagone& hex3):hexagones{hex1,hex2,hex3}{// on considère que les hexagone existent deja au moment de la creation des tuiles 
-                                                        // permet quand on creer les hexagones de les "mélanger" avant de les attribuer à des tuiles
-     
-    // définitions des voisins --> pour l'instant on a pas mis d'hexagone fantômes 
-    //définition voisins hex1
-    hexagones[0].setVoisinsNE(nullptr);
-    hexagones[0].setVoisinsE(nullptr);
-    hexagones[0].setVoisinsSE(&hexagones[2]); 
-    hexagones[0].setVoisinsSO(&hexagones[1]);
-    hexagones[0].setVoisinsO(nullptr);
-    hexagones[0].setVoisinsNO(nullptr);
-    
-     
-
-    //définition voisins hex2
-    hexagones[1].setVoisinsNE(&hexagones[0]);
-    hexagones[1].setVoisinsE(&hexagones[2]);
-    hexagones[1].setVoisinsSE(nullptr); 
-    hexagones[1].setVoisinsSO(nullptr);
-    hexagones[1].setVoisinsO(nullptr);
-    hexagones[1].setVoisinsNO(nullptr);
-
-    //définition voisins hex3
-    hexagones[2].setVoisinsNE(nullptr);
-    hexagones[2].setVoisinsE(nullptr);
-    hexagones[2].setVoisinsSE(nullptr); 
-    hexagones[2].setVoisinsSO(nullptr);
-    hexagones[2].setVoisinsO(&hexagones[1]);
-    hexagones[2].setVoisinsNO(&hexagones[0]);
-   
-}; 
-
-
-Tuile Tuile::rotation(){
-    
-    *this = Tuile(hexagones[1],hexagones[2],hexagones[0]); 
-
-    return *this; 
-
-}; 
-TuileDepart::TuileDepart():Tuile(Hexagone(Type::Carriere, Couleur::nulle), 
-                Hexagone(Type::Carriere, Couleur::nulle), 
-                Hexagone(Type::Carriere, Couleur::nulle)){
-            hexagones.push_back(Hexagone(Type::Place,Couleur::Bleu)); // rajout du centre de la tuile 
-
-
-            // on gère les voisins : 
-            //redéfinition voisins hex1
-            hexagones[0].setVoisinsSO(&hexagones[3]);
-            hexagones[0].setVoisinsSE(nullptr);
-
-            //reéfinition voisins hex2
-            hexagones[1].setVoisinsNE(nullptr);
-            hexagones[1].setVoisinsE(&hexagones[3]);
-
-            //redéfinition voisins hex3
-            hexagones[2].setVoisinsNO(&hexagones[3]);
-            hexagones[2].setVoisinsO(nullptr);
-
-            //définition voisins hexgone/place centrale hex4
-            hexagones[3].setVoisinsO(&hexagones[0]);
-            hexagones[3].setVoisinsNE(&hexagones[1]); 
-            hexagones[3].setVoisinsSE(&hexagones[2]); 
-
-        }; 
-
-// pour gérer les affichages pour les tests : 
-std::string toString(Couleur c) {
-    switch (c) {
-        case Couleur::Rouge: return "Rouge";
-        case Couleur::Vert:  return "Vert";
-        case Couleur::Bleu:  return "Bleu";
-        case Couleur::Jaune:  return "Jaune";
-        case Couleur::Violet:  return "violet";
-        case Couleur::nulle :   return "";
-        default: return "Inconnue";
-    }
+    // Afficher les voisins
+    std::cout << "  Voisins: ";
+    std::cout << "NE:" << (getVoisinsNE() ? "O" : "X");
+    std::cout << " S:" << (getVoisinsS() ? "O" : "X");
+    std::cout << " SE:" << (getVoisinsSE() ? "O" : "X");
+    std::cout << " SO:" << (getVoisinsSO() ? "O" : "X");
+    std::cout << " N:" << (getVoisinsN() ? "O" : "X");
+    std::cout << " NO:" << (getVoisinsNO() ? "O" : "X");
+    std::cout << " TOP:" << (getVoisinsTOP() ? "O" : "X");
+    std::cout << " BOT:" << (getVoisinsBOT() ? "O" : "X");
+    std::cout << std::endl;
 }
-std::string toString(Type t) {
-    switch (t) {
-        case Type::Carriere: return "Carriere";
-        case Type::Quartier:  return "Quartier";
-        case Type::Place:  return "Place";
-        default: return "Inconnu";
+
+Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
+{
+    hexagones.push_back(&hex1);
+    hexagones.push_back(&hex2);
+    hexagones.push_back(&hex3);
+
+    hex1.setVoisinsSO(&hex2);
+    hex1.setVoisinsS(&hex3);
+
+    hex2.setVoisinsNO(&hex1);
+    hex2.setVoisinsSO(&hex3);
+
+    hex3.setVoisinsN(&hex1);
+    hex3.setVoisinsNE(&hex2);
+};
+
+void Tuile::afficherData() const
+{
+    std::cout << "=== DONNEES DE LA TUILE ===" << std::endl;
+
+    std::cout << "Nombre d'hexagones: " << hexagones.size() << std::endl;
+
+    for (size_t i = 0; i < hexagones.size(); ++i)
+    {
+        std::cout << "Hexagone " << i + 1 << ":" << std::endl;
+        if (hexagones[i])
+            hexagones[i]->afficherData();
+    }
+
+    std::cout << "============================" << std::endl;
+}
+
+Tuile *Tuile::rotate()
+{
+    /*permet la rotation de la tuile en invertissant les hexagones */
+    /*Hexagone* copie[2];
+    for (int i =0; i<=2; i++){
+        copie[i]=hexagones[i];
+    }
+    hexagones[0]=copie[1];
+    hexagones[1]=copie[2];
+    hexagones[2]=copie[3];
+
+    // modification des voisins des hexagones à gérer
+    // position à gérer
+    */
+
+    // autre solution :
+    *this = Tuile(*hexagones[1], *hexagones[2], *hexagones[0]);
+    return this;
+};
+
+void Tuile::reset_hex_links()
+{
+    for (auto &hex : hexagones)
+    {
+        hex->setVoisins(nullptr);
     }
 }
-std::ostream& operator<<(std::ostream& os, Couleur c) {
-    return os << toString(c);
-}
-std::ostream& operator<<(std::ostream& os, Type t) {
-    return os << toString(t);
-}
+
+TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagone &hexCentre) : Tuile(hex1, hex2, hex3)
+{
+
+    this->hexagones.push_back(&hexCentre); // rajout du centre de la tuile
+    reset_hex_links();
+    // On gère les voisins :
+
+    // Redéfinition voisins hex1
+    hexagones[0]->setVoisinsS(hexagones[3]);
+
+    // Redéfinition voisins hex2
+    hexagones[1]->setVoisinsNE(hexagones[3]);
+
+    // Redéfinition voisins hex3
+    hexagones[2]->setVoisinsNO(hexagones[3]);
+
+    // Définition voisins hexgone/place centrale hex4
+    hexagones[3]->setVoisinsN(hexagones[0]);
+    hexagones[3]->setVoisinsSO(hexagones[1]);
+    hexagones[3]->setVoisinsSE(hexagones[2]);
+    hexagones[3]->setVoisinsNE(nullptr);
+};
