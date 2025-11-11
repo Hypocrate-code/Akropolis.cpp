@@ -93,3 +93,7 @@ protected:
 
  private:
  };
+
+std::ostream& operator<<(std::ostream& os, Couleur c);
+std::ostream& operator<<(std::ostream& os, Type t); 
+ 
