@@ -16,6 +16,7 @@ Chacun.e développe sa feature sur sa branche. Bien sûr, les features sont le p
 - Testez votre code (voir <a>Compilation</a>).
 - Ne pas commit des fichiers encore en développement sur d'autres branches : quand vous pousserez votre branche, ces fichiers non terminés seront donc dupliqués, et ce n'est pas votre code, même si le fonctionnement du vôtre en dépend.
 - Ne pas commit et push votre CMakeLists.txt
+- Bien sélectionner <u>dev <- votre-branch</u> au lieu du <u>main <- votre-branch</u> par défaut : les commits qui seront proposés d'être merged en seront pas les mêmes si vous passez à côté de ça.
 
 #### Nommer sa branche
 
@@ -25,27 +26,32 @@ Chacun.e développe sa feature sur sa branche. Bien sûr, les features sont le p
 
 #### Travailler sur le projet
 ```bash
-# 1. Se mettre à jour
+# 1. Se mettre à jour et vérifier d'avoir tout enregistré
 git pull origin dev
 git fetch --all
+git status
 
-# 2. Créer sa branche
+
+# 2. Aller sur la branceh de la dernière version de dev
+git switch dev
+
+# 3. Créer sa branche à partir de dev
 git branch <nom-de-branche> # Voir partie ci-dessus
 
-# 3. Aller sur cette branche
+# 4. Aller sur cette branche
 git switch <nom-de-branche>
 
-# 3.bis Vérifier la branche actuelle
+# 4.bis Vérifier la branche actuelle
 git branch -a 
 # Une liste de branche apparaît, en rouge celles en ligne, en vert celle.s en local sur votre pc. 
 # La branche sur laquelle vous êtes possède un * devant. 
 
-# 4. Si vous avez besoin de fichiers en développement sur d'autres branches.
+# 5. Si vous avez besoin de fichiers en développement sur d'autres branches.
 git checkout remotes/origin/feature/en-developpement -- chemin/vers/fichier
 # Remplacez par la branche ciblée. (Voir git branch -a)
 # Une copie locale du fichier est créée sur votre ordi, avec laquelle vous pouvez dev votre feature.
 
-# 5. Une fois votre code fait, restore les fichiers empruntés et commit les ajouts.
+# 6. Une fois votre code fait, restore les fichiers empruntés et commit les ajouts.
 git restore --staged chemin/vers/fichier-emprunté1
 git restore --staged chemin/vers/fichier-emprunté2
 git add chemin/vers/fichier # seulement vos fichiers
@@ -53,10 +59,11 @@ git status # Important : vérifiez (en vert) les fichiers que vous allez commit 
 git restore --staged chemin/vers/votre-fichier # Si vous avez ajouté un fichier que vous ne voulez pas commit.
 git commit -m "Ajout structure Pioche"
 
-# 6. Poussez la branche
+# 7. Pousser la branche
 git push -u origin <nom-de-branche>
 
-# 7. Créer une Pull Request sur GitHub
+# 8. Créer une Pull Request sur GitHub
+
 ```
 
 ---
