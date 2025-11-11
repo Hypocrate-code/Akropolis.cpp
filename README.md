@@ -1,6 +1,6 @@
 # Akropolis.cpp
 
-Une version C++ du jeu de plateau Akropolis, projet réalisé pour le cours LO21 à l'Université de Technologie de Compiègne, France.
+Une version en C++ du jeu de plateau Akropolis, projet réalisé pour le cours LO21 à l'Université de Technologie de Compiègne, France.
 
 - <a href="#workflow">Travailler en groupe</a>
 - <a href="#compilation">Compilation du projet</a>
@@ -152,10 +152,11 @@ cmake ..
 # Le Makefile est alors créé à votre chemin actuel (build/).
 
 # 4. Build le projet.
-make
+cmake --build . -j4
 # Make va utiliser le Makefile pour créer un exécutable.
 
 # 5. Lancer l'exécutable.
 ./Akropolis
+
 
 ```
