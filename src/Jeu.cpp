@@ -6,17 +6,18 @@
 #include <iostream>
 #include "Tuile.hpp"
 #include <map>
-#include <algorithm>
 #include <array>
 #include <random>
 #include <chrono>
 #include "Utils.hpp"
+#include <ranges>
+#include <algorithm>
 
 using std::map;
 
 // Opérations de singleton
 
-Jeu* Jeu::instance= nullptr;
+Jeu* Jeu::instance = nullptr;
 
 Jeu* Jeu::getInstance() {
   if (instance) {
@@ -123,7 +124,7 @@ void Jeu::Initialiser(const int& nbJoueur) {
     tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n+1], *hexs[n+2], *hexs[n+3]));
 
     // Création du joueur
-    joueurs.push_back(new Joueur(name, 2, tuilesDepart[tuilesDepart.size() - 1]));
+    joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));
   }
 
   for (auto& j : joueurs) {
