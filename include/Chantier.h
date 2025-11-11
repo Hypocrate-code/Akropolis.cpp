@@ -15,7 +15,7 @@ public:
     void remplirDepuisPioche(Pioche& pioche);
 
     // Acheter une tuile selon sa position et le nombre de pierres du joueur
-    std::optional<Tuile> acheterTuile(std::size_t index, int& pierresJoueur);
+    std::optional<Tuile*> acheterTuile(std::size_t index, int& pierresJoueur);
 
     // Coût d'une tuile selon sa position (index) (0 gratuite, 1 → 1 pierre, etc.)
     int coutPourIndice(std::size_t index) const;
@@ -26,7 +26,7 @@ public:
     bool estVide() const noexcept;
 
 private:
-    std::vector<Tuile> tuiles;   // tuiles présentes dans le chantier
+    std::vector<Tuile*> tuiles;   // tuiles présentes dans le chantier
     int nbJoueurs;               // nombre de joueurs
     std::size_t tailleMax;       // = nbJoueurs + 2
 };

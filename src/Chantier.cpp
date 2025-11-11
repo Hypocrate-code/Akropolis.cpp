@@ -10,13 +10,13 @@ void Chantier::remplirDepuisPioche(Pioche& pioche) {
     while (tuiles.size() < tailleMax && !pioche.estVide()) {
         auto nouvelle = pioche.piocher();
         if (nouvelle) {
-            tuiles.push_back(*nouvelle);
+            tuiles.push_back(nouvelle);
         }
     }
 }
 
 //  Achat d'une tuile
-std::optional<Tuile> Chantier::acheterTuile(std::size_t index, int& pierresJoueur) {
+std::optional<Tuile*> Chantier::acheterTuile(std::size_t index, int& pierresJoueur) {
     if (index >= tuiles.size())
         return std::nullopt;
 
@@ -38,7 +38,7 @@ int Chantier::coutPourIndice(std::size_t index) const {
 }
 
 // Accesseurs
-const std::vector<Tuile>& Chantier::getTuiles() const noexcept {
+const std::vector<Tuile*>& Chantier::getTuiles() const noexcept {
     return tuiles;
 }
 
