@@ -116,3 +116,10 @@ TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagon
     hexagones[3]->setVoisinsSE(hexagones[2]);
     hexagones[3]->setVoisinsNE(nullptr);
 };
+
+std::ostream& operator<<(std::ostream& os, Couleur c) {
+    return os << Utils::color_to_string(c);
+}
+std::ostream& operator<<(std::ostream& os, Type t) {
+    return os << type_to_string(t);
+}
