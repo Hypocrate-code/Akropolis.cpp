@@ -235,9 +235,75 @@ CiteJoueur::CiteJoueur(const Tuile *tuileDeDepart) : Cite{tuileDeDepart}
     updateTuileFantome();
 }
 
-void CiteJoueur::placerTuile(const Tuile *dest)
+//Idée pour placer tuiles
+/*
+Classe HexagoneFantome :
+
+- Représente un emplacement libre autour de la cité du joueur.
+- Contient :
+    - La position ou la référence vers un hexagone voisin existant.
+    - Une liste de voisins potentiels (nullptr = côté libre).
+    - Une méthode bool estCompatibleAvec(const Tuile& t) qui vérifie :
+        si au moins un hexagone de la tuile peut se connecter à cet emplacement
+- Sert à prévisualiser les zones où le joueur peut poser une nouvelle tuile.
+
+Méthode updateHexagoneFantome() :
+- Parcourt toutes les tuiles déjà placées.
+- Pour chaque hexagone ayant un côté libre (voisin == nullptr),
+  crée ou met à jour un HexagoneFantome à cet endroit.
+- Supprime les fantômes devenus invalides (occupés par une tuile réelle).
+- Maintient la liste 'hexagonesFantomes' toujours à jour avec les positions possibles.
+
+
+
+class HexagoneFantome;                              // déclaration anticipée
+std::vector<HexagoneFantome*> hexagonesFantomes;    //dans HexagoneFantome
+
+void CiteJoueur::placerTuile(const Tuile* tuile)
 {
+    if (!tuile) 
+        return;
+
+    const HexagoneFantome* emplacementValide = nullptr;
+
+    for (auto fantome : hexagonesFantomes)  // liste des positions libres autour de la cité
+    {
+        if (fantome->estCompatibleAvec(*tuile)) 
+        {
+            emplacementValide = fantome;
+            break;
+        }
+    }
+
+    if (!emplacementValide)
+    {
+        std::cerr << "Aucun emplacement valide." << std::endl;
+        return;
+    }
+
+    //Connecter la nouvelle tuile à son environnement
+    for (auto hexNouveau : tuile->get_hexagones())
+    {
+        for (auto voisin : emplacementValide->getVoisins())
+        {
+            if (voisin && voisin->getTuileParent())
+            {
+                // établir lien bidirectionnel
+                hexNouveau->setVoisins(voisin);
+                const_cast<Hexagone*>(voisin)->setVoisins(hexNouveau);
+            }
+        }
+    }
+
+    // Ajouter la tuile à la cité
+    tuiles.push_back(tuile);
+
+    //Mettre à jour les emplacements fantômes
+    updateHexagoneFantome();
 }
+*/
+
+
 uint32_t CiteJoueur::compterPoints() const
 {
 

@@ -32,6 +32,9 @@ class Jeu {
     void Initialiser(const int& nbJoueur);
     void Jouer(Joueur j);
 
+    const std::array<Tuile*, 61>& getTuilesCite() const { return tuilesCite; } //pour pioche
+
+
   protected:
     Jeu();
     static Jeu* instance;

@@ -46,7 +46,8 @@ class CiteJoueur : public Cite {
     ~CiteJoueur()=default;
 
 
-    void placerTuile(const Tuile* dest) override;
+    //void placerTuile(const Tuile* dest) override;
+    void CiteJoueur::placerTuile(const Tuile* tuile) override;
     uint32_t compterPoints() const override;
     void updateTuileFantome();
 

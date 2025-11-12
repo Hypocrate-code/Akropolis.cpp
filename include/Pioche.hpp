@@ -1,29 +1,27 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <vector>
+#include <array>
 
-class Tuile;
-//exemple à mettre à jour 
-class Jeu {
-    size_t nbTuiles;      
-public:
-    size_t getNbTuiles() const { return nbTuiles; }
-    Tuile** tuiles;
-};
+using namespace std;
+
+#include "Tuile.hpp"
+#include "Jeu.hpp"
+
 
 class Pioche {
-    const Tuile** tuiles;
-    size_t nb; 
+private:
+    vector<Tuile*> tuiles;
 public:
     Pioche(const Pioche&) = delete;
     Pioche& operator=(const Pioche&) = delete;
 
     explicit Pioche(const Jeu& jeu);
 
-    const Tuile& piocher();
+    Tuile* piocher();
 
-    size_t getNbTuiles() const { return nb; }
-    bool estVide() const { return nb == 0; }
-
-    ~Pioche() { delete[] tuiles; }
+    size_t getNbTuiles() const { return tuiles.size(); }
+    bool estVide() const { return tuiles.empty(); }
+  
 };
