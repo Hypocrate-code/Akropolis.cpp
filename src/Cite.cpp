@@ -3,6 +3,9 @@
 #include <algorithm>
 #include "Tuile.hpp"
 #include "Utils.hpp"
+#include <unordered_set>
+#include <stack>
+
 using namespace Utils;
 
 void Cite::print_hex(Hexagone *hex, int x, int y, strCalc &calc) const
@@ -240,8 +243,110 @@ void CiteJoueur::placerTuile(const Tuile *dest)
 }
 uint32_t CiteJoueur::compterPoints() const
 {
+    uint32_t nb_place_bleue=0; 
+    uint32_t nb_place_rouge=0;
+    uint32_t nb_place_verte=0;
+    uint32_t nb_place_violet=0;
+    uint32_t nb_place_jaune=0;
 
-    return 0;
+    uint32_t points_bleu=0; 
+    uint32_t points_rouge=0;
+    uint32_t points_vert=0;
+    uint32_t points_violet=0;
+    uint32_t points_jaune=0; 
+
+    
+    // parcours des hexagones 
+    const Hexagone* start=tuiles.back()->get_hexagones().back(); 
+    if (!start) return;
+
+    std::unordered_set<const Hexagone*> visited;
+    std::stack<const Hexagone*> pile;
+
+    pile.push(start);
+
+    while (!pile.empty()) {
+        const Hexagone* h = pile.top();
+        pile.pop();
+
+        if (visited.count(h)) continue;
+        visited.insert(h);
+
+        // Comptage des points : 
+        uint32_t niveau=1; 
+        // on determine le niveau
+        const Hexagone*copie=h ;  
+        while(copie->getVoisinsBOT()!=nullptr){
+            niveau++; 
+            copie=copie->getVoisinsBOT(); 
+
+        }
+        //place, on incrémente le nombre de place de cette couleur  
+        if (h->getType()==Type::Place){
+           if(h->getCouleur()==Couleur::Bleu) nb_place_bleue ++; 
+           if(h->getCouleur()==Couleur::Jaune) nb_place_jaune ++; 
+           if(h->getCouleur()==Couleur::Rouge) nb_place_rouge++; 
+           if(h->getCouleur()==Couleur::Vert) nb_place_verte ++; 
+           if(h->getCouleur()==Couleur::Violet) nb_place_violet ++; 
+        }
+        //quartier 
+        if (h->getType()==Type::Quartier){
+            // calcul point marché: + 1 points si n'est pas entouré d'autres marchés 
+            if (h->getCouleur()==Couleur::Jaune){
+                const Hexagone *voisins[6] = {
+                    h->getVoisinsNE(),
+                    h->getVoisinsS(),
+                    h->getVoisinsSE(),
+                    h->getVoisinsSO(),
+                    h->getVoisinsN(),
+                    h->getVoisinsNO()};
+                bool cond=true; 
+                for (int i; i<=6; i++){
+                    if (voisins[i]->getCouleur()==Couleur::Jaune && voisins[i]->getType()==Type::Quartier){
+                        cond=false; 
+                    }
+                if (cond) points_jaune+=1*niveau; 
+                }
+                    
+            }
+
+            //calcul points jardins : +1 pt pour chaque jardin 
+            if (h->getCouleur()==Couleur::Vert){
+                        points_vert+=1*niveau; 
+            }
+
+            //calcul temples : +1 si est entièrement entouré 
+            if (h->getCouleur()==Couleur::Violet){
+
+                const Hexagone *voisins[6] = {
+                    h->getVoisinsNE(),
+                    h->getVoisinsS(),
+                    h->getVoisinsSE(),
+                    h->getVoisinsSO(),
+                    h->getVoisinsN(),
+                    h->getVoisinsNO()};
+                    bool cond=true;
+            for (int i; i<=6; i++){
+                if(voisins[i]==nullptr||voisins[i]->getType()==Type::Fantome) cond=false; 
+            if(cond)points_violet+=1*niveau; 
+        }
+     }
+        // Ajouter les voisins
+        for (const Hexagone* v : h->getVoisins()) {
+            if (v != nullptr && !visited.count(v))
+                pile.push(v);
+        }
+    }
+}
+
+        
+    uint32_t total=points_bleu*nb_place_bleue*1
+                    +points_jaune *nb_place_jaune*2
+                    +points_rouge *nb_place_rouge*2
+                    +points_vert*nb_place_verte*3
+                    +points_violet*nb_place_violet*2
+                    ; 
+    return total;
 }
 
 void CiteJoueur::updateTuileFantome()

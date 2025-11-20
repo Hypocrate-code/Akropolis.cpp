@@ -80,7 +80,6 @@ public:
 
     void afficherData() const;
 
-
 protected:
     std::vector<Hexagone *> hexagones;
     
