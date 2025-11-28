@@ -40,6 +40,10 @@ public:
     const Hexagone *getVoisinsBOT() const { return voisins[7]; };
 
     const std::array<const Hexagone*,8>& getVoisins() const { return voisins; }
+    const std::array<const Hexagone*, 6>& getVoisins3D() const; 
+
+
+    int getNiveau()const; 
 
     // accesseurs écriture
     inline void setVoisinsNE(const Hexagone *hex) { voisins[0] = hex; };

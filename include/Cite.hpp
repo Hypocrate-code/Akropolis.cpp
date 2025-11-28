@@ -21,6 +21,7 @@ class Cite{
 
     void afficher() const;
     void QTDraw() const;
+    
 
     protected:
     std::vector<const Tuile*> tuiles;

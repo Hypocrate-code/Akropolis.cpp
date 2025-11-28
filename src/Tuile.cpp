@@ -123,3 +123,29 @@ std::ostream& operator<<(std::ostream& os, Couleur c) {
 std::ostream& operator<<(std::ostream& os, Type t) {
     return os << type_to_string(t);
 }
+
+
+const std::array<const Hexagone*, 6>& Hexagone::getVoisins3D() const{
+        std::array<const Hexagone*,8> voisins8 = getVoisins(); 
+
+        std::array<const Hexagone*, 6> voisins6; 
+
+        std::copy(voisins8.begin(), voisins6.begin() + 6, voisins6.begin());
+                    
+        for(int i=0; i<=6; i++){
+                    int niveau_voisins= getNiveau(); 
+                    while(voisins6[i]==nullptr && niveau_voisins>0){
+                        voisins6[i]=voisins6[i]->getVoisinsBOT();
+                        niveau_voisins --; 
+                    }
+                    return voisins6; 
+}}
+int Hexagone::getNiveau()const{
+    const Hexagone*copie= this ; 
+    int niveau =1;  
+        while(copie->getVoisinsBOT()!=nullptr){
+            niveau++; 
+            copie=copie->getVoisinsBOT(); 
+
+        }
+};
