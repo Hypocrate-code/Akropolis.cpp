@@ -3,7 +3,7 @@ project(Akropolis)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set (CMAKE_CXX_FLAGS "-g")
 # Fichiers sources
 file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADERS "include/*.hpp")
