@@ -264,7 +264,7 @@ uint32_t CiteJoueur::compterPoints() const
     
     // parcours des hexagones 
     const Hexagone* start=tuiles.back()->get_hexagones().back(); 
-    if (!start) return;
+    if (!start) return 0;
 
     std::unordered_set<const Hexagone*> visited;
     std::stack<const Hexagone*> pile;
@@ -287,12 +287,27 @@ uint32_t CiteJoueur::compterPoints() const
         
         //place, on incrémente le nombre de place de cette couleur  
         if (h->getType()==Type::Place){
-           if(h->getCouleur()==Couleur::Bleu) nb_place_bleue ++; 
-           if(h->getCouleur()==Couleur::Jaune) nb_place_jaune ++; 
-           if(h->getCouleur()==Couleur::Rouge) nb_place_rouge++; 
-           if(h->getCouleur()==Couleur::Vert) nb_place_verte ++; 
-           if(h->getCouleur()==Couleur::Violet) nb_place_violet ++; 
+            Couleur hc = h->getCouleur();
+            switch (hc)
+            {
+            case Couleur::Bleu:
+                nb_place_bleue++;
+                break;
+            case Couleur::Jaune:
+                nb_place_jaune++;
+                break;
+            case Couleur::Rouge:
+                nb_place_rouge++;
+                break;
+            case Couleur::Vert:
+                nb_place_verte++;
+                break;
+            case Couleur::Violet:
+                nb_place_violet++;
+                break;
+            }
         }
+
         //quartier 
         if (h->getType()==Type::Quartier){
             // calcul point marché: + 1 points si n'est pas entouré d'autres marchés 
@@ -328,7 +343,7 @@ uint32_t CiteJoueur::compterPoints() const
             //calcul habitation: on doit calculer les groupes d'habitations 
             if (h->getCouleur()==Couleur::Bleu){
             // si on a deja visite le groupe --> on passe 
-            if (std::find(habitations_visitees.begin(), habitations_visitees.end(), &h) != habitations_visitees.end()){
+            if (std::find(habitations_visitees.begin(), habitations_visitees.end(), h) != habitations_visitees.end()){
                     std::stack<const Hexagone*> habitations_a_visiter; 
                     int32_t points_bleu_h; 
                     habitations_a_visiter.push(h); 
@@ -380,6 +395,12 @@ uint32_t CiteJoueur::compterPoints() const
     if (!habitations_visitees.empty()) {
     points_bleu = *std::max_element(points_hab.begin(), points_hab.end());
     
+    std::cout << "printing points" << points_bleu*nb_place_bleue*1 << " . " <<
+                    points_jaune *nb_place_jaune*2 << " . " <<
+                    points_rouge *nb_place_rouge*2 <<" . " <<
+                    points_vert*nb_place_verte*3 <<" . " <<
+                    points_violet*nb_place_violet*2 << std::endl;
+       
     uint32_t total=points_bleu*nb_place_bleue*1
                     +points_jaune *nb_place_jaune*2
                     +points_rouge *nb_place_rouge*2
@@ -394,4 +415,5 @@ uint32_t CiteJoueur::compterPoints() const
 
 void CiteJoueur::updateTuileFantome()
 {
+
 }
