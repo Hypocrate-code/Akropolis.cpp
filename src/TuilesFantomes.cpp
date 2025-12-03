@@ -1,57 +1,82 @@
-#include "TuileFantome.hpp"
+#include "TuilesFantomes.hpp"
 #include "Exception.hpp"
+#include <unordered_map>
 
 
-TuileFantome::TuileFantome(Hexagone &h1, Hexagone &h2, Hexagone &h3)
-    : Tuile(h1, h2, h3)
-{
-    // on force le type fantôme
-    for (auto* h : hexagones) {
-        h->setVoisins(nullptr);
-    }
-}
+namespace HexagoneFantome {
+// Donne la direction opposée
+static const std::array<int, 6> oppose = {
+    3, // NE (0) -> SO (3)
+    4, // S  (1) -> N  (4)
+    5, // SE (2) -> NO (5)
+    0, // SO (3) -> NE (0)
+    1, // N  (4) -> S  (1)
+    2  // NO (5) -> SE (2)
+};
 
-
-// vérifie si un hexagone n’a pas déjà une vraie tuile autour
+// Vérifie si un hexagone n’a pas déjà un vrai voisin
 bool GenerateurFantome::emplacementLibre(const Hexagone* hex) {
-    for (auto v : hex->getVoisins()) {
+
+    const auto& voisins = hex->getVoisins();
+
+    for (int i = 0; i < 6; i++) {
+        const Hexagone* v = voisins[i];
+
         if (v != nullptr && v->getType() != Type::Fantome)
             return false;
     }
+
     return true;
 }
 
-// génère une tuile fantôme orientée autour d'un hexagone
-TuileFantome* GenerateurFantome::creerFantomeAutour(const Hexagone* centre) {
+// Crée un hexagone fantôme dans une direction donnée
+Hexagone* GenerateurFantome::creerFantomeVoisin(Hexagone* centre, int direction) {
 
-    auto* a = new Hexagone(Type::Fantome);
-    auto* b = new Hexagone(Type::Fantome);
-    auto* c = new Hexagone(Type::Fantome);
+    auto* ghost = new Hexagone(Type::Fantome);
 
-    // liaisons minimales fantômes
-    a->setVoisinsS(b);
-    b->setVoisinsNE(c);
-    c->setVoisinsNO(a);
+    // connecter centre -> ghost
+    centre->setVoisins(ghost + direction);
 
-    return new TuileFantome(*a, *b, *c);
+    // connecter ghost -> centre
+    ghost->setVoisins(centre + oppose[direction]);
+
+    return ghost;
 }
 
-// Génère toutes les tuiles fantômes autour des tuiles existantes
-std::vector<TuileFantome*> GenerateurFantome::genererAutour(const std::vector<const Tuile*>& tuilesExistantes) {
+// Génère tous les hexagones fantômes autour de la cité
+std::vector<Hexagone*> GenerateurFantome::genererAutour(const std::vector<const Tuile*>& tuilesExistantes) {
 
-    std::vector<TuileFantome*> resultat;
+    std::vector<Hexagone*> resultat;
 
-    for (auto* t : tuilesExistantes) {
-        for (auto* hex : t->get_hexagones()) {
+    // Pour éviter les doublons
+    std::unordered_set<const Hexagone*> dejaCree;
 
-            // pour chaque voisin vide → on génère une tuile fantôme
-            for (auto v : hex->getVoisins()) {
-                if (v == nullptr && emplacementLibre(hex)) {
-                    resultat.push_back(creerFantomeAutour(hex));
+    for (auto* tuile : tuilesExistantes) {
+        for (Hexagone* hex : tuile->get_hexagones()) {
+
+            const auto& voisins = hex->getVoisins();
+
+            // Vérifie que cet hexagone peut accueillir des fantômes
+            if (!emplacementLibre(hex))
+                continue;
+
+            for (int dir = 0; dir < 6; dir++) {
+
+                if (voisins[dir] == nullptr) {
+
+                    // éviter de créer plusieurs fois le même fantôme
+                    if (dejaCree.count(hex) == 0) {
+                        Hexagone* ghost = creerFantomeVoisin(hex, dir);
+                        resultat.push_back(ghost);
+                    }
                 }
             }
+
+            dejaCree.insert(hex);
         }
     }
 
     return resultat;
+}
+
 }
