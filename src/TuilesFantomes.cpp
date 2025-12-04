@@ -30,19 +30,32 @@ bool GenerateurFantome::emplacementLibre(const Hexagone* hex) {
 }
 
 // Crée un hexagone fantôme dans une direction donnée
-Hexagone* GenerateurFantome::creerFantomeVoisin(Hexagone* centre, int direction) {
-
+Hexagone* GenerateurFantome::creerFantomeVoisin(Hexagone* centre, int dir)
+{
     auto* ghost = new Hexagone(Type::Fantome);
 
-    // connecter centre -> ghost
-    centre->setVoisins(ghost + direction);
+    // connecter centre → ghost
+    switch (dir) {
+        case 0: centre->setVoisinsNE(ghost); break;
+        case 1: centre->setVoisinsS(ghost); break;
+        case 2: centre->setVoisinsSE(ghost); break;
+        case 3: centre->setVoisinsSO(ghost); break;
+        case 4: centre->setVoisinsN(ghost); break;
+        case 5: centre->setVoisinsNO(ghost); break;
+    }
 
-    // connecter ghost -> centre
-    ghost->setVoisins(centre + oppose[direction]);
+    // connecter ghost → centre
+    switch (oppose[dir]) {
+        case 0: ghost->setVoisinsNE(centre); break;
+        case 1: ghost->setVoisinsS(centre); break;
+        case 2: ghost->setVoisinsSE(centre); break;
+        case 3: ghost->setVoisinsSO(centre); break;
+        case 4: ghost->setVoisinsN(centre); break;
+        case 5: ghost->setVoisinsNO(centre); break;
+    }
 
     return ghost;
 }
-
 // Génère tous les hexagones fantômes autour de la cité
 std::vector<Hexagone*> GenerateurFantome::genererAutour(const std::vector<const Tuile*>& tuilesExistantes) {
 
