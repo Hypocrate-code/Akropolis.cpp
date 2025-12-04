@@ -11,7 +11,7 @@
 
 int main(){
     try {
-        std::cout << "Start of program." << std::endl << std::endl;
+        /*std::cout << "Start of program." << std::endl << std::endl;
         Jeu* j = Jeu::getInstance();
         int nJoueur;
         std::cout << "=============================" << std::endl;
@@ -21,6 +21,9 @@ int main(){
         std::cin >> nJoueur;
         j->Initialiser(nJoueur);
         std::cout << std::endl << "Program correctly ended." << std::endl;
+        */
+      
+        
         return 0;
 
 

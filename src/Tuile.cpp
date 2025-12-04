@@ -10,7 +10,7 @@ Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
     {
         throw Exception("le type ne correspond pas à la couleur indiquée");
     }
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 8; i++)
     {
         voisins[i] = nullptr; // à la creation des hexagones, pas de voisins ne font pas encore partie des tuiles
     }
@@ -40,7 +40,7 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
     hexagones.push_back(&hex2);
     hexagones.push_back(&hex3);
 
-    hex1.setVoisinsSO(&hex2);
+    hex1.setVoisinsSE(&hex2);
     hex1.setVoisinsS(&hex3);
 
     hex2.setVoisinsNO(&hex1);
@@ -125,21 +125,30 @@ std::ostream& operator<<(std::ostream& os, Type t) {
 }
 
 
-const std::array<const Hexagone*, 6>& Hexagone::getVoisins3D() const{
-        std::array<const Hexagone*,8> voisins8 = getVoisins(); 
 
-        std::array<const Hexagone*, 6> voisins6; 
 
-        std::copy(voisins8.begin(), voisins6.begin() + 6, voisins6.begin());
-                    
-        for(int i=0; i<=6; i++){
-                    int niveau_voisins= getNiveau(); 
-                    while(voisins6[i]==nullptr && niveau_voisins>0){
-                        voisins6[i]=voisins6[i]->getVoisinsBOT();
-                        niveau_voisins --; 
-                    }
-                    return voisins6; 
-}}
+std::array<const Hexagone*, 6> Hexagone::getVoisins3D() const{
+    std::array<const Hexagone*,8> voisins8 = getVoisins();
+
+    std::array<const Hexagone*, 6> voisins6{}; // init à nullptr
+
+    
+    std::copy(voisins8.begin(), voisins8.begin() + 6, voisins6.begin());
+
+    const Hexagone* copie = this; 
+    while(copie!=nullptr){ 
+        std::array<const Hexagone*,8> voisinsNiveau = copie->getVoisins(); 
+        for(int i=0; i<6; i++){
+            if(voisinsNiveau[i]!=nullptr && voisins6[i]==nullptr ){
+                voisins6[i]=voisinsNiveau[i]; 
+            }
+        }
+        copie = copie->getVoisinsBOT();
+    }
+    return voisins6;
+}
+
+
 int Hexagone::getNiveau()const{
     const Hexagone*copie= this ; 
     int niveau =1;  
@@ -148,4 +157,5 @@ int Hexagone::getNiveau()const{
             copie=copie->getVoisinsBOT(); 
 
         }
+    return niveau; 
 };
