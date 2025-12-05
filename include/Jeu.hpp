@@ -28,8 +28,6 @@ class Jeu {
     void afficherTuiles() const;
     void afficherHexagones() const;
     ModeDeJeu getModeDeJeu() const; // A voir si utile, mode solo ?
-    
-
     void tourJoueur(Joueur* joueur);
     void Initialiser(const int& nbJoueur);
     void Jouer(Joueur j);

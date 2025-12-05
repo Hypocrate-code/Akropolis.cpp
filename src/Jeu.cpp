@@ -131,20 +131,30 @@ void Jeu::Initialiser(const int& nbJoueur) {
 
 // --- TEST AJOUT D'UNE TUILE (MANUELLEMENT) ET DU SET_HEX_FANTOME ---
 
-    //Tuile* t = new Tuile{*hexs[0], *hexs[1], *hexs[2]};
-     //t->set_cite(joueurs[0]->getCite());
-     //tuilesDepart[i]->get_hexagones()[0]->setVoisinsNE(t->get_hexagones()[0]);
-     //tuilesDepart[i]->get_hexagones()[0]->setVoisinsSE(t->get_hexagones()[2]);
-     //tuilesDepart[i]->get_hexagones()[3]->setVoisinsNE(t->get_hexagones()[2]);
-     //tuilesDepart[i]->get_hexagones()[2]->setVoisinsN(t->get_hexagones()[2]);
-    
-    tuilesDepart[i]->set_hex_fantome();  //esto anade los fantasmas
-     //t->set_hex_fantome();
-    //joueurs[0]->getCite()->afficher();
-    
-     //delete t;
+
+  joueurs[0]->getCite()->generateAllHexFantome();
+      Tuile* t = new Tuile{*hexs[0], *hexs[1], *hexs[2]};
+     //t->set_cite(joueurs[0]->getCite()); //futur dans placerTUile
+     //tuilesDepart[i]->get_hexagones()[0]->setVoisinsN(t->get_hexagones()[0]);
+     
+     tuilesDepart[i]->get_hexagones()[0]->setVoisinsNE(t->get_hexagones()[0]);
+     tuilesDepart[i]->get_hexagones()[0]->setVoisinsSE(t->get_hexagones()[2]);
+     tuilesDepart[i]->get_hexagones()[3]->setVoisinsNE(t->get_hexagones()[2]);
+     tuilesDepart[i]->get_hexagones()[2]->setVoisinsN(t->get_hexagones()[2]);
+
+     joueurs[0]->getCite()->addTuile(t);
+     //
+    //joueurs[0]->getCite()->release_hex_fantome();
+    //tuilesDepart[i]->set_hex_fantome();
+
+    // t->set_hex_fantome();
+    // joueurs[0]->getCite()->afficher();
+    //
+    // delete t;
 
 // --- FIN TEST AJOUT D'UNE TUILE (MANUELLEMENT) ET DU SET_HEX_FANTOME ---
+
+
   }
 
   for (auto& j : joueurs) {
@@ -176,7 +186,6 @@ void Jeu::afficherHexagones() const {
     std::cout << std::endl;
   }
 }
-
 void Jeu::tourJoueur(Joueur* joueur) {
     std::cout << "\n=== Tour de " << joueur->getNom() << " ===\n";
 

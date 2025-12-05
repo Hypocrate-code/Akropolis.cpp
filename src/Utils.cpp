@@ -4,10 +4,14 @@
 namespace Utils
 {
     int indiceDeDroite(int direction) {
-        return 0 <= direction <= 5 ? (direction == 5 ? 0 : direction + 1) : -1;
+
+
+        if (direction < 0 || direction > 5) return -1;
+        return (direction == 5 ? 0 : direction + 1);
     }
     int indiceDeGauche(int direction) {
-        return 0 <= direction <= 5 ? (direction == 0 ? 5 : direction - 1) : -1;
+        if (direction < 0 || direction > 5) return -1;
+        return (direction == 0 ? 5 : direction - 1);
     }
 
     char get_color_char(Couleur color)
@@ -190,4 +194,24 @@ namespace Utils
         }
         return str;
     }
+
+
+
+
+
+    int opposite_index(int idx)
+{
+    switch (idx)
+    {
+    case 0: return 3; // NE <-> SO
+    case 3: return 0;
+    case 1: return 4; // S  <-> N
+    case 4: return 1;
+    case 2: return 5; // SE <-> NO
+    case 5: return 2;
+    case 6: return 7; // TOP <-> BOT
+    case 7: return 6;
+    default: return idx;
+    }
+}
 }

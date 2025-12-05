@@ -13,6 +13,9 @@ Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
     {
         throw Exception("le type ne correspond pas à la couleur indiquée");
     }
+    if(type == Type::Fantome){
+        couleur = Couleur::nulle;
+    }
     for (int i = 0; i < 8; i++)
     {
         voisins[i] = nullptr;
@@ -101,49 +104,6 @@ void Tuile::reset_hex_links()
         hex->setVoisins(nullptr);
     }
 }
-void Tuile::set_hex_fantome()
-{
-    for (size_t j = 0; j < hexagones.size() ; j++)
-    {
-        std::array<const Hexagone*, 8> voisins = hexagones[j]->getVoisins();
-        for (size_t i = 0; i < voisins.size() - 2; i++) { // Skip top et bottom
-            if (voisins[i] == nullptr) {
-                // cite->afficher();
-                Hexagone* newHex = cite->get_hex_fantome();
-                // std::cout << "indice i : " << i << std::endl;
-                hexagones[j]->setVoisinIndice(i, newHex);
-
-                // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA GAUCHE POUR CHERCHER LES LIAISONS
-                int k = indiceDeGauche(i);
-                Hexagone* voisinDeGauche = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(k));
-                while (voisinDeGauche != nullptr) {
-                    // std::cout << "pas nullptr : " << std::endl;
-                    // voisinDeGauche->afficherData();
-                    k = indiceDeDroite(indiceDeDroite(k));
-                    voisinDeGauche->setVoisinIndice(k, newHex);
-                    k = indiceDeGauche(k);
-                    voisinDeGauche = const_cast<Hexagone*>(voisinDeGauche->getVoisinIndice(k));
-                }
-
-
-                // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA DROITE POUR CHERCHER LES LIAISONS
-                k = indiceDeDroite(i);
-                Hexagone* voisinDeDroite = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(k));
-                while (voisinDeDroite != nullptr) {
-                    // std::cout << "pas nullptr : " << std::endl;
-                    // voisinDeDroite->afficherData();
-                    k = indiceDeGauche(indiceDeGauche(k));
-                    voisinDeDroite->setVoisinIndice(k, newHex);
-                    k = indiceDeDroite(k);
-                    voisinDeDroite = const_cast<Hexagone*>(voisinDeDroite->getVoisinIndice(k));
-                }
-
-                // std::cout << "Fin des voisins de l'hex fantome : " << newHex->getIndice() << std::endl;
-
-            }
-        }
-    }
-}
 
 TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagone &hexCentre) : Tuile(hex1, hex2, hex3)
 {
@@ -175,3 +135,21 @@ std::ostream& operator<<(std::ostream& os, Couleur c) {
 std::ostream& operator<<(std::ostream& os, Type t) {
     return os << type_to_string(t);
 }
+
+
+Hexagone::~Hexagone(){
+    for (auto& voisin : voisins) {
+        if (voisin){
+            voisin->removeConnection(this);
+            voisin = nullptr;
+        }
+    } 
+}
+
+void Hexagone::removeConnection(const Hexagone* hex) {
+    for (auto& voisin : voisins){
+        if (voisin == hex)
+            voisin = nullptr;
+    }
+}
+

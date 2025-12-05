@@ -19,12 +19,19 @@ public:
     ~Cite() = default;
 
     virtual void placerTuile(const Tuile* dest) = 0;
+    void addTuile(Tuile* t);
+    void addTuile(const Tuile* t);
+
     virtual uint32_t compterPoints() const = 0;
 
     void afficher() const;
     void QTDraw() const;
     std::vector<Hexagone*> hexs_fantome;
-    Hexagone* get_hex_fantome();
+    Hexagone* create_new_hex_fantome();
+    void release_hex_fantome();
+
+    void generateAllHexFantome();
+    void updateFantomeOfTuile(const Tuile* t);
 protected:
 
     std::vector<const Tuile*> tuiles;
@@ -39,9 +46,9 @@ protected:
     void add_hex_data(Hexagone *hex, int x, int y, strCalc& calc) const;
 
     // Dessines les hexagones recursivement, les hexagones deja dessine sont dans drawnHexagones.
-    void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones) const; //, int depth) const;
+    void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones, int hauteur) const; //, int depth) const;
 
-    void addTuile(const Tuile* t);
+    
 };
 
 class CiteJoueur : public Cite {
@@ -52,7 +59,6 @@ public:
 
     void placerTuile(const Tuile* dest) override;
     uint32_t compterPoints() const override;
-    void updateTuileFantome();
 
 };
 
