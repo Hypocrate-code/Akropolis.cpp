@@ -2,6 +2,13 @@
 
 namespace Utils
 {
+    int voisinDroite(int direction) {
+        return 0 <= direction <= 6 ? (direction == 6 ? 0 : direction + 1) : -1;
+    }
+    int voisinGauche(int direction) {
+        return 0 <= direction <= 6 ? (direction == 0 ? 6 : direction - 1) : -1;
+    }
+
     char get_color_char(Couleur color)
     {
         switch (color)
@@ -55,7 +62,7 @@ namespace Utils
         case Type::Place:
             return "PLA";
         case Type::Fantome:
-            return "FAN";
+            return "   ";
         default:
             return "UNK";
         }
@@ -76,13 +83,12 @@ namespace Utils
         case Couleur::Violet:
             return "VIO";
         case Couleur::nulle:
-            return "NUL";
+            return "   ";
         default:
             return "UNK";
         }
     }
 
-    // Rest of the helper functions remain the same...
     std::string type_to_string(Type type)
     {
         switch (type)
@@ -165,6 +171,11 @@ namespace Utils
         result = replace_all(result, "VIO", "\033[35mVIO\033[0m");
         result = replace_all(result, "NUL", "\033[37mNUL\033[0m");
 
+        return result;
+    }
+    std::string colorize_string(const std::string& str, const Couleur color)
+    {
+        std::string result = get_color_code(color) + str + get_color_code(color);
         return result;
     }
 

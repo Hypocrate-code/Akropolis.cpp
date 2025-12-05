@@ -1,8 +1,9 @@
 #include "Cite.hpp"
+#include "Tuile.hpp"
 #include <iostream>
 #include <algorithm>
-#include "Tuile.hpp"
 #include "Utils.hpp"
+
 using namespace Utils;
 
 void Cite::print_hex(Hexagone *hex, int x, int y, strCalc &calc) const
@@ -57,22 +58,37 @@ void Cite::print_hex(Hexagone *hex, int x, int y, strCalc &calc) const
 
 void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc) const
 {
-    std::string typeStr = get_short_type(hex->getType());
-    std::string colorStr = get_short_color(hex->getCouleur());
-    // std::string colorCode = get_color_code(hex->getCouleur());
-    // std::string resetCode = "\033[0m";
+    std::string resetCode = "\033[0m";
+    std::string typeStr = get_color_code(hex->getCouleur()) + get_short_type(hex->getType()) + resetCode;
+    std::string colorStr = colorize_string(typeStr, hex->getCouleur());
+    std::string colorCode = get_short_color(hex->getCouleur());
 
     if (y - 1 >= 0 && x - 4 >= 0 && x + 5 <= calc[y - 1].size())
     {
         // std::string topLine = center_string(colorCode + typeStr + resetCode, 3);
-        std::string topLine = center_string(typeStr, 7);
-        calc[y].replace(x - 3, 7, topLine);
+        std::string topLine;
+
+        if (hex->getType() == Type::Fantome) {
+            std::string indice = std::to_string(hex->getIndice());
+            calc[y].erase(x, indice.length());
+            calc[y].insert(x - indice.length()/2, indice);
+        }
+        else {
+            topLine = center_string(get_short_type(hex->getType()), 7);
+            calc[y].erase(x - 3, 7);
+            calc[y].insert(x - 3, topLine);
+        }
+        // std::string final = replace_all(topLine ,get_short_type(hex->getType()), typeStr);
+        // std::cout << final << std::endl;
+        // calc[y].insert(x + 4, resetCode);
+        // calc[y].insert(x - 3, get_color_code(hex->getCouleur()));
+        // calc[y].insert(x - 3, topLine);
     }
 
     if (y >= 0 && x - 3 >= 0 && x + 4 <= calc[y].size())
     {
         // std::string midLine = center_string(colorCode + colorStr + resetCode, 5);
-        std::string midLine = center_string(colorStr, 7);
+        std::string midLine = center_string(colorCode, 7);
         // calc[y+1].replace(x - 2, 5, midLine);
         calc[y + 1].replace(x - 3, 7, midLine);
     }
@@ -91,21 +107,21 @@ void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
     // Proper hexagon grid offsets for pointy-top hexagones
 
     static const std::vector<std::pair<int, int>> directionOffsets = {
-        {7, -2}, // NE (index 0) - largeur hexagone = 9
-        {0, 4},  // S  (index 1) - hauteur hexagone = 5
-        {7, 2},  // SE (index 2) - largeur hexagone = 9
-        {-7, 2}, // SO (index 3) - largeur hexagone = 9
-        {0, -4}, // N  (index 4) - hauteur hexagone = 5
-        {-7, -2} // NO (index 5) - largeur hexagone = 9
+        {0, 4},  // S  (index 0) - hauteur hexagone = 5
+        {7, 2},  // SE (index 1) - largeur hexagone = 9
+        {7, -2}, // NE (index 2) - largeur hexagone = 9
+        {0, -4}, // N  (index 3) - hauteur hexagone = 5
+        {-7, -2}, // NO (index 4) - largeur hexagone = 9
+        {-7, 2} // SO (index 5) - largeur hexagone = 9
     };
 
     const Hexagone *neighbors[6] = {
-        hex->getVoisinsNE(), // 0: Nord-Est
-        hex->getVoisinsS(),  // 1: Sud
-        hex->getVoisinsSE(), // 2: Sud-Est
-        hex->getVoisinsSO(), // 3: Sud-Ouest
-        hex->getVoisinsN(),  // 4: Nord
-        hex->getVoisinsNO()  // 5: Nord-Ouest
+        hex->getVoisinsS(),  // 0: Sud
+        hex->getVoisinsSE(), // 1: Sud-Est
+        hex->getVoisinsNE(), // 2: Nord-Est
+        hex->getVoisinsN(),  // 3: Nord
+        hex->getVoisinsNO(),  // 4: Nord-Ouest
+        hex->getVoisinsSO() // 5: Sud-Ouest
     };
 
     for (int i = 0; i < 6; ++i)
@@ -125,9 +141,7 @@ void Cite::afficher() const
 {
     std::cout << "=== DEBUG HEXAGONE CONNECTIONS ===" << std::endl;
 
-    if (tuiles.empty())
-        return;
-
+    if (tuiles.empty()) {return;}
     // Debug: Print all hexagones and their neighbors
     for (size_t i = 0; i < tuiles.size(); ++i)
     {
@@ -227,7 +241,14 @@ void Cite::increase_calc_size_V(strCalc &calc, uint32_t size) const
 
 Cite::Cite(const Tuile *tuileDeDepart)
 {
-    tuiles.push_back(tuileDeDepart);
+    this->addTuile(tuileDeDepart);
+}
+
+
+void Cite::addTuile(const Tuile* t)
+{
+    tuiles.push_back(t);
+    const_cast<Tuile*>(t)->cite = this;
 }
 
 CiteJoueur::CiteJoueur(const Tuile *tuileDeDepart) : Cite{tuileDeDepart}
@@ -242,6 +263,12 @@ uint32_t CiteJoueur::compterPoints() const
 {
 
     return 0;
+}
+
+HexFantome* Cite::get_hex_fantome() {
+    HexFantome* newHex = new HexFantome(hexs_fantome.size());
+    hexs_fantome.push_back(newHex);
+    return newHex;
 }
 
 void CiteJoueur::updateTuileFantome()

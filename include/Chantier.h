@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Tuile.hpp"
-#include "Pioche.hpp"
+// #include "Pioche.hpp"
 #include <vector>
 #include <optional>
 #include <iostream>
@@ -12,7 +12,7 @@ public:
     explicit Chantier(int nbJoueurs);
 
     // Remplir le chantier depuis la pioche (en gardant la dernière tuile)
-    void remplirDepuisPioche(Pioche& pioche);
+    // void remplirDepuisPioche(Pioche& pioche);
 
     // Acheter une tuile selon sa position et le nombre de pierres du joueur
     std::optional<Tuile*> acheterTuile(std::size_t index, int& pierresJoueur);
@@ -21,7 +21,7 @@ public:
     int coutPourIndice(std::size_t index) const;
 
     // Accès lecture seule
-    const std::vector<Tuile>& getTuiles() const noexcept;
+    const std::vector<Tuile*>& getTuiles() const noexcept;
     std::size_t taille() const noexcept;
     bool estVide() const noexcept;
 

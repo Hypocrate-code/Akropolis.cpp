@@ -31,12 +31,12 @@ class Jeu {
 
     void Initialiser(const int& nbJoueur);
     void Jouer(Joueur j);
+    std::array<Tuile*, 61> tuilesCite;
 
   protected:
     Jeu();
     static Jeu* instance;
     const ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
-    std::array<Tuile*, 61> tuilesCite;
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;

@@ -1,18 +1,21 @@
 #include "Tuile.hpp"
+#include "Cite.hpp"
 #include "Exception.hpp"
 #include <iostream>
+
+#include "Jeu.hpp"
 #include "Utils.hpp"
 
 using namespace Utils;
 Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
 {
-    if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && couleur == Couleur::nulle))
+    if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && type != Type::Fantome && couleur == Couleur::nulle))
     {
         throw Exception("le type ne correspond pas à la couleur indiquée");
     }
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 8; i++)
     {
-        voisins[i] = nullptr; // à la creation des hexagones, pas de voisins ne font pas encore partie des tuiles
+        voisins[i] = nullptr;
     }
 };
 
@@ -40,7 +43,7 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
     hexagones.push_back(&hex2);
     hexagones.push_back(&hex3);
 
-    hex1.setVoisinsSO(&hex2);
+    hex1.setVoisinsSE(&hex2);
     hex1.setVoisinsS(&hex3);
 
     hex2.setVoisinsNO(&hex1);
@@ -65,6 +68,7 @@ void Tuile::afficherData() const
 
     std::cout << "============================" << std::endl;
 }
+
 
 Tuile *Tuile::rotate()
 {
@@ -91,6 +95,45 @@ void Tuile::reset_hex_links()
     for (auto &hex : hexagones)
     {
         hex->setVoisins(nullptr);
+    }
+}
+void Tuile::set_hex_fantome()
+{
+    for (size_t j = 0; j < hexagones.size() ; j++)
+    {
+        std::array<const Hexagone*, 8> voisins = hexagones[j]->getVoisins();
+        for (size_t i = 0; i < voisins.size() - 2; i++) { // Skip top et bottom
+            if (voisins[i] == nullptr) {
+                // cite->afficher();
+                const HexFantome* newHex = cite->get_hex_fantome();
+                std::cout << "indice i : " << i << std::endl;
+                hexagones[j]->setVoisinIndice(i, newHex);
+
+                // int indiceGauche = voisinGauche(i);
+                // std::cout << "indice à gauche de i : " << indiceGauche << std::endl;
+                // Hexagone* gauche = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(indiceGauche));
+                // while (gauche != nullptr) {
+                //     std::cout << "pas nullptr g" << std::endl;
+                //     gauche->setVoisinIndice(voisinDroite(voisinDroite(voisinDroite(indiceGauche))), newHex);
+                //     indiceGauche = voisinGauche(indiceGauche);
+                //     std::cout << "indice à gauche de i : " << indiceGauche << std::endl;
+                //     Hexagone* gauche = const_cast<Hexagone*>(gauche->getVoisinIndice(indiceGauche));
+                // }
+                // std::cout << "fin" << std::endl;
+
+                // int indiceDroite = voisinDroite(i);
+                // Hexagone* droite = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(indiceDroite));
+                // while (droite != nullptr) {
+                //     droite->setVoisinIndice(voisinGauche(indiceDroite), newHex);
+                //     indiceDroite = voisinDroite(indiceDroite);
+                //     Hexagone* droite = const_cast<Hexagone*>(droite->getVoisinIndice(indiceDroite));
+                // }
+
+                // Création d'hexagones fantomes géré par la tuile elle-même,
+                // son indice est composé de l'indice de la tuile (a implémenter)
+                // ainsi que l'indice de l'hex fantome par rapport à la tuile (0 à b en hex au plus)
+            }
+        }
     }
 }
 

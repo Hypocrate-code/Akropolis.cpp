@@ -93,6 +93,7 @@ Jeu::Jeu() : mode{ModeDeJeu::Solo} {
   for (size_t i = 0 ; i < tuilesCite.size() ; i++) {
     const size_t j = i*3;
     tuilesCite[i] = new Tuile(*hexs[j], *hexs[j+1], *hexs[j+2]);
+    tuilesCite[i]->set_indice(i);
   }
 
   // -> Passer les tuiles à la Pioche / Chantier ??
@@ -121,15 +122,25 @@ void Jeu::Initialiser(const int& nbJoueur) {
 
     // Création de la tuile de départ
     const size_t n = hexs.size() - 4;
+
     tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n+1], *hexs[n+2], *hexs[n+3]));
+
+    // Tuile t{*hexs[0], *hexs[1], *hexs[2]};
+    // t.set_hex_fantome();
+    // tuilesDepart[i]->get_hexagones()[3]->setVoisinsS(t.get_hexagones()[0]);
 
     // Création du joueur
     joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));
+
+    tuilesDepart[i]->set_hex_fantome();
   }
 
   for (auto& j : joueurs) {
     std::cout << "Player : " << j->getNom() << std::endl;
     std::cout << "Rocks count : " << j->getNbPierres() << std::endl;
+    // Tuile t{*hexs[0], *hexs[1], *hexs[2]};
+    // tuilesDepart[0]->get_hexagones()[0]->setVoisinsNE(t.get_hexagones()[1]);
+    // t.set_hex_fantome();
     j->getCite()->afficher();
   }
 
