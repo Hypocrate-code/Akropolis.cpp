@@ -108,20 +108,20 @@ void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
 
     static const std::vector<std::pair<int, int>> directionOffsets = {
         {0, 4},  // S  (index 0) - hauteur hexagone = 5
-        {7, 2},  // SE (index 1) - largeur hexagone = 9
-        {7, -2}, // NE (index 2) - largeur hexagone = 9
-        {0, -4}, // N  (index 3) - hauteur hexagone = 5
+        {-7, 2}, // SO (index 5) - largeur hexagone = 9
         {-7, -2}, // NO (index 4) - largeur hexagone = 9
-        {-7, 2} // SO (index 5) - largeur hexagone = 9
+        {0, -4}, // N  (index 3) - hauteur hexagone = 5
+        {7, -2}, // NE (index 2) - largeur hexagone = 9
+        {7, 2}  // SE (index 1) - largeur hexagone = 9
     };
 
     const Hexagone *neighbors[6] = {
         hex->getVoisinsS(),  // 0: Sud
-        hex->getVoisinsSE(), // 1: Sud-Est
-        hex->getVoisinsNE(), // 2: Nord-Est
+        hex->getVoisinsSO(), // 1: Sud-Ouest
+        hex->getVoisinsNO(),  // 2: Nord-Ouest
         hex->getVoisinsN(),  // 3: Nord
-        hex->getVoisinsNO(),  // 4: Nord-Ouest
-        hex->getVoisinsSO() // 5: Sud-Ouest
+        hex->getVoisinsNE(), // 4: Nord-Est
+        hex->getVoisinsSE(), // 5: Sud-Est
     };
 
     for (int i = 0; i < 6; ++i)
@@ -179,7 +179,7 @@ void Cite::afficher() const
         }
     }
 
-    std::cout << "=== END DEBUG ===" << std::endl;
+    std::cout << "=== END DEBUG ===" << std::endl << std::endl;
 
     std::cout << "Nombre de tuiles dans la cite: " << tuiles.size() << std::endl;
     if (tuiles.size())
@@ -265,8 +265,9 @@ uint32_t CiteJoueur::compterPoints() const
     return 0;
 }
 
-HexFantome* Cite::get_hex_fantome() {
-    HexFantome* newHex = new HexFantome(hexs_fantome.size());
+Hexagone* Cite::get_hex_fantome() {
+    Hexagone* newHex = new Hexagone(Type::Fantome);
+    newHex->setIndice(hexs_fantome.size());
     hexs_fantome.push_back(newHex);
     return newHex;
 }

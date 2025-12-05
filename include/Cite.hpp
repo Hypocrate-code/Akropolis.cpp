@@ -6,7 +6,7 @@
 
 class Tuile;
 class Hexagone;
-class HexFantome;
+// class HexFantome;
 
 typedef std::vector<std::string> strCalc;
 
@@ -23,8 +23,8 @@ public:
 
     void afficher() const;
     void QTDraw() const;
-    std::vector<HexFantome*> hexs_fantome;
-    HexFantome* get_hex_fantome();
+    std::vector<Hexagone*> hexs_fantome;
+    Hexagone* get_hex_fantome();
 protected:
 
     std::vector<const Tuile*> tuiles;

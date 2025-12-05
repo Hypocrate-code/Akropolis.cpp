@@ -21,6 +21,10 @@ Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
 
 void Hexagone::afficherData() const
 {
+    if (this == nullptr) {
+        // std::cout << "nullptr" << std::endl;
+        return;
+    }
     std::cout << "  Type: " << type_to_string(getType())
               << ", Couleur: " << color_to_string(getCouleur()) << std::endl;
 
@@ -105,33 +109,37 @@ void Tuile::set_hex_fantome()
         for (size_t i = 0; i < voisins.size() - 2; i++) { // Skip top et bottom
             if (voisins[i] == nullptr) {
                 // cite->afficher();
-                const HexFantome* newHex = cite->get_hex_fantome();
-                std::cout << "indice i : " << i << std::endl;
+                Hexagone* newHex = cite->get_hex_fantome();
+                // std::cout << "indice i : " << i << std::endl;
                 hexagones[j]->setVoisinIndice(i, newHex);
 
-                // int indiceGauche = voisinGauche(i);
-                // std::cout << "indice à gauche de i : " << indiceGauche << std::endl;
-                // Hexagone* gauche = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(indiceGauche));
-                // while (gauche != nullptr) {
-                //     std::cout << "pas nullptr g" << std::endl;
-                //     gauche->setVoisinIndice(voisinDroite(voisinDroite(voisinDroite(indiceGauche))), newHex);
-                //     indiceGauche = voisinGauche(indiceGauche);
-                //     std::cout << "indice à gauche de i : " << indiceGauche << std::endl;
-                //     Hexagone* gauche = const_cast<Hexagone*>(gauche->getVoisinIndice(indiceGauche));
-                // }
-                // std::cout << "fin" << std::endl;
+                // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA GAUCHE POUR CHERCHER LES LIAISONS
+                int k = indiceDeGauche(i);
+                Hexagone* voisinDeGauche = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(k));
+                while (voisinDeGauche != nullptr) {
+                    // std::cout << "pas nullptr : " << std::endl;
+                    // voisinDeGauche->afficherData();
+                    k = indiceDeDroite(indiceDeDroite(k));
+                    voisinDeGauche->setVoisinIndice(k, newHex);
+                    k = indiceDeGauche(k);
+                    voisinDeGauche = const_cast<Hexagone*>(voisinDeGauche->getVoisinIndice(k));
+                }
 
-                // int indiceDroite = voisinDroite(i);
-                // Hexagone* droite = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(indiceDroite));
-                // while (droite != nullptr) {
-                //     droite->setVoisinIndice(voisinGauche(indiceDroite), newHex);
-                //     indiceDroite = voisinDroite(indiceDroite);
-                //     Hexagone* droite = const_cast<Hexagone*>(droite->getVoisinIndice(indiceDroite));
-                // }
 
-                // Création d'hexagones fantomes géré par la tuile elle-même,
-                // son indice est composé de l'indice de la tuile (a implémenter)
-                // ainsi que l'indice de l'hex fantome par rapport à la tuile (0 à b en hex au plus)
+                // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA DROITE POUR CHERCHER LES LIAISONS
+                k = indiceDeDroite(i);
+                Hexagone* voisinDeDroite = const_cast<Hexagone*>(hexagones[j]->getVoisinIndice(k));
+                while (voisinDeDroite != nullptr) {
+                    // std::cout << "pas nullptr : " << std::endl;
+                    // voisinDeDroite->afficherData();
+                    k = indiceDeGauche(indiceDeGauche(k));
+                    voisinDeDroite->setVoisinIndice(k, newHex);
+                    k = indiceDeDroite(k);
+                    voisinDeDroite = const_cast<Hexagone*>(voisinDeDroite->getVoisinIndice(k));
+                }
+
+                // std::cout << "Fin des voisins de l'hex fantome : " << newHex->getIndice() << std::endl;
+
             }
         }
     }
@@ -158,6 +166,7 @@ TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagon
     hexagones[3]->setVoisinsSO(hexagones[1]);
     hexagones[3]->setVoisinsSE(hexagones[2]);
     hexagones[3]->setVoisinsNE(nullptr);
+
 };
 
 std::ostream& operator<<(std::ostream& os, Couleur c) {

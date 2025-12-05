@@ -1,12 +1,13 @@
 #include "Utils.hpp"
+#include "Tuile.hpp"
 
 namespace Utils
 {
-    int voisinDroite(int direction) {
-        return 0 <= direction <= 6 ? (direction == 6 ? 0 : direction + 1) : -1;
+    int indiceDeDroite(int direction) {
+        return 0 <= direction <= 5 ? (direction == 5 ? 0 : direction + 1) : -1;
     }
-    int voisinGauche(int direction) {
-        return 0 <= direction <= 6 ? (direction == 0 ? 6 : direction - 1) : -1;
+    int indiceDeGauche(int direction) {
+        return 0 <= direction <= 5 ? (direction == 0 ? 5 : direction - 1) : -1;
     }
 
     char get_color_char(Couleur color)

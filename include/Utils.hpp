@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
-#include "Tuile.hpp"
+// #include "Tuile.hpp"
 
+
+enum class Couleur;
+enum class Type;
 namespace Utils
 {
     char get_color_char(Couleur color);
@@ -19,6 +22,6 @@ namespace Utils
     std::string colorize_line(const std::string &line);
     std::string colorize_string(const std::string& str, Couleur color);
     std::string replace_all(std::string str, const std::string &from, const std::string &to);
-    int voisinDroite(int direction);
-    int voisinGauche(int direction);
+    int indiceDeDroite(int direction);
+    int indiceDeGauche(int direction);
 }

@@ -3,6 +3,8 @@
 #include <array>
 #include <ostream>
 
+#include "Utils.hpp"
+
 class Cite;
 
 enum class Couleur
@@ -30,12 +32,13 @@ public:
     Hexagone(Type t, Couleur c = Couleur::nulle);
 
     // acesseurs lecture
+
     const Hexagone *getVoisinsS() const { return voisins[0]; };
-    const Hexagone *getVoisinsSE() const { return voisins[1]; };
-    const Hexagone *getVoisinsNE() const { return voisins[2]; };
+    const Hexagone *getVoisinsSO() const { return voisins[1]; };
+    const Hexagone *getVoisinsNO() const { return voisins[2]; };
     const Hexagone *getVoisinsN() const { return voisins[3]; };
-    const Hexagone *getVoisinsNO() const { return voisins[4]; };
-    const Hexagone *getVoisinsSO() const { return voisins[5]; };
+    const Hexagone *getVoisinsNE() const { return voisins[4]; };
+    const Hexagone *getVoisinsSE() const { return voisins[5]; };
     const Hexagone *getVoisinsTOP() const { return voisins[6]; };
     const Hexagone *getVoisinsBOT() const { return voisins[7]; };
     const Hexagone *getVoisinIndice(int i) const { return voisins[i];};
@@ -43,18 +46,22 @@ public:
     const std::array<const Hexagone*,8>& getVoisins() const { return voisins; }
 
     // accesseurs écriture
-    inline void setVoisinsS(const Hexagone *hex) { voisins[0] = hex; };
-    inline void setVoisinsSE(const Hexagone *hex) { voisins[1] = hex; };
-    inline void setVoisinsNE(const Hexagone *hex) { voisins[2] = hex; };
-    inline void setVoisinsN(const Hexagone *hex) { voisins[3] = hex; };
-    inline void setVoisinsNO(const Hexagone *hex) { voisins[4] = hex; };
-    inline void setVoisinsSO(const Hexagone *hex) { voisins[5] = hex; };
-    inline void setVoisinsTOP(const Hexagone *hex) { voisins[6] = hex; };
-    inline void setVoisinsBOT(const Hexagone *hex) { voisins[7] = hex; };
 
-    inline void setVoisinIndice(const int i, const Hexagone *hex) {
+    inline void setVoisinsS(Hexagone *hex) { this->setVoisinIndice(0, hex);};
+    inline void setVoisinsSO(Hexagone *hex) { this->setVoisinIndice(1, hex);};
+    inline void setVoisinsNO(Hexagone *hex) { this->setVoisinIndice(2, hex);};
+    inline void setVoisinsN(Hexagone *hex) { this->setVoisinIndice(3, hex);};
+    inline void setVoisinsNE(Hexagone *hex) { this->setVoisinIndice(4, hex);};
+    inline void setVoisinsSE(Hexagone *hex) { this->setVoisinIndice(5, hex);};
+    inline void setVoisinsTOP(Hexagone *hex) { this->setVoisinIndice(6, hex);};
+    inline void setVoisinsBOT(Hexagone *hex) { this->setVoisinIndice(7, hex);};
+
+    inline void setVoisinIndice(const int i, Hexagone *hex) {
         if (0 <= i < voisins.size()) {
             voisins[i] = hex;
+        }
+        if (hex != nullptr) {
+            hex->voisins[Utils::indiceDeGauche(Utils::indiceDeGauche(Utils::indiceDeGauche(i)))] = this;
         }
     };
 
@@ -69,6 +76,7 @@ public:
     void afficherData() const;
 
     int getIndice() const {return indice;}
+    void setIndice(int i) {indice = i;}
 
 protected:
     Type type;
@@ -76,14 +84,6 @@ protected:
     std::array<const Hexagone*, 8> voisins;
     const Tuile *parent;
     int indice = 0;
-};
-
-class HexFantome : public Hexagone {
-public:
-
-    HexFantome(int i, Type t = Type::Fantome, Couleur c = Couleur::nulle) : Hexagone(t, c) {indice = i;};
-    // TuileFantome(Hexagone &h1, Hexagone &h2, Hexagone &h3);
-private:
 };
 
 
