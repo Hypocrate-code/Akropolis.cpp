@@ -1,7 +1,7 @@
 //
 // Created by thiba on 06/11/2025.
 //
-
+#include "Pioche.hpp"
 #include "Jeu.hpp"
 #include <iostream>
 #include "Tuile.hpp"
@@ -125,8 +125,10 @@ void Jeu::Initialiser(const int& nbJoueur) {
 
     tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n+1], *hexs[n+2], *hexs[n+3]));
     // Création du joueur
-    joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1])); 
+    joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));   
   }
+  //creation de la pioche en commun
+  pioche = new Pioche(*this);
 }
 
 void Jeu::Lancer() {
@@ -189,13 +191,18 @@ void Jeu::tourJoueur(Joueur* joueur) {
     std::cout << "\n1) Cite du joueur :\n";
     joueur->getCite()->afficher();
 
-    // --- 2) Affichage du chantier (à compléter plus tard) ---
-    std::cout << "\n2) Chantier : (en construction)\n";
-    std::cout << "[Chantier du joueur " << joueur->getNom() << "]\n";
+    // --- 2) Chantier global partagé ---
+    if (chantier.empty()) {            
+      mettreAJourChantier();         
+    }
+    std::cout << "\n2) Chantier :\n";
+    afficherChantier();                        // Affiche le chantier actuel
 
     // --- 3) Choix de la tuile et débit de pierres (pour le moment manuel) ---
-    std::cout << "\n3) Choix de la tuile et debit de pierres :\n";
+    std::cout << "\n3) Choix de la tuile et débit de pierres :\n";
     std::cout << "Nombre de pierres disponibles : " << joueur->getNbPierres() << std::endl;
+    
+    Tuile* tChoisie = choisirTuileDuChantier(); // Le joueur choisit une tuile  
 
     // --- 4) Possibilité de rotation (non implémentée encore) ---
     std::cout << "\n4) Rotation de la tuile : (en construction)\n";
@@ -203,13 +210,57 @@ void Jeu::tourJoueur(Joueur* joueur) {
     // --- 5) Placement de la tuile ---
     std::cout << "\n5) Placement de la tuile :\n";
 
-    // Pour le moment, on utilise la tuile manuelle comme test
-    Tuile* t = new Tuile{*hexs[0], *hexs[1], *hexs[2]};
-    joueur->getCite()->placerTuile(t);
-    // --- Libérer la tuile temporaire ---
-    delete t;
+    joueur->getCite()->placerTuile(tChoisie);
 
     // --- Affichage final de la cité après le placement ---
     std::cout << "\nCite après le tour :\n";
     joueur->getCite()->afficher();
+}
+
+
+//piocher 
+// === Met à jour le chantier global si moins de 5 tuiles ===
+void Jeu::mettreAJourChantier() {
+    if (!pioche) return; // sécurité
+    while (chantier.size() < 5 && !pioche->estVide()) {
+        chantier.push_back(pioche->piocher());
+    }
+}
+
+// === Affiche le chantier actuel ===
+void Jeu::afficherChantier() const {
+    std::cout << "=== Chantier ===\n";
+    for (size_t i = 0; i < chantier.size(); ++i) {
+        std::cout << i << " : ";
+        chantier[i]->afficherData();
+    }
+}
+
+// === Permet au joueur de choisir une tuile dans le chantier ===
+Tuile* Jeu::choisirTuileDuChantier() {
+    if (chantier.empty()) {
+        std::cout << "Le chantier est vide.\n";
+        return nullptr;
+    }
+
+    // Affichage pour vérification
+    afficherChantier();
+
+    size_t choix;
+    do {
+        std::cout << "Choisissez une tuile par son numéro (0-" << chantier.size()-1 << ") : ";
+        std::cin >> choix;
+    } while (choix >= chantier.size());
+
+    Tuile* t = chantier[choix];
+    chantier.erase(chantier.begin() + choix);
+
+    // Affichage du chantier restant pour vérification
+    std::cout << "=== Chantier après choix ===\n";
+    for (size_t i = 0; i < chantier.size(); ++i) {
+        std::cout << i << " : ";
+        chantier[i]->afficherData();
+    }
+
+    return t;
 }

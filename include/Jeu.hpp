@@ -6,10 +6,12 @@
 #define JEU_H
 
 #include <vector>
-
+#include "Pioche.hpp" 
 #include "Tuile.hpp"
 #include "Joueur.hpp"
 #include <array>
+
+class Pioche; 
 
 enum class ModeDeJeu {
   Multi,
@@ -34,6 +36,17 @@ class Jeu {
     void Lancer();   
     std::array<Tuile*, 61> tuilesCite;
 
+    const std::array<Tuile*, 61>& getTuilesCite() const {
+        return tuilesCite;
+    }
+
+    void mettreAJourChantier();
+
+    void afficherChantier() const;
+
+    Tuile* choisirTuileDuChantier();
+
+
   protected:
     Jeu();
     static Jeu* instance;
@@ -41,6 +54,9 @@ class Jeu {
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;
+    
+    Pioche* pioche = nullptr;  
+    std::vector<Tuile*> chantier; 
 };
 
 #endif //JEU_H
