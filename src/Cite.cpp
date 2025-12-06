@@ -396,6 +396,27 @@ void CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     std::cout << "Details de l'hexagone fantome:\n";
     hexFantome->afficherData();
 
+    // lambda pour ajoouter les donner a lex
+
+    auto updateHexSrcFromFan = [](Hexagone *src, Hexagone *fan)
+    {
+        uint32_t FanVoisinsBinl = fan->getVoisinsNonFantomeBin();
+
+        for (int i = 0; i < 8; ++i)
+        {
+            if (FanVoisinsBinl & (0b10000000 >> i))
+            {
+                std::cout << "index voisin a connecter: " << i << "\n";
+                // si bit == 1 alors il faut faire la connection
+                Hexagone *voisinFantome = fan->getVoisinIndice(i);
+
+                src->setVoisinIndice(i, voisinFantome);
+            }
+        }
+    };
+
+    updateHexSrcFromFan(hex, hexFantome);
+    /*
     for (int i = 0; i < 8; ++i)
     {
         if (FanVoisinsBin & (0b10000000 >> i))
@@ -405,60 +426,57 @@ void CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
             Hexagone *voisinFantome = hexFantome->getVoisinIndice(i);
 
             hex->setVoisinIndice(i, voisinFantome);
+        }
+    }
+*/
 
-            // voisinFantome->setVoisinIndice(i, nullptr); // on deconnecte le fantome de son voisinage
 
-            // Hexagone* voisinSrc = hex->getVoisinIndice(i);
-            // if (voisinSrc && voisinFantome) {
-            //  Connecter l'hexagone de la tuile a l'hexagone fantome
-            // voisinSrc->setVoisinIndice(opposite_index(i), voisinFantome);
+std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisinsBin) << "\n";
 
-            //                std::cout << "Connecte l'hexagone src indice " << voisinSrc->getIndice()
-            //                        << " a l'hexagone fantome indice " << voisinFantome->getIndice() << "\n";
-            //        }
+    for (int i = 0; i < 8; i++)
+    {
+
+        if (SrcVoisinsBin & (0b10000000 >> i))
+        {
+            std::cout << "hex a connecter: " << i << "\n";
+            // on a trouver la direction dun voisin, il faut lupdate avec les donner de la tuile fantome associer
+            // comme on a la direction on peut trouver la tuile fantome associer
+            Hexagone *nextHexFan = hexFantome->getVoisinIndice(i);
+            std::cout << "Voisin fantome trouve: " << nextHexFan << "\n";
+            if (nextHexFan == nullptr)
+            {
+                //ici il y a de laire donc rien a faire.
+                continue;
+            }
+            if (!nextHexFan || nextHexFan->getType() != Type::Fantome)
+            {
+                std::cout << "Impossible de placer la tuile, le voisin n'est pas un fantome\n";
+                exit(1);
+            }
+            else
+            {
+
+                // on doit maintenant update le nextHexSrc avec les donnees du nextHexFan
+                Hexagone *nextHexSrc = hex->getVoisinIndice(i);
+                if (!nextHexSrc)
+                {
+                    std::cout << "Erreur: Le voisin source est null a l'indice " << i << "\n";
+                    exit(1);
+                }
+                updateHexSrcFromFan(nextHexSrc, nextHexFan);
+                std::cout << "HEREREREREREE" << std::endl;
+                nextHexSrc->afficherData();
+            }
         }
     }
 
     std::cout << "Details de l'hexagone src apres placement:\n";
-    // hex->afficherData();
-
+    hex->afficherData();
     addTuile(owner);
 
     // placerSurID(id, tl);
 
     // updateFantomeOfTuile(tl);
-}
-
-void CiteJoueur::placerSurID(int id, const Tuile *t)
-{
-    Hexagone *hexagoneFantome = nullptr;
-    for (auto *h : hexs_fantome)
-    {
-        if (h->getIndice() == id)
-        {
-            hexagoneFantome = h;
-            break;
-        }
-    }
-
-    std::cout << "=== Voisins de l'hexagone fantome selectionne (id=" << id << ") ===\n";
-    hexagoneFantome->getVoisinsList();
-
-    std::cout << "=== Voisins du premier hexagone de la tuile a placer ===\n";
-    t->getVoisinsHex(0);
-
-    // --- REPETIR EL TEST MANUAL EXISTENTE ---
-    const Tuile *depart = tuiles[0];
-
-    depart->get_hexagones()[0]->setVoisinsNE(t->get_hexagones()[0]);
-    depart->get_hexagones()[0]->setVoisinsSE(t->get_hexagones()[2]);
-    depart->get_hexagones()[3]->setVoisinsNE(t->get_hexagones()[2]);
-    depart->get_hexagones()[2]->setVoisinsN(t->get_hexagones()[2]);
-
-    // Agregar la tuile a la cité
-    addTuile(t);
-
-    std::cout << "Tuile place manuellement avec placerSurID().\n";
 }
 
 uint32_t CiteJoueur::compterPoints() const

@@ -61,7 +61,6 @@ public:
     ~CiteJoueur()=default;
 
     void placerTuileFromHexRef(Hexagone* hex) override;
-    void placerSurID(int id, const Tuile* tl);
     uint32_t compterPoints() const override;
 
 };
