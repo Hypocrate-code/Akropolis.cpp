@@ -93,6 +93,7 @@ Jeu::Jeu() : mode{ModeDeJeu::Solo} {
   for (size_t i = 0 ; i < tuilesCite.size() ; i++) {
     const size_t j = i*3;
     tuilesCite[i] = new Tuile(*hexs[j], *hexs[j+1], *hexs[j+2]);
+    tuilesCite[i]->set_indice(i);
   }
 
   // -> Passer les tuiles à la Pioche / Chantier ??
@@ -109,9 +110,9 @@ void Jeu::Initialiser(const int& nbJoueur) {
 
     // Accueil du joueur i+1
     std::string name;
-    std::cout << "What's your name, player " << i+1 << " :  ";
+    std::cout << std::endl << "What's your name, player " << i+1 << " :  ";
     std::cin >> name;
-    std::cout << "Thanks " << name << "." << std::endl;
+    std::cout << "Thanks " << name << "." << std::endl << std::endl;
 
     // Création des hexagones pour la tuile de départ du joueur i+1
     for (size_t j = 0; j < 3; j++) {
@@ -121,15 +122,45 @@ void Jeu::Initialiser(const int& nbJoueur) {
 
     // Création de la tuile de départ
     const size_t n = hexs.size() - 4;
+
     tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n+1], *hexs[n+2], *hexs[n+3]));
+
 
     // Création du joueur
     joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));
+
+// --- TEST AJOUT D'UNE TUILE (MANUELLEMENT) ET DU SET_HEX_FANTOME ---
+
+
+  joueurs[0]->getCite()->generateAllHexFantome();
+      Tuile* t = new Tuile{*hexs[0], *hexs[1], *hexs[2]};
+     //t->set_cite(joueurs[0]->getCite()); //futur dans placerTUile
+     //tuilesDepart[i]->get_hexagones()[0]->setVoisinsN(t->get_hexagones()[0]);
+     
+     tuilesDepart[i]->get_hexagones()[0]->setVoisinsNE(t->get_hexagones()[0]);
+     tuilesDepart[i]->get_hexagones()[0]->setVoisinsSE(t->get_hexagones()[2]);
+     tuilesDepart[i]->get_hexagones()[3]->setVoisinsNE(t->get_hexagones()[2]);
+     tuilesDepart[i]->get_hexagones()[2]->setVoisinsN(t->get_hexagones()[2]);
+
+     joueurs[0]->getCite()->addTuile(t);
+     //
+    //joueurs[0]->getCite()->release_hex_fantome();
+    //tuilesDepart[i]->set_hex_fantome();
+
+    // t->set_hex_fantome();
+    // joueurs[0]->getCite()->afficher();
+    //
+    // delete t;
+
+// --- FIN TEST AJOUT D'UNE TUILE (MANUELLEMENT) ET DU SET_HEX_FANTOME ---
+
+
   }
 
   for (auto& j : joueurs) {
     std::cout << "Player : " << j->getNom() << std::endl;
-    std::cout << "Rocks count : " << j->getNbPierres() << std::endl;
+    std::cout << "Rocks count : " << j->getNbPierres() << std::endl << std::endl;
+    tourJoueur(j);
     j->getCite()->afficher();
   }
 
@@ -154,4 +185,29 @@ void Jeu::afficherHexagones() const {
     hexs[i]->afficherData();
     std::cout << std::endl;
   }
+}
+void Jeu::tourJoueur(Joueur* joueur) {
+    std::cout << "\n=== Tour de " << joueur->getNom() << " ===\n";
+
+    // 1. Affichage de la cité
+    std::cout << "\n1) Cité du joueur :\n";
+    joueur->getCite()->afficher();
+
+    // 2. Affichage du chantier
+    std::cout << "\n2) Chantier : (en construction)\n";
+    std::cout << "[Chantier du joueur " << joueur->getNom() << "]\n";
+
+    // 3. Choix de la tuile et débit de pierres
+    std::cout << "\n3) Choix de la tuile et debit de pierres : (en construction)\n";
+    std::cout << "Rocks count : " << joueur->getNbPierres() << std::endl;
+
+    // 4. Possibilité de rotation
+    std::cout << "\n4) Rotation de la tuile : (en construction)\n";
+
+    // 5. Placement de la tuile
+    std::cout << "\n5) Placement de la tuile : (en construction)\n";
+
+    // Affichage final de la cité
+    std::cout << "\nCite apres le tour :\n";
+    joueur->getCite()->afficher();
 }

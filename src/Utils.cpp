@@ -1,7 +1,19 @@
 #include "Utils.hpp"
+#include "Tuile.hpp"
 
 namespace Utils
 {
+    int indiceDeDroite(int direction) {
+
+
+        if (direction < 0 || direction > 5) return -1;
+        return (direction == 5 ? 0 : direction + 1);
+    }
+    int indiceDeGauche(int direction) {
+        if (direction < 0 || direction > 5) return -1;
+        return (direction == 0 ? 5 : direction - 1);
+    }
+
     char get_color_char(Couleur color)
     {
         switch (color)
@@ -55,7 +67,7 @@ namespace Utils
         case Type::Place:
             return "PLA";
         case Type::Fantome:
-            return "FAN";
+            return "   ";
         default:
             return "UNK";
         }
@@ -76,13 +88,12 @@ namespace Utils
         case Couleur::Violet:
             return "VIO";
         case Couleur::nulle:
-            return "NUL";
+            return "   ";
         default:
             return "UNK";
         }
     }
 
-    // Rest of the helper functions remain the same...
     std::string type_to_string(Type type)
     {
         switch (type)
@@ -167,6 +178,11 @@ namespace Utils
 
         return result;
     }
+    std::string colorize_string(const std::string& str, const Couleur color)
+    {
+        std::string result = get_color_code(color) + str + get_color_code(color);
+        return result;
+    }
 
     std::string replace_all(std::string str, const std::string &from, const std::string &to)
     {
@@ -178,4 +194,24 @@ namespace Utils
         }
         return str;
     }
+
+
+
+
+
+    int opposite_index(int idx)
+{
+    switch (idx)
+    {
+    case 0: return 3; // NE <-> SO
+    case 3: return 0;
+    case 1: return 4; // S  <-> N
+    case 4: return 1;
+    case 2: return 5; // SE <-> NO
+    case 5: return 2;
+    case 6: return 7; // TOP <-> BOT
+    case 7: return 6;
+    default: return idx;
+    }
+}
 }

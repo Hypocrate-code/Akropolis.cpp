@@ -28,15 +28,15 @@ class Jeu {
     void afficherTuiles() const;
     void afficherHexagones() const;
     ModeDeJeu getModeDeJeu() const; // A voir si utile, mode solo ?
-
+    void tourJoueur(Joueur* joueur);
     void Initialiser(const int& nbJoueur);
     void Jouer(Joueur j);
+    std::array<Tuile*, 61> tuilesCite;
 
   protected:
     Jeu();
     static Jeu* instance;
     const ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
-    std::array<Tuile*, 61> tuilesCite;
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;

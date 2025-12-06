@@ -1,9 +1,11 @@
 #pragma once
-#include <string>
-#include <optional>
-#include <iostream>
 #include <vector>
 #include <array>
+#include <ostream>
+
+#include "Utils.hpp"
+
+class Cite;
 
 enum class Couleur
 {
@@ -23,35 +25,55 @@ enum class Type
 };
 
 class Tuile;
+
 class Hexagone
 {
 public:
     Hexagone(Type t, Couleur c = Couleur::nulle);
-    // int CompterPoint();
+
+    //peut etre utiliser le destructeur pour suprimmer les laisons avec les autres hexagones pour ne pas avoir 
+    ~Hexagone();
 
     // acesseurs lecture
-    const Hexagone *getVoisinsNE() const { return voisins[0]; };
-    const Hexagone *getVoisinsS() const { return voisins[1]; };
-    const Hexagone *getVoisinsSE() const { return voisins[2]; };
-    const Hexagone *getVoisinsSO() const { return voisins[3]; };
-    const Hexagone *getVoisinsN() const { return voisins[4]; };
-    const Hexagone *getVoisinsNO() const { return voisins[5]; };
+
+    const Hexagone *getVoisinsS() const { return voisins[0]; };
+    const Hexagone *getVoisinsSO() const { return voisins[1]; };
+    const Hexagone *getVoisinsNO() const { return voisins[2]; };
+    const Hexagone *getVoisinsN() const { return voisins[3]; };
+    const Hexagone *getVoisinsNE() const { return voisins[4]; };
+    const Hexagone *getVoisinsSE() const { return voisins[5]; };
     const Hexagone *getVoisinsTOP() const { return voisins[6]; };
     const Hexagone *getVoisinsBOT() const { return voisins[7]; };
+    
+    const Hexagone *getVoisinIndice(int i) const {
+        return (i >= 0 && i < static_cast<int>(voisins.size())) ? voisins[i] : nullptr;
+    };
 
-    const std::array<const Hexagone*,8>& getVoisins() const { return voisins; }
+    const std::array<Hexagone*,8>& getVoisins() const { return voisins; }
 
     // accesseurs écriture
-    inline void setVoisinsNE(const Hexagone *hex) { voisins[0] = hex; };
-    inline void setVoisinsS(const Hexagone *hex) { voisins[1] = hex; };
-    inline void setVoisinsSE(const Hexagone *hex) { voisins[2] = hex; };
-    inline void setVoisinsSO(const Hexagone *hex) { voisins[3] = hex; };
-    inline void setVoisinsN(const Hexagone *hex) { voisins[4] = hex; };
-    inline void setVoisinsNO(const Hexagone *hex) { voisins[5] = hex; };
-    inline void setVoisinsTOP(const Hexagone *hex) { voisins[6] = hex; };
-    inline void setVoisinsBOT(const Hexagone *hex) { voisins[7] = hex; };
 
-    inline void setVoisins(const Hexagone* hexs) { voisins.fill(hexs); }
+    inline void setVoisinsS(Hexagone *hex) { this->setVoisinIndice(0, hex);};
+    inline void setVoisinsSO(Hexagone *hex) { this->setVoisinIndice(1, hex);};
+    inline void setVoisinsNO(Hexagone *hex) { this->setVoisinIndice(2, hex);};
+    inline void setVoisinsN(Hexagone *hex) { this->setVoisinIndice(3, hex);};
+    inline void setVoisinsNE(Hexagone *hex) { this->setVoisinIndice(4, hex);};
+    inline void setVoisinsSE(Hexagone *hex) { this->setVoisinIndice(5, hex);};
+    inline void setVoisinsTOP(Hexagone *hex) { this->setVoisinIndice(6, hex);};
+    inline void setVoisinsBOT(Hexagone *hex) { this->setVoisinIndice(7, hex);};
+
+    inline void setVoisinIndice(int i, Hexagone *hex) {
+        if (i < 0 || i >= int(voisins.size())) return;
+        voisins[i] = hex;
+        if (hex && i < 6) {
+            int opp = Utils::indiceDeGauche(Utils::indiceDeGauche(Utils::indiceDeGauche(i)));
+            if (opp >= 0 && opp < int(hex->voisins.size())) {
+                hex->voisins[opp] = this;
+            }
+        }
+    };
+
+    inline void setVoisins(Hexagone* hexs) { voisins.fill(hexs); }
 
     inline void setTuileParent(Tuile *tl) { parent = tl; }
     inline const Tuile *getTuileParent() const { return parent; }
@@ -61,12 +83,19 @@ public:
 
     void afficherData() const;
 
-private:
+    int getIndice() const {return indice;}
+    void setIndice(int i) {indice = i;}
+
+    void removeConnection(const Hexagone* hex); //eleve la connection avec les voisins qui on la valeur the hex
+
+protected:
     Type type;
     Couleur couleur;
-    std::array<const Hexagone*, 8> voisins;
+    std::array<Hexagone*, 8> voisins;
     const Tuile *parent;
+    int indice = 0;
 };
+
 
 class Tuile
 {
@@ -80,10 +109,13 @@ public:
 
     void afficherData() const;
 
+    void set_indice(const int i) { indice = i; }
+    void set_cite(Cite* c) { cite = c; }
 
+    Cite* cite;
 protected:
     std::vector<Hexagone *> hexagones;
-    
+    int indice;
 };
 
  class TuileDepart : public Tuile
@@ -95,5 +127,4 @@ protected:
  };
 
 std::ostream& operator<<(std::ostream& os, Couleur c);
-std::ostream& operator<<(std::ostream& os, Type t); 
- 
+std::ostream& operator<<(std::ostream& os, Type t);

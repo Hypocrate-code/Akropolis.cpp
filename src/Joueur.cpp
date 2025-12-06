@@ -6,5 +6,5 @@ Joueur::Joueur(const char* nom, uint32_t nbPierres, const Tuile* tuileDeDepart) 
     if (!tuileDeDepart)
         throw Exception("Tuile De Depart manquante");
     else
-        cite = std::make_shared<CiteJoueur>(tuileDeDepart);
+        cite = new CiteJoueur(tuileDeDepart);
 }

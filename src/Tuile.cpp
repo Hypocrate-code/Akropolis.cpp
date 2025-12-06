@@ -1,23 +1,33 @@
 #include "Tuile.hpp"
+#include "Cite.hpp"
 #include "Exception.hpp"
 #include <iostream>
+
+#include "Jeu.hpp"
 #include "Utils.hpp"
 
 using namespace Utils;
 Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
 {
-    if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && couleur == Couleur::nulle))
+    if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && type != Type::Fantome && couleur == Couleur::nulle))
     {
         throw Exception("le type ne correspond pas à la couleur indiquée");
     }
-    for (int i = 0; i < 6; i++)
+    if(type == Type::Fantome){
+        couleur = Couleur::nulle;
+    }
+    for (int i = 0; i < 8; i++)
     {
-        voisins[i] = nullptr; // à la creation des hexagones, pas de voisins ne font pas encore partie des tuiles
+        voisins[i] = nullptr;
     }
 };
 
 void Hexagone::afficherData() const
 {
+    if (this == nullptr) {
+        // std::cout << "nullptr" << std::endl;
+        return;
+    }
     std::cout << "  Type: " << type_to_string(getType())
               << ", Couleur: " << color_to_string(getCouleur()) << std::endl;
 
@@ -40,7 +50,7 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
     hexagones.push_back(&hex2);
     hexagones.push_back(&hex3);
 
-    hex1.setVoisinsSO(&hex2);
+    hex1.setVoisinsSE(&hex2);
     hex1.setVoisinsS(&hex3);
 
     hex2.setVoisinsNO(&hex1);
@@ -65,6 +75,7 @@ void Tuile::afficherData() const
 
     std::cout << "============================" << std::endl;
 }
+
 
 Tuile *Tuile::rotate()
 {
@@ -115,6 +126,7 @@ TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagon
     hexagones[3]->setVoisinsSO(hexagones[1]);
     hexagones[3]->setVoisinsSE(hexagones[2]);
     hexagones[3]->setVoisinsNE(nullptr);
+
 };
 
 std::ostream& operator<<(std::ostream& os, Couleur c) {
@@ -123,3 +135,21 @@ std::ostream& operator<<(std::ostream& os, Couleur c) {
 std::ostream& operator<<(std::ostream& os, Type t) {
     return os << type_to_string(t);
 }
+
+
+Hexagone::~Hexagone(){
+    for (auto& voisin : voisins) {
+        if (voisin){
+            voisin->removeConnection(this);
+            voisin = nullptr;
+        }
+    } 
+}
+
+void Hexagone::removeConnection(const Hexagone* hex) {
+    for (auto& voisin : voisins){
+        if (voisin == hex)
+            voisin = nullptr;
+    }
+}
+

@@ -1,7 +1,12 @@
 #pragma once
 #include <string>
-#include "Tuile.hpp"
+// #include "Tuile.hpp"
 
+//#define DEBUG
+
+
+enum class Couleur;
+enum class Type;
 namespace Utils
 {
     char get_color_char(Couleur color);
@@ -17,6 +22,10 @@ namespace Utils
     std::string center_string(const std::string &str, int width);
 
     std::string colorize_line(const std::string &line);
+    std::string colorize_string(const std::string& str, Couleur color);
     std::string replace_all(std::string str, const std::string &from, const std::string &to);
+    int indiceDeDroite(int direction);
+    int indiceDeGauche(int direction);
 
+    int opposite_index(int idx);
 }
