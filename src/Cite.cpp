@@ -320,7 +320,9 @@ void CiteJoueur::placerTuile(const Tuile *tl)
 uint32_t CiteJoueur::compterPoints() const
 {
 
-    return 0;
+CiteJoueur::CiteJoueur(const Tuile *tuileDeDepart) : Cite{tuileDeDepart}
+{
+    updateTuileFantome();
 }
 
 Hexagone *Cite::create_new_hex_fantome()
