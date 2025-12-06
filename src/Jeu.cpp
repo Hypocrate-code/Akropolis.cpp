@@ -203,6 +203,8 @@ void Jeu::tourJoueur(Joueur* joueur) {
     std::cout << "Nombre de pierres disponibles : " << joueur->getNbPierres() << std::endl;
     
     Tuile* tChoisie = choisirTuileDuChantier(); // Le joueur choisit une tuile  
+    Hexagone* hex0 = tChoisie->get_hexagones()[0]; //Le Hexagone 0
+
 
     // --- 4) Possibilité de rotation (non implémentée encore) ---
     std::cout << "\n4) Rotation de la tuile : (en construction)\n";
@@ -210,8 +212,8 @@ void Jeu::tourJoueur(Joueur* joueur) {
     // --- 5) Placement de la tuile ---
     std::cout << "\n5) Placement de la tuile :\n";
 
-
-    //joueur->getCite()->placerTuile(tChoisie); //nueva
+    //On va travailler avec l'hexagone 0 de la tuile choisi.
+    joueur->getCite()->placerTuileFromHexRef(hex0); 
 
     // Pour le moment, on utilise la tuile manuelle comme test
     //Tuile* t = new Tuile{*hexs[0], *hexs[1], *hexs[2]};
@@ -253,7 +255,7 @@ Tuile* Jeu::choisirTuileDuChantier() {
     }
 
     // Affichage pour vérification
-    afficherChantier();
+    //afficherChantier();
 
     size_t choix;
     do {
@@ -265,11 +267,12 @@ Tuile* Jeu::choisirTuileDuChantier() {
     chantier.erase(chantier.begin() + choix);
 
     // Affichage du chantier restant pour vérification
+    /*
     std::cout << "=== Chantier après choix ===\n";
     for (size_t i = 0; i < chantier.size(); ++i) {
         std::cout << i << " : ";
         chantier[i]->afficherData();
-    }
+    }*/
 
     return t;
 }
