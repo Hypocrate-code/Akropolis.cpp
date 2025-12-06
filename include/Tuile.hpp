@@ -2,6 +2,7 @@
 #include <vector>
 #include <array>
 #include <ostream>
+#include <cstdint>
 
 #include "Utils.hpp"
 
@@ -45,9 +46,12 @@ public:
     const Hexagone *getVoisinsTOP() const { return voisins[6]; };
     const Hexagone *getVoisinsBOT() const { return voisins[7]; };
     
-    const Hexagone *getVoisinIndice(int i) const {
+    Hexagone *getVoisinIndice(int i) const {
         return (i >= 0 && i < static_cast<int>(voisins.size())) ? voisins[i] : nullptr;
     };
+
+    uint32_t getVoisinsNonFantomeBin() const;
+
 
     const std::array<Hexagone*,8>& getVoisins() const { return voisins; }
 
@@ -62,6 +66,10 @@ public:
     inline void setVoisinsTOP(Hexagone *hex) { this->setVoisinIndice(6, hex);};
     inline void setVoisinsBOT(Hexagone *hex) { this->setVoisinIndice(7, hex);};
 
+    inline void setCouleur(Couleur c) { couleur = c; };
+    inline void setType(Type t) { type = t; };
+
+    
     inline void setVoisinIndice(int i, Hexagone *hex) {
         if (i < 0 || i >= int(voisins.size())) return;
         voisins[i] = hex;
@@ -76,7 +84,8 @@ public:
     inline void setVoisins(Hexagone* hexs) { voisins.fill(hexs); }
 
     inline void setTuileParent(Tuile *tl) { parent = tl; }
-    inline const Tuile *getTuileParent() const { return parent; }
+    //inline const Tuile *getTuileParent() const { return parent; }
+    inline Tuile *getTuileParent() const { return parent; }
 
     Type getType() const { return type; }
     Couleur getCouleur() const { return couleur; }
@@ -93,7 +102,7 @@ protected:
     Type type;
     Couleur couleur;
     std::array<Hexagone*, 8> voisins;
-    const Tuile *parent;
+    Tuile *parent;
     int indice = 0;
 };
 
