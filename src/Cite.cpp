@@ -7,7 +7,6 @@
 using namespace Utils;
 
 
-
 void Cite::print_hex(Hexagone *hex, int x, int y, strCalc &calc) const
 {
     std::string colorCode = get_color_code(hex->getCouleur());
