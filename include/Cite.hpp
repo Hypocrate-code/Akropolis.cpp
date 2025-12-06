@@ -5,7 +5,8 @@
 #include <unordered_set>
 
 class Tuile;
-typedef std::vector<std::string> strCalc;
+class Hexagone;
+// class HexFantome;
 
 typedef std::vector<std::string> strCalc;
 
@@ -51,7 +52,7 @@ protected:
 };
 
 class CiteJoueur : public Cite {
-    public:
+public:
 
     CiteJoueur(const Tuile* tuileDeDepart);
     ~CiteJoueur()=default;

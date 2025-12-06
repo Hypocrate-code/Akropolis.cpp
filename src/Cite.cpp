@@ -7,6 +7,7 @@
 using namespace Utils;
 
 
+
 void Cite::print_hex(Hexagone *hex, int x, int y, strCalc &calc) const
 {
     std::string colorCode = get_color_code(hex->getCouleur());
@@ -320,9 +321,7 @@ void CiteJoueur::placerTuile(const Tuile *tl)
 uint32_t CiteJoueur::compterPoints() const
 {
 
-CiteJoueur::CiteJoueur(const Tuile *tuileDeDepart) : Cite{tuileDeDepart}
-{
-    updateTuileFantome();
+    return 0;
 }
 
 Hexagone *Cite::create_new_hex_fantome()
