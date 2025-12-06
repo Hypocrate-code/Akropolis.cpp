@@ -24,6 +24,7 @@ Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
 
 void Hexagone::afficherData() const
 {
+    //????? what ?????
     if (this == nullptr) {
         // std::cout << "nullptr" << std::endl;
         return;
@@ -43,18 +44,6 @@ void Hexagone::afficherData() const
     std::cout << " BOT:" << (getVoisinsBOT() ? "O" : "X");
     std::cout << std::endl;
 
-    // plot nice image
-
-    {
-    std::cout << "                           " << std::endl;
-    strCalc calc = strCalc(10, std::string(50, ' '));
-    std::unordered_set<Hexagone*> drawnHexagones;
-    Cite::draw_hex_recursive(voisins[0], 10, 6, calc, drawnHexagones, 0);
-    for (auto &line : calc)
-    {
-        std::cout << colorize_line(line) << std::endl;
-    }
-}
 
 }
 
@@ -84,12 +73,19 @@ void Tuile::afficherData() const
 
     std::cout << "Nombre d'hexagones: " << hexagones.size() << std::endl;
 
-    for (size_t i = 0; i < hexagones.size(); ++i)
+
     {
-        std::cout << "Hexagone " << i + 1 << ":" << std::endl;
-        if (hexagones[i])
-            hexagones[i]->afficherData();
+    std::cout << "                           " << std::endl;
+    strCalc calc = strCalc(10, std::string(50, ' '));
+    std::unordered_set<Hexagone*> drawnHexagones;
+    Cite::draw_hex_recursive(hexagones[0], 10, 6, calc, drawnHexagones, 0);
+
+    for (auto &line : calc)
+    {
+        std::cout << colorize_line(line) << std::endl;
     }
+    
+}
 
     std::cout << "============================" << std::endl;
 }
