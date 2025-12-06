@@ -88,6 +88,7 @@ public:
 
     void removeConnection(const Hexagone* hex); //eleve la connection avec les voisins qui on la valeur the hex
 
+    std::array<int, 8> getVoisinsList() const;
 protected:
     Type type;
     Couleur couleur;
@@ -113,6 +114,10 @@ public:
     void set_cite(Cite* c) { cite = c; }
 
     Cite* cite;
+
+    std::array<int, 8> getVoisinsHex(int indexHex) const;
+
+
 protected:
     std::vector<Hexagone *> hexagones;
     int indice;

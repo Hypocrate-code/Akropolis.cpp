@@ -30,7 +30,8 @@ class Jeu {
     ModeDeJeu getModeDeJeu() const; // A voir si utile, mode solo ?
     void tourJoueur(Joueur* joueur);
     void Initialiser(const int& nbJoueur);
-    void Jouer(Joueur j);
+    //void Jouer(Joueur j);   
+    void Lancer();   
     std::array<Tuile*, 61> tuilesCite;
 
   protected:

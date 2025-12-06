@@ -312,10 +312,66 @@ CiteJoueur::CiteJoueur(const Tuile *tuileDeDepart) : Cite{tuileDeDepart}
     //generateAllHexFantome();
 }
 
-void CiteJoueur::placerTuile(const Tuile *tl)
+
+void CiteJoueur::placerTuile(const Tuile* tl)
 {
-    // pas oublier dappeller updateTuileFantome apres avoir placer la tuile
+    std::cout << "\n\n/======== DEBUG PLACER TUILE =========/\n";
+    std::cout << "Tu vas placer la tuile avec le hexagone de reference : "
+              << tl->get_hexagones()[0]->getType() << " "
+              << tl->get_hexagones()[0]->getCouleur() << "\n";
+
+    int id;
+    bool idValide = false;
+
+    while (!idValide) {
+        std::cout << "Entrez le numero d'hexagone ou vous voulez placer la tuile : ";
+        std::cin >> id;
+
+        for (auto* hex : hexs_fantome) {
+            if (hex->getIndice() == id) {  
+                idValide = true;
+                break;
+            }
+        }
+
+        if (!idValide) {
+            std::cout << "ID invalide. Veuillez entrer un numero correct.\n";
+        }
+    }
+
+    placerSurID(id, tl);
+
     updateFantomeOfTuile(tl);
+}
+
+void CiteJoueur::placerSurID(int id, const Tuile* t)
+{
+    Hexagone* hexagoneFantome = nullptr;
+    for (auto* h : hexs_fantome) {
+        if (h->getIndice() == id) {
+            hexagoneFantome = h;
+            break;
+        }
+    }
+
+    std::cout << "=== Voisins de l'hexagone fantome selectionne (id=" << id << ") ===\n";
+    hexagoneFantome->getVoisinsList();
+
+    std::cout << "=== Voisins du premier hexagone de la tuile a placer ===\n";
+    t->getVoisinsHex(0);
+
+    // --- REPETIR EL TEST MANUAL EXISTENTE ---
+    const Tuile* depart = tuiles[0];
+
+    depart->get_hexagones()[0]->setVoisinsNE(t->get_hexagones()[0]);
+    depart->get_hexagones()[0]->setVoisinsSE(t->get_hexagones()[2]);
+    depart->get_hexagones()[3]->setVoisinsNE(t->get_hexagones()[2]);
+    depart->get_hexagones()[2]->setVoisinsN(t->get_hexagones()[2]);
+
+    // Agregar la tuile a la cité
+    addTuile(t);
+
+    std::cout << "Tuile place manuellement avec placerSurID().\n";
 }
 
 uint32_t CiteJoueur::compterPoints() const

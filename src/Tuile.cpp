@@ -153,3 +153,49 @@ void Hexagone::removeConnection(const Hexagone* hex) {
     }
 }
 
+std::array<int, 8> Tuile::getVoisinsHex(int indexHex) const {
+    std::array<int, 8> voisinsBin = {0,0,0,0,0,0,0,0};
+
+    if (indexHex < 0 || indexHex >= hexagones.size()) {
+        std::cerr << "Erreur: indexHex hors limites." << std::endl;
+        return voisinsBin;
+    }
+
+    const auto& voisinsHex = hexagones[indexHex]->getVoisins();
+
+    for (size_t i = 0; i < voisinsHex.size(); ++i) {
+        voisinsBin[i] = (voisinsHex[i] != nullptr ? 1 : 0);
+    }
+
+    // DEBUG
+    std::cout << "=== DEBUG Tuile::getVoisinsHex pour Hexagone " << indexHex << " ===" << std::endl;
+    static const std::array<std::string, 8> noms = {"S","SE","NE","N","NO","SO","TOP","BOT"};
+    for (size_t i = 0; i < voisinsBin.size(); ++i) {
+        std::cout << noms[i] << " => " << voisinsBin[i] << std::endl;
+    }
+    std::cout << "===================================" << std::endl;
+
+    return voisinsBin;
+}
+
+std::array<int, 8> Hexagone::getVoisinsList() const {
+    // nombres para debug
+    static const std::array<std::string, 8> noms = {"S", "SE", "NE", "N", "NO", "SO", "TOP", "BOT"};
+
+    const auto& ptrs = Hexagone::getVoisins(); // getVoisins de la base
+    std::array<int, 8> voisinsBin; // array de 1/0
+
+    // Solo llenar el array binario
+    for (int i = 0; i < 8; ++i) {
+        voisinsBin[i] = (ptrs[i] != nullptr ? 1 : 0);
+    }
+
+    // Mostrar solo el binario (opcional, si quieres debug)
+    std::cout << "=== DEBUG HexFantome::voisinsBin (1/0) ===" << std::endl;
+    for (int i = 0; i < 8; ++i) {
+        std::cout << noms[i] << " => " << voisinsBin[i] << std::endl;
+    }
+    std::cout << "===================================" << std::endl;
+
+    return voisinsBin;
+}

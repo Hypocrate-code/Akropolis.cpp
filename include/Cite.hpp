@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_set>
 
+
 class Tuile;
 class Hexagone;
 // class HexFantome;
@@ -58,6 +59,7 @@ public:
     ~CiteJoueur()=default;
 
     void placerTuile(const Tuile* dest) override;
+    void placerSurID(int id, const Tuile* tl);
     uint32_t compterPoints() const override;
 
 };

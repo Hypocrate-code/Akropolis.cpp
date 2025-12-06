@@ -20,6 +20,8 @@ int main(){
         std::cout << "A game is about to launch, how many are you :  ";
         std::cin >> nJoueur;
         j->Initialiser(nJoueur);
+        j->Lancer();
+        
         std::cout << std::endl << "Program correctly ended." << std::endl;
         return 0;
 
