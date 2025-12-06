@@ -11,7 +11,20 @@
 
 int main(){
     try {
-        std::cout << "Start of program." << std::endl << std::endl;
+        //test rotate 
+        Hexagone hex1{Type::Place, Couleur::Rouge};
+        Hexagone hex2{Type::Place, Couleur::Bleu};
+        Hexagone hex3{Type::Place, Couleur::Jaune};
+        
+        Tuile tl1{hex2, hex1, hex3};
+        CiteJoueur c1{&tl1}; 
+
+        c1.afficher(); 
+        tl1.rotate(); 
+        c1.afficher(); 
+
+
+        /*std::cout << "Start of program." << std::endl << std::endl;
         Jeu* j = Jeu::getInstance();
         int nJoueur;
         std::cout << "=============================" << std::endl;
@@ -21,8 +34,9 @@ int main(){
         std::cin >> nJoueur;
         j->Initialiser(nJoueur);
         std::cout << std::endl << "Program correctly ended." << std::endl;
-        return 0;
+        return 0;*/
 
+    
 
         // Hexagone hex1{Type::Place, Couleur::Rouge};
         // Hexagone hex2{Type::Place, Couleur::Bleu};

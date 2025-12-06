@@ -80,20 +80,43 @@ void Tuile::afficherData() const
 Tuile *Tuile::rotate()
 {
     /*permet la rotation de la tuile en invertissant les hexagones */
-    /*Hexagone* copie[2];
-    for (int i =0; i<=2; i++){
-        copie[i]=hexagones[i];
-    }
-    hexagones[0]=copie[1];
-    hexagones[1]=copie[2];
-    hexagones[2]=copie[3];
 
-    // modification des voisins des hexagones à gérer
-    // position à gérer
-    */
+    //enregistre les voisins des hex de la tuile 
+     const std::array<Hexagone*,8>& voisins_0=this->get_hexagones()[0]->getVoisins(); 
+     const std::array<Hexagone*,8>& voisins_1=this->get_hexagones()[1]->getVoisins(); 
+     const std::array<Hexagone*,8>& voisins_2=this->get_hexagones()[2]->getVoisins(); 
 
-    // autre solution :
-    *this = Tuile(*hexagones[1], *hexagones[2], *hexagones[0]);
+    //suppresion de tous les voisins des hex
+    this->reset_hex_links(); 
+
+    // rotation des hexagones
+    std::swap(hexagones[0], hexagones[2]); 
+    std::swap(hexagones[1], hexagones[2]);
+
+    
+    // ch hex prend les voisins ext de l'hex apres lui
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[0]->setVoisinIndice(i,voisins_2[i]); 
+     }
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[1]->setVoisinIndice(i,voisins_0[i]); 
+     }
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[2]->setVoisinIndice(i,voisins_1[i]); 
+     }
+
+
+
+     // on met les bons voisins au centre de la tuile 
+     hexagones[0]->setVoisinsS(hexagones[2]); 
+     hexagones[2]->setVoisinsN(hexagones[0]); 
+
+     hexagones[0]->setVoisinsSE(hexagones[1]); 
+     hexagones[1]->setVoisinsNO(hexagones[0]); 
+
+     hexagones[2]->setVoisinsNE(hexagones[1]); 
+     hexagones[1]->setVoisinsSO(hexagones[2]); 
+     
     return this;
 };
 
