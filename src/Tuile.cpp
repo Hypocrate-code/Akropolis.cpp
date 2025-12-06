@@ -42,6 +42,20 @@ void Hexagone::afficherData() const
     std::cout << " TOP:" << (getVoisinsTOP() ? "O" : "X");
     std::cout << " BOT:" << (getVoisinsBOT() ? "O" : "X");
     std::cout << std::endl;
+
+    // plot nice image
+
+    {
+    std::cout << "                           " << std::endl;
+    strCalc calc = strCalc(10, std::string(50, ' '));
+    std::unordered_set<Hexagone*> drawnHexagones;
+    Cite::draw_hex_recursive(voisins[0], 10, 6, calc, drawnHexagones, 0);
+    for (auto &line : calc)
+    {
+        std::cout << colorize_line(line) << std::endl;
+    }
+}
+
 }
 
 Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
@@ -58,6 +72,10 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
 
     hex3.setVoisinsN(&hex1);
     hex3.setVoisinsNE(&hex2);
+
+    hex1.setTuileParent(this);
+    hex2.setTuileParent(this);
+    hex3.setTuileParent(this);
 };
 
 void Tuile::afficherData() const
@@ -92,9 +110,30 @@ Tuile *Tuile::rotate()
     // position à gérer
     */
 
-    // autre solution :
-    *this = Tuile(*hexagones[1], *hexagones[2], *hexagones[0]);
+    //tmp sol
+    typedef struct tmpStruct {
+        Type type;
+        Couleur couleur;
+        int indice;
+    } tmpStrct;
+
+    tmpStrct Hex0Data ={ hexagones[0]->getType(), hexagones[0]->getCouleur(), hexagones[0]->getIndice() };
+    tmpStrct Hex1Data ={ hexagones[1]->getType(), hexagones[1]->getCouleur(), hexagones[1]->getIndice() };
+    tmpStrct Hex2Data ={ hexagones[2]->getType(), hexagones[2]->getCouleur(), hexagones[2]->getIndice() };
+
+    hexagones[0]->setIndice(Hex1Data.indice);
+    hexagones[0]->setType(Hex1Data.type);
+    hexagones[0]->setCouleur(Hex1Data.couleur);
+
+    hexagones[1]->setIndice(Hex2Data.indice);
+    hexagones[1]->setType(Hex2Data.type);
+    hexagones[1]->setCouleur(Hex2Data.couleur);
+
+    hexagones[2]->setIndice(Hex0Data.indice);
+    hexagones[2]->setType(Hex0Data.type);
+    hexagones[2]->setCouleur(Hex0Data.couleur);
     return this;
+
 };
 
 void Tuile::reset_hex_links()
@@ -180,7 +219,7 @@ std::array<int, 8> Tuile::getVoisinsHex(int indexHex) const {
 
 std::array<int, 8> Hexagone::getVoisinsList() const {
     // nombres para debug
-    static const std::array<std::string, 8> noms = {"S", "SE", "NE", "N", "NO", "SO", "TOP", "BOT"};
+    static const std::array<std::string, 8> noms = {"S", "SO", "NO", "N", "NE", "SE", "TOP", "BOT"};
 
     const auto& ptrs = Hexagone::getVoisins(); // getVoisins de la base
     std::array<int, 8> voisinsBin; // array de 1/0
@@ -198,4 +237,15 @@ std::array<int, 8> Hexagone::getVoisinsList() const {
     std::cout << "===================================" << std::endl;
 
     return voisinsBin;
+}
+
+uint32_t Hexagone::getVoisinsNonFantomeBin() const {
+    uint32_t bin = 0;
+    for (size_t i = 0; i < voisins.size(); ++i) {
+        bin = bin<<1;
+        if (voisins[i] != nullptr && voisins[i]->getType() != Type::Fantome) {
+            bin |= 1;
+        }
+    }
+    return bin;
 }

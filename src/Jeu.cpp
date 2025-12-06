@@ -210,11 +210,20 @@ void Jeu::tourJoueur(Joueur* joueur) {
     // --- 5) Placement de la tuile ---
     std::cout << "\n5) Placement de la tuile :\n";
 
-    joueur->getCite()->placerTuile(tChoisie);
+
+    //joueur->getCite()->placerTuile(tChoisie); //nueva
+
+    // Pour le moment, on utilise la tuile manuelle comme test
+    //Tuile* t = new Tuile{*hexs[0], *hexs[1], *hexs[2]};
+    //joueur->getCite()->placerTuileFromHexRef(hexs[0]);
+    // --- Libérer la tuile temporaire ---
+    //delete t;
+
 
     // --- Affichage final de la cité après le placement ---
     std::cout << "\nCite après le tour :\n";
     joueur->getCite()->afficher();
+
 }
 
 
