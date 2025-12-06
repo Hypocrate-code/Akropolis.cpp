@@ -213,13 +213,8 @@ void Jeu::tourJoueur(Joueur* joueur) {
     std::cout << "\n5) Placement de la tuile :\n";
 
     //On va travailler avec l'hexagone 0 de la tuile choisi.
-    joueur->getCite()->placerTuileFromHexRef(hex0); 
+    joueur->getCite()->placerTuileFromHexRef(hex0);
 
-    // Pour le moment, on utilise la tuile manuelle comme test
-    //Tuile* t = new Tuile{*hexs[0], *hexs[1], *hexs[2]};
-    //joueur->getCite()->placerTuileFromHexRef(hexs[0]);
-    // --- Libérer la tuile temporaire ---
-    //delete t;
 
 
     // --- Affichage final de la cité après le placement ---

@@ -322,9 +322,9 @@ void CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
         exit(1);
         return;
     }
-    hex->afficherData();
-    // owner->rotate();
-    // hex->afficherData();
+     hex->afficherData();
+    //  owner->rotate();
+    //  hex->afficherData();
 
     int id;
     bool idValide = false;
@@ -386,15 +386,8 @@ void CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
 
     // for each bits equal to 1 in fantome
 
-    typedef struct tmpStruct
-    {
-        Type type;
-        Couleur couleur;
-        int indice;
-    } tmpStrct;
-
-    std::cout << "Details de l'hexagone fantome:\n";
-    hexFantome->afficherData();
+    // std::cout << "Details de l'hexagone fantome:\n";
+    // hexFantome->afficherData();
 
     // lambda pour ajoouter les donner a lex
 
@@ -409,33 +402,16 @@ void CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
                 std::cout << "index voisin a connecter: " << i << "\n";
                 // si bit == 1 alors il faut faire la connection
                 Hexagone *voisinFantome = fan->getVoisinIndice(i);
-
                 src->setVoisinIndice(i, voisinFantome);
             }
         }
     };
 
     updateHexSrcFromFan(hex, hexFantome);
-    /*
-    for (int i = 0; i < 8; ++i)
-    {
-        if (FanVoisinsBin & (0b10000000 >> i))
-        {
-            std::cout << "index voisin a connecter: " << i << "\n";
-            // si bit == 1 alors il faut faire la connection
-            Hexagone *voisinFantome = hexFantome->getVoisinIndice(i);
-
-            hex->setVoisinIndice(i, voisinFantome);
-        }
-    }
-*/
-
-
-std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisinsBin) << "\n";
+    std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisinsBin) << "\n";
 
     for (int i = 0; i < 8; i++)
     {
-
         if (SrcVoisinsBin & (0b10000000 >> i))
         {
             std::cout << "hex a connecter: " << i << "\n";
@@ -445,7 +421,11 @@ std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisins
             std::cout << "Voisin fantome trouve: " << nextHexFan << "\n";
             if (nextHexFan == nullptr)
             {
-                //ici il y a de laire donc rien a faire.
+                // ici il y a de lair donc rien a faire.
+                //std::cout 
+                //JE SAIS PAS POURQUOI MAIS QUELQUE CHOSE NE VA PAS ICI
+                // JAI LIMPRESSION QUE CA VEUX DIRE LA TUILE A UN HEX DANS LES AIRS DONC IL FAUT cancel
+                // MAIS PAS TOUJOURS.....
                 continue;
             }
             if (!nextHexFan || nextHexFan->getType() != Type::Fantome)
@@ -464,14 +444,14 @@ std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisins
                     exit(1);
                 }
                 updateHexSrcFromFan(nextHexSrc, nextHexFan);
-                std::cout << "HEREREREREREE" << std::endl;
-                nextHexSrc->afficherData();
+                //std::cout << "HEREREREREREE" << std::endl;
+                //nextHexSrc->afficherData();
             }
         }
     }
 
     std::cout << "Details de l'hexagone src apres placement:\n";
-    hex->afficherData();
+    //hex->afficherData();
     addTuile(owner);
 
     // placerSurID(id, tl);
@@ -525,7 +505,7 @@ void Cite::updateFantomeOfTuile(const Tuile *t)
                 {
 
                     // std::cout << "Created TOP fantome for hex indice " << hexagones[j]->getIndice() << std::endl;
-                    hexagones[j]->afficherData();
+                    //hexagones[j]->afficherData();
                     continue;
                 }
 

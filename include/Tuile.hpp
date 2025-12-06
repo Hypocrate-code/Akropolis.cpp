@@ -73,8 +73,8 @@ public:
     inline void setVoisinIndice(int i, Hexagone *hex) {
         if (i < 0 || i >= int(voisins.size())) return;
         voisins[i] = hex;
-        if (hex && i < 6) {
-            int opp = Utils::indiceDeGauche(Utils::indiceDeGauche(Utils::indiceDeGauche(i)));
+        if (hex) {
+            int opp = Utils::opposite_index(i);
             if (opp >= 0 && opp < int(hex->voisins.size())) {
                 hex->voisins[opp] = this;
             }
