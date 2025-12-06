@@ -245,3 +245,35 @@ uint32_t Hexagone::getVoisinsNonFantomeBin() const {
     }
     return bin;
 }
+
+std::array<Hexagone*, 6> Hexagone::getVoisins3D() const{
+    std::array<Hexagone*,8> voisins8 = getVoisins();
+
+    std::array<Hexagone*, 6> voisins6{}; // init à nullptr
+
+
+    std::copy(voisins8.begin(), voisins8.begin() + 6, voisins6.begin());
+
+    const Hexagone* copie = this; 
+    while(copie!=nullptr){ 
+        std::array<Hexagone*,8> voisinsNiveau = copie->getVoisins(); 
+        for(int i=0; i<6; i++){
+            if(voisinsNiveau[i]!=nullptr && voisins6[i]==nullptr ){
+                voisins6[i]=voisinsNiveau[i]; 
+            }
+        }
+        copie = copie->getVoisinsBOT();
+    }
+    return voisins6;
+}
+
+int Hexagone::getNiveau()const{
+    const Hexagone*copie= this ; 
+    int niveau =1;  
+        while(copie->getVoisinsBOT()!=nullptr){
+            niveau++; 
+            copie=copie->getVoisinsBOT(); 
+
+        }
+    return niveau; 
+};

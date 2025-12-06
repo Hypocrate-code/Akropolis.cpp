@@ -4,6 +4,9 @@
 #include <algorithm>
 #include "Utils.hpp"
 #include <bitset>
+#include <unordered_set>
+#include <stack>
+#include <cstdint>
 
 using namespace Utils;
 
@@ -227,7 +230,7 @@ void Cite::afficher() const
     std::cout << "Nombre de tuiles dans la cite: " << tuiles.size() << std::endl;
     if (tuiles.size())
         std::cout << "Nombre d'hexagones dans la cite: " << ((tuiles.size() - 1) * 3 + 4) << std::endl;
-    std::cout << "nombre de tuile fantome dans la cite: " << hexs_fantome.size() << std::endl;
+    std::cout << "nombre d'hexagone fantome dans la cite: " << hexs_fantome.size() << std::endl;
 
     // Initialize canvas
     strCalc calc = {
@@ -461,8 +464,184 @@ void CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
 
 uint32_t CiteJoueur::compterPoints() const
 {
+    uint32_t nb_place_bleue=0; 
+    uint32_t nb_place_rouge=0;
+    uint32_t nb_place_verte=0;
+    uint32_t nb_place_violet=0;
+    uint32_t nb_place_jaune=0;
 
-    return 0;
+    uint32_t points_bleu=0; 
+    uint32_t points_rouge=0;
+    uint32_t points_vert=0;
+    uint32_t points_violet=0;
+    uint32_t points_jaune=0; 
+
+
+    std::vector<const Hexagone*> habitations_visitees{}; 
+    std::vector<uint32_t> points_hab{};
+
+    // parcours des hexagones 
+    const Hexagone* start=tuiles.back()->get_hexagones().back(); 
+    if (!start) return 0;
+
+    std::unordered_set<const Hexagone*> visited;
+    std::stack<const Hexagone*> pile;
+
+    pile.push(start);
+
+
+    while (!pile.empty()) {
+        const Hexagone* h = pile.top();
+        pile.pop();
+        if (visited.count(h)) continue;
+        visited.insert(h);
+
+        // Comptage des points : 
+        // si la tuile est recouverte --> ne vaut pas de points 
+        if(h->getVoisinsTOP()==nullptr || h->getVoisinsTOP()->getType()==Type::Fantome ){
+            // on determine le niveau de l'hex
+            uint32_t niveau=h->getNiveau(); 
+
+
+            //place, on incrémente le nombre de place de cette couleur  
+            if (h->getType()==Type::Place){
+                Couleur hc = h->getCouleur();
+                switch (hc)
+                {
+                case Couleur::Bleu:
+                    nb_place_bleue++;
+                    break;
+                case Couleur::Jaune:
+                    nb_place_jaune++;
+                    break;
+                case Couleur::Rouge:
+                    nb_place_rouge++;
+                    break;
+                case Couleur::Vert:
+                    nb_place_verte++;
+                    break;
+                case Couleur::Violet:
+                    nb_place_violet++;
+                    break;
+                }
+            }
+            //quartier 
+            if (h->getType()==Type::Quartier){
+
+                // calcul point marché: + 1 points si n'est pas entouré d'autres marchés 
+                if(h->getCouleur()==Couleur::Jaune){ 
+                    const std::array<Hexagone*, 6> voisins = h->getVoisins3D(); 
+                    bool cond=true; 
+                    for (int i=0; i<6; i++){
+
+                        if(voisins[i]!=nullptr){
+                             if (voisins[i]->getCouleur()==Couleur::Jaune && voisins[i]->getType()==Type::Quartier){
+                            cond=false;
+                            }
+                        }
+
+                        }
+                        if (cond==true) points_jaune+=1*niveau; 
+
+
+                }
+                    //calcul points jardins : +1 pt pour chaque jardin 
+                if (h->getCouleur()==Couleur::Vert){
+                            points_vert+=1*niveau; 
+                }
+                    //calcul temples : +1 si est entièrement entouré 
+                if (h->getCouleur()==Couleur::Violet){
+
+                    const std::array<Hexagone*, 6>& voisins = h->getVoisins3D(); 
+
+                    //on vérifie si entierment entouré au niveau 0  
+                    bool cond=true;
+                    for (int i=0; i<6; i++){
+                        if(voisins[i]!=nullptr){
+                            if(voisins[i]->getType()==Type::Fantome) cond=false; 
+                        }else{
+                            cond=false; 
+                        }
+
+                    }
+                    if(cond)points_violet+=1*niveau; 
+
+                }
+                  //calcul habitation: on doit calculer les groupes d'habitations 
+                if (h->getCouleur()==Couleur::Bleu){
+                    // si on a deja visite le groupe --> on passe
+                    if (std::find(habitations_visitees.begin(), habitations_visitees.end(), h) == habitations_visitees.end()){
+                            std::stack<const Hexagone*> habitations_a_visiter; 
+                            uint32_t points_bleu_h=1; 
+                            habitations_a_visiter.push(h);
+                            while(!habitations_a_visiter.empty()){
+                                const Hexagone* hab = habitations_a_visiter.top();
+                                habitations_a_visiter.pop();
+                                const std::array<Hexagone*, 6> voisins = hab->getVoisins3D();
+                                for(int i=0; i<6; i++){
+                                    if(voisins[i]!=nullptr){
+                                        if(voisins[i]->getCouleur()==Couleur::Bleu && voisins[i]->getType()==Type::Quartier && std::find(habitations_visitees.begin(), habitations_visitees.end(), voisins[i]) == habitations_visitees.end()&&voisins[i]->getVoisinsTOP()==nullptr){
+                                            habitations_a_visiter.push(voisins[i]); 
+                                            points_bleu_h ++; 
+                                        }
+                                    }
+                                }
+                            habitations_visitees.push_back(hab); 
+                            }
+                        points_hab.push_back(points_bleu_h); 
+                        }
+                // algo de recherche d'habitations voisines à faire 
+                        // on parcourt les voisins de h, 
+                        // puis les voisins des voisins de h ect jusqu'à ce qu'il n'y est plus d'habitations dans les voisins
+                        // à ch nouvelle habitation visitée, on l'ajoute dans le vecteur + on incrémente nbre de points 
+                        // et on parcours les voisins de cette habitations  qui n'ont pas encore été visités 
+                    }
+
+                
+                // calcul caserne : +1 si l'hexagone est en périphérie de la cité
+                if(h->getCouleur()==Couleur::Rouge){
+                    bool cond=false; 
+                    const std::array<Hexagone*, 6>& voisins = h->getVoisins3D(); 
+
+
+                    for (int i=0; i<6; i++){
+                        if(voisins[i]!=nullptr){
+                            if(voisins[i]->getType()==Type::Fantome) cond=true;
+                        }else{
+                            cond=true; 
+                        }
+
+                    }
+                    if(cond)points_rouge+=1*niveau; 
+                }
+
+            }
+        }
+          // Ajouter les voisins
+        for (const Hexagone* v : h->getVoisins()) {
+            if (v != nullptr && !visited.count(v))
+                pile.push(v);
+        }
+    }
+
+    // On prend le max des suites de cité pour avoir le nbre de points correspondants     
+    if (!habitations_visitees.empty()) {
+        points_bleu = *std::max_element(points_hab.begin(), points_hab.end());
+    }
+
+    std::cout << "printing points : " << points_bleu*nb_place_bleue*1 << " . " <<
+                    points_jaune *nb_place_jaune*2 << " . " <<
+                    points_rouge *nb_place_rouge*2 <<" . " <<
+                    points_vert*nb_place_verte*3 <<" . " <<
+                    points_violet*nb_place_violet*2 << std::endl;
+
+    uint32_t total=points_bleu*nb_place_bleue*1
+                    +points_jaune *nb_place_jaune*2
+                    +points_rouge *nb_place_rouge*2
+                    +points_vert*nb_place_verte*3
+                    +points_violet*nb_place_violet*2
+                    ; 
+    return total;
 }
 
 Hexagone *Cite::create_new_hex_fantome()

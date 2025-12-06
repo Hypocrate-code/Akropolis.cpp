@@ -151,6 +151,9 @@ void Jeu::Lancer() {
             fin = true;
         }
     }
+    for (auto& j : joueurs) {
+        std::cout << j->getCite()->compterPoints() << std::endl;
+    }
 }
 
 
