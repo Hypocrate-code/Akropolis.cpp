@@ -195,10 +195,10 @@ void Jeu::tourJoueur(Joueur* joueur) {
     joueur->getCite()->afficher();
 
     // --- 2) Chantier global partagé ---
+
     if (chantier.empty()) {            
       mettreAJourChantier();         
     }
-    std::cout << "\n2) Chantier :\n";
     afficherChantier();                        // Affiche le chantier actuel
 
     // --- 3) Choix de la tuile et débit de pierres (pour le moment manuel) ---
@@ -238,9 +238,9 @@ void Jeu::mettreAJourChantier() {
 
 // === Affiche le chantier actuel ===
 void Jeu::afficherChantier() const {
-    std::cout << "=== Chantier ===\n";
+    std::cout << "\n=== Chantier ===\n\n";
     for (size_t i = 0; i < chantier.size(); ++i) {
-        std::cout << i << " : ";
+        std::cout << "Tuile " << i << " : ";
         chantier[i]->afficherData();
     }
 }

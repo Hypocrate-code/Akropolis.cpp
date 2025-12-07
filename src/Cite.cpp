@@ -176,61 +176,64 @@ void Cite::afficher() const
 
 {
 
-    // #ifdef DEBUG
-    std::cout << "=== DEBUG HEXAGONE CONNECTIONS ===" << std::endl;
+    // =================== DEBUG HEXAGONE CONNECTIONS =========================
 
-    if (tuiles.empty())
-    {
-        return;
-    }
+    // std::cout << "=== DEBUG HEXAGONE CONNECTIONS ===" << std::endl;
 
-    // Debug: Print all hexagones and their neighbors
-    for (size_t i = 0; i < tuiles.size(); ++i)
-    {
-        std::cout << "Tuile " << i << ":" << std::endl;
-        const auto &hexagones = tuiles[i]->get_hexagones();
-        for (size_t j = 0; j < hexagones.size(); ++j)
-        {
-            std::cout << "  Hexagone " << j << " (" << type_to_string(hexagones[j]->getType())
-                      << ", " << color_to_string(hexagones[j]->getCouleur()) << "):" << std::endl;
+    // if (tuiles.empty())
+    // {
+    //     return;
+    // }
 
-            // Print all neighbors
-            const Hexagone *neighbors[] = {
-                hexagones[j]->getVoisinsNE(),
-                hexagones[j]->getVoisinsS(),
-                hexagones[j]->getVoisinsSE(),
-                hexagones[j]->getVoisinsSO(),
-                hexagones[j]->getVoisinsN(),
-                hexagones[j]->getVoisinsNO(),
-                hexagones[j]->getVoisinsTOP(),
-                hexagones[j]->getVoisinsBOT()};
+    // // Debug: Print all hexagones and their neighbors
+    // for (size_t i = 0; i < tuiles.size(); ++i)
+    // {
+    //     std::cout << "Tuile " << i << ":" << std::endl;
+    //     const auto &hexagones = tuiles[i]->get_hexagones();
+    //     for (size_t j = 0; j < hexagones.size(); ++j)
+    //     {
+    //         std::cout << "  Hexagone " << j << " (" << type_to_string(hexagones[j]->getType())
+    //                   << ", " << color_to_string(hexagones[j]->getCouleur()) << "):" << std::endl;
 
-            const char *directionNames[] = {"NE", "S", "SE", "SO", "N", "NO", "TOP", "BOT"};
+    //         // Print all neighbors
+    //         const Hexagone *neighbors[] = {
+    //             hexagones[j]->getVoisinsNE(),
+    //             hexagones[j]->getVoisinsS(),
+    //             hexagones[j]->getVoisinsSE(),
+    //             hexagones[j]->getVoisinsSO(),
+    //             hexagones[j]->getVoisinsN(),
+    //             hexagones[j]->getVoisinsNO(),
+    //             hexagones[j]->getVoisinsTOP(),
+    //             hexagones[j]->getVoisinsBOT()};
 
-            for (int k = 0; k < 8; ++k)
-            {
-                if (neighbors[k])
-                {
-                    std::cout << "    " << directionNames[k] << " -> "
-                              << type_to_string(neighbors[k]->getType()) << ", "
-                              << color_to_string(neighbors[k]->getCouleur()) << std::endl;
-                }
-                else
-                {
-                    std::cout << "    " << directionNames[k] << " -> NULL" << std::endl;
-                }
-            }
-        }
-    }
+    //         const char *directionNames[] = {"NE", "S", "SE", "SO", "N", "NO", "TOP", "BOT"};
 
-    std::cout << "=== END DEBUG ===" << std::endl
-              << std::endl;
-    // #endif
+    //         for (int k = 0; k < 8; ++k)
+    //         {
+    //             if (neighbors[k])
+    //             {
+    //                 std::cout << "    " << directionNames[k] << " -> "
+    //                           << type_to_string(neighbors[k]->getType()) << ", "
+    //                           << color_to_string(neighbors[k]->getCouleur()) << std::endl;
+    //             }
+    //             else
+    //             {
+    //                 std::cout << "    " << directionNames[k] << " -> NULL" << std::endl;
+    //             }
+    //         }
+    //     }
+    // }
 
-    std::cout << "Nombre de tuiles dans la cite: " << tuiles.size() << std::endl;
-    if (tuiles.size())
-        std::cout << "Nombre d'hexagones dans la cite: " << ((tuiles.size() - 1) * 3 + 4) << std::endl;
-    std::cout << "nombre d'hexagone fantome dans la cite: " << hexs_fantome.size() << std::endl;
+    // std::cout << "Nombre de tuiles dans la cite: " << tuiles.size() << std::endl;
+    // if (tuiles.size())
+    //     std::cout << "Nombre d'hexagones dans la cite: " << ((tuiles.size() - 1) * 3 + 4) << std::endl;
+    // std::cout << "nombre d'hexagone fantome dans la cite: " << hexs_fantome.size() << std::endl;
+
+    // std::cout << "=== END DEBUG ===" << std::endl
+    //           << std::endl;
+
+
+    // =================== FIN DEBUG HEXAGONE CONNECTIONS =========================
 
     // Initialize canvas
     strCalc calc = {

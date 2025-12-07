@@ -69,25 +69,13 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
 
 void Tuile::afficherData() const
 {
-    std::cout << "=== DONNEES DE LA TUILE ===" << std::endl;
-
-    std::cout << "Nombre d'hexagones: " << hexagones.size() << std::endl;
-
-
-    {
-    std::cout << "                           " << std::endl;
-    strCalc calc = strCalc(10, std::string(50, ' '));
+    strCalc calc = strCalc(6, std::string(50, ' '));
     std::unordered_set<Hexagone*> drawnHexagones;
     Cite::draw_hex_recursive(hexagones[0], 10, 6, calc, drawnHexagones, 0);
-
     for (auto &line : calc)
     {
         std::cout << colorize_line(line) << std::endl;
     }
-    
-}
-
-    std::cout << "============================" << std::endl;
 }
 
 
