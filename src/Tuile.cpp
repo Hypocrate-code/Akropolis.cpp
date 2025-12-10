@@ -82,40 +82,43 @@ void Tuile::afficherData() const
 Tuile *Tuile::rotate()
 {
     /*permet la rotation de la tuile en invertissant les hexagones */
-    /*Hexagone* copie[2];
-    for (int i =0; i<=2; i++){
-        copie[i]=hexagones[i];
-    }
-    hexagones[0]=copie[1];
-    hexagones[1]=copie[2];
-    hexagones[2]=copie[3];
 
-    // modification des voisins des hexagones à gérer
-    // position à gérer
-    */
+    //enregistre les voisins des hex de la tuile 
+     const std::array<Hexagone*,8>& voisins_0=this->get_hexagones()[0]->getVoisins(); 
+     const std::array<Hexagone*,8>& voisins_1=this->get_hexagones()[1]->getVoisins(); 
+     const std::array<Hexagone*,8>& voisins_2=this->get_hexagones()[2]->getVoisins(); 
 
-    //tmp sol
-    typedef struct tmpStruct {
-        Type type;
-        Couleur couleur;
-        int indice;
-    } tmpStrct;
+    //suppresion de tous les voisins des hex
+    this->reset_hex_links(); 
 
-    tmpStrct Hex0Data ={ hexagones[0]->getType(), hexagones[0]->getCouleur(), hexagones[0]->getIndice() };
-    tmpStrct Hex1Data ={ hexagones[1]->getType(), hexagones[1]->getCouleur(), hexagones[1]->getIndice() };
-    tmpStrct Hex2Data ={ hexagones[2]->getType(), hexagones[2]->getCouleur(), hexagones[2]->getIndice() };
+    // rotation des hexagones
+    std::swap(hexagones[0], hexagones[2]); 
+    std::swap(hexagones[1], hexagones[2]);
 
-    hexagones[0]->setIndice(Hex1Data.indice);
-    hexagones[0]->setType(Hex1Data.type);
-    hexagones[0]->setCouleur(Hex1Data.couleur);
+    
+    // ch hex prend les voisins ext de l'hex apres lui
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[0]->setVoisinIndice(i,voisins_2[i]); 
+     }
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[1]->setVoisinIndice(i,voisins_0[i]); 
+     }
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[2]->setVoisinIndice(i,voisins_1[i]); 
+     }
 
-    hexagones[1]->setIndice(Hex2Data.indice);
-    hexagones[1]->setType(Hex2Data.type);
-    hexagones[1]->setCouleur(Hex2Data.couleur);
 
-    hexagones[2]->setIndice(Hex0Data.indice);
-    hexagones[2]->setType(Hex0Data.type);
-    hexagones[2]->setCouleur(Hex0Data.couleur);
+
+     // on met les bons voisins au centre de la tuile 
+     hexagones[0]->setVoisinsS(hexagones[2]); 
+     hexagones[2]->setVoisinsN(hexagones[0]); 
+
+     hexagones[0]->setVoisinsSE(hexagones[1]); 
+     hexagones[1]->setVoisinsNO(hexagones[0]); 
+
+     hexagones[2]->setVoisinsNE(hexagones[1]); 
+     hexagones[1]->setVoisinsSO(hexagones[2]); 
+     
     return this;
 
 };
