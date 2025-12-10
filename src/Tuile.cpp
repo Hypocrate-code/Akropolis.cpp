@@ -217,11 +217,11 @@ std::array<int, 8> Hexagone::getVoisinsList() const {
     }
 
     // Mostrar solo el binario (opcional, si quieres debug)
-    std::cout << "=== DEBUG HexFantome::voisinsBin (1/0) ===" << std::endl;
-    for (int i = 0; i < 8; ++i) {
-        std::cout << noms[i] << " => " << voisinsBin[i] << std::endl;
-    }
-    std::cout << "===================================" << std::endl;
+    // std::cout << "=== DEBUG HexFantome::voisinsBin (1/0) ===" << std::endl;
+    // for (int i = 0; i < 8; ++i) {
+    //     std::cout << noms[i] << " => " << voisinsBin[i] << std::endl;
+    // }
+    // std::cout << "===================================" << std::endl;
 
     return voisinsBin;
 }

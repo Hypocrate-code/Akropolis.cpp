@@ -19,7 +19,7 @@ public:
     Cite(const Tuile* tuileDeDepart);
     ~Cite() = default;
 
-    virtual void placerTuileFromHexRef(Hexagone* hex) = 0;
+    virtual int placerTuileFromHexRef(Hexagone* hex) = 0;
     void addTuile(Tuile* t);
     void addTuile(const Tuile* t);
 
@@ -60,7 +60,7 @@ public:
     CiteJoueur(const Tuile* tuileDeDepart);
     ~CiteJoueur()=default;
 
-    void placerTuileFromHexRef(Hexagone* hex) override;
+    int placerTuileFromHexRef(Hexagone* hex) override;
     uint32_t compterPoints() const override;
 
 };
