@@ -23,7 +23,7 @@ std::optional<Tuile*> Chantier::acheterTuile(std::size_t index, int& pierresJoue
     int cout = coutPourIndice(index);
     if (pierresJoueur < cout)
         return std::nullopt;
-
+    
     pierresJoueur -= cout;
     Tuile* achetee = tuiles[index];
     tuiles.erase(tuiles.begin() + static_cast<long>(index));
@@ -31,7 +31,7 @@ std::optional<Tuile*> Chantier::acheterTuile(std::size_t index, int& pierresJoue
     return achetee;
 }
 
-// Calcul du co�t
+// Calcul du cout
 int Chantier::coutPourIndice(std::size_t index) const {
     if (index >= tuiles.size()) return -1;
     return static_cast<int>(index); // co�t = position dans le chantier
