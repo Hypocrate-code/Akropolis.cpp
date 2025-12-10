@@ -24,6 +24,7 @@ Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
 
 void Hexagone::afficherData() const
 {
+    //????? what ?????
     if (this == nullptr) {
         // std::cout << "nullptr" << std::endl;
         return;
@@ -42,6 +43,8 @@ void Hexagone::afficherData() const
     std::cout << " TOP:" << (getVoisinsTOP() ? "O" : "X");
     std::cout << " BOT:" << (getVoisinsBOT() ? "O" : "X");
     std::cout << std::endl;
+
+
 }
 
 Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
@@ -58,43 +61,66 @@ Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
 
     hex3.setVoisinsN(&hex1);
     hex3.setVoisinsNE(&hex2);
+
+    hex1.setTuileParent(this);
+    hex2.setTuileParent(this);
+    hex3.setTuileParent(this);
 };
 
 void Tuile::afficherData() const
 {
-    std::cout << "=== DONNEES DE LA TUILE ===" << std::endl;
-
-    std::cout << "Nombre d'hexagones: " << hexagones.size() << std::endl;
-
-    for (size_t i = 0; i < hexagones.size(); ++i)
+    strCalc calc = strCalc(6, std::string(50, ' '));
+    std::unordered_set<Hexagone*> drawnHexagones;
+    Cite::draw_hex_recursive(hexagones[0], 10, 6, calc, drawnHexagones, 0);
+    for (auto &line : calc)
     {
-        std::cout << "Hexagone " << i + 1 << ":" << std::endl;
-        if (hexagones[i])
-            hexagones[i]->afficherData();
+        std::cout << colorize_line(line) << std::endl;
     }
-
-    std::cout << "============================" << std::endl;
 }
 
 
 Tuile *Tuile::rotate()
 {
     /*permet la rotation de la tuile en invertissant les hexagones */
-    /*Hexagone* copie[2];
-    for (int i =0; i<=2; i++){
-        copie[i]=hexagones[i];
-    }
-    hexagones[0]=copie[1];
-    hexagones[1]=copie[2];
-    hexagones[2]=copie[3];
 
-    // modification des voisins des hexagones à gérer
-    // position à gérer
-    */
+    //enregistre les voisins des hex de la tuile 
+     const std::array<Hexagone*,8>& voisins_0=this->get_hexagones()[0]->getVoisins(); 
+     const std::array<Hexagone*,8>& voisins_1=this->get_hexagones()[1]->getVoisins(); 
+     const std::array<Hexagone*,8>& voisins_2=this->get_hexagones()[2]->getVoisins(); 
 
-    // autre solution :
-    *this = Tuile(*hexagones[1], *hexagones[2], *hexagones[0]);
+    //suppresion de tous les voisins des hex
+    this->reset_hex_links(); 
+
+    // rotation des hexagones
+    std::swap(hexagones[0], hexagones[2]); 
+    std::swap(hexagones[1], hexagones[2]);
+
+    
+    // ch hex prend les voisins ext de l'hex apres lui
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[0]->setVoisinIndice(i,voisins_2[i]); 
+     }
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[1]->setVoisinIndice(i,voisins_0[i]); 
+     }
+     for (int i=0; i<=0; i++ ){
+        this->hexagones[2]->setVoisinIndice(i,voisins_1[i]); 
+     }
+
+
+
+     // on met les bons voisins au centre de la tuile 
+     hexagones[0]->setVoisinsS(hexagones[2]); 
+     hexagones[2]->setVoisinsN(hexagones[0]); 
+
+     hexagones[0]->setVoisinsSE(hexagones[1]); 
+     hexagones[1]->setVoisinsNO(hexagones[0]); 
+
+     hexagones[2]->setVoisinsNE(hexagones[1]); 
+     hexagones[1]->setVoisinsSO(hexagones[2]); 
+     
     return this;
+
 };
 
 void Tuile::reset_hex_links()
@@ -153,3 +179,92 @@ void Hexagone::removeConnection(const Hexagone* hex) {
     }
 }
 
+std::array<int, 8> Tuile::getVoisinsHex(int indexHex) const {
+    std::array<int, 8> voisinsBin = {0,0,0,0,0,0,0,0};
+
+    if (indexHex < 0 || indexHex >= hexagones.size()) {
+        std::cerr << "Erreur: indexHex hors limites." << std::endl;
+        return voisinsBin;
+    }
+
+    const auto& voisinsHex = hexagones[indexHex]->getVoisins();
+
+    for (size_t i = 0; i < voisinsHex.size(); ++i) {
+        voisinsBin[i] = (voisinsHex[i] != nullptr ? 1 : 0);
+    }
+
+    // DEBUG
+    std::cout << "=== DEBUG Tuile::getVoisinsHex pour Hexagone " << indexHex << " ===" << std::endl;
+    static const std::array<std::string, 8> noms = {"S","SE","NE","N","NO","SO","TOP","BOT"};
+    for (size_t i = 0; i < voisinsBin.size(); ++i) {
+        std::cout << noms[i] << " => " << voisinsBin[i] << std::endl;
+    }
+    std::cout << "===================================" << std::endl;
+
+    return voisinsBin;
+}
+
+std::array<int, 8> Hexagone::getVoisinsList() const {
+    // nombres para debug
+    static const std::array<std::string, 8> noms = {"S", "SO", "NO", "N", "NE", "SE", "TOP", "BOT"};
+
+    const auto& ptrs = Hexagone::getVoisins(); // getVoisins de la base
+    std::array<int, 8> voisinsBin; // array de 1/0
+
+    // Solo llenar el array binario
+    for (int i = 0; i < 8; ++i) {
+        voisinsBin[i] = (ptrs[i] != nullptr ? 1 : 0);
+    }
+
+    // Mostrar solo el binario (opcional, si quieres debug)
+    // std::cout << "=== DEBUG HexFantome::voisinsBin (1/0) ===" << std::endl;
+    // for (int i = 0; i < 8; ++i) {
+    //     std::cout << noms[i] << " => " << voisinsBin[i] << std::endl;
+    // }
+    // std::cout << "===================================" << std::endl;
+
+    return voisinsBin;
+}
+
+uint32_t Hexagone::getVoisinsNonFantomeBin() const {
+    uint32_t bin = 0;
+    for (size_t i = 0; i < voisins.size(); ++i) {
+        bin = bin<<1;
+        if (voisins[i] != nullptr && voisins[i]->getType() != Type::Fantome) {
+            bin |= 1;
+        }
+    }
+    return bin;
+}
+
+std::array<Hexagone*, 6> Hexagone::getVoisins3D() const{
+    std::array<Hexagone*,8> voisins8 = getVoisins();
+
+    std::array<Hexagone*, 6> voisins6{}; // init à nullptr
+
+
+    std::copy(voisins8.begin(), voisins8.begin() + 6, voisins6.begin());
+
+    const Hexagone* copie = this; 
+    while(copie!=nullptr){ 
+        std::array<Hexagone*,8> voisinsNiveau = copie->getVoisins(); 
+        for(int i=0; i<6; i++){
+            if(voisinsNiveau[i]!=nullptr && voisins6[i]==nullptr ){
+                voisins6[i]=voisinsNiveau[i]; 
+            }
+        }
+        copie = copie->getVoisinsBOT();
+    }
+    return voisins6;
+}
+
+int Hexagone::getNiveau()const{
+    const Hexagone*copie= this ; 
+    int niveau =1;  
+        while(copie->getVoisinsBOT()!=nullptr){
+            niveau++; 
+            copie=copie->getVoisinsBOT(); 
+
+        }
+    return niveau; 
+};

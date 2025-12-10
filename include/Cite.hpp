@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_set>
 
+
 class Tuile;
 class Hexagone;
 // class HexFantome;
@@ -18,7 +19,7 @@ public:
     Cite(const Tuile* tuileDeDepart);
     ~Cite() = default;
 
-    virtual void placerTuile(const Tuile* dest) = 0;
+    virtual int placerTuileFromHexRef(Hexagone* hex) = 0;
     void addTuile(Tuile* t);
     void addTuile(const Tuile* t);
 
@@ -32,21 +33,23 @@ public:
 
     void generateAllHexFantome();
     void updateFantomeOfTuile(const Tuile* t);
+
+    //tmp 
+    static void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones, int hauteur); //, int depth) const;
 protected:
 
     std::vector<const Tuile*> tuiles;
 
-    void print_hex(Hexagone*hex, int x, int y, strCalc& calc) const;
-    void increase_calc_size_H(strCalc& calc, uint32_t size) const;
-    void increase_calc_size_V(strCalc& calc, uint32_t size) const;
+    static void print_hex(Hexagone*hex, int x, int y, strCalc& calc);
+    static void increase_calc_size_H(strCalc& calc, uint32_t size);
+    static void increase_calc_size_V(strCalc& calc, uint32_t size);
 
     //calc est un tableau de chaîne de caractères sur lequel on dessine les hexagones, il est passé en paramètre des fonctions pour être modifié
 
     //ajoute le texte dans les hexagones(PLA pour place, CAR pour carriere...)
-    void add_hex_data(Hexagone *hex, int x, int y, strCalc& calc) const;
+    static void add_hex_data(Hexagone *hex, int x, int y, strCalc& calc);
 
     // Dessines les hexagones recursivement, les hexagones deja dessine sont dans drawnHexagones.
-    void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones, int hauteur) const; //, int depth) const;
 
     
 };
@@ -57,7 +60,7 @@ public:
     CiteJoueur(const Tuile* tuileDeDepart);
     ~CiteJoueur()=default;
 
-    void placerTuile(const Tuile* dest) override;
+    int placerTuileFromHexRef(Hexagone* hex) override;
     uint32_t compterPoints() const override;
 
 };
