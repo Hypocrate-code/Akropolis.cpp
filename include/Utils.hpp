@@ -2,7 +2,7 @@
 #include <string>
 // #include "Tuile.hpp"
 
-//#define DEBUG
+#define DEBUG
 
 
 enum class Couleur;

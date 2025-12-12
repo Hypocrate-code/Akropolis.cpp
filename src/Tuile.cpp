@@ -47,7 +47,7 @@ void Hexagone::afficherData() const
 
 }
 
-Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3)
+Tuile::Tuile(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3) : hauteur(0)
 {
     hexagones.push_back(&hex1);
     hexagones.push_back(&hex2);
@@ -235,7 +235,7 @@ std::array<int, 8> Hexagone::getVoisinsList() const {
     return voisinsBin;
 }
 
-uint32_t Hexagone::getVoisinsNonFantomeBin() const {
+uint8_t Hexagone::getVoisinsNonFantomeBin() const {
     uint32_t bin = 0;
     for (size_t i = 0; i < voisins.size(); ++i) {
         bin = bin<<1;
