@@ -19,7 +19,7 @@ public:
     Cite(const Tuile* tuileDeDepart);
     ~Cite() = default;
 
-    virtual int placerTuileFromHexRef(Hexagone* hex) = 0;
+    virtual bool placerTuileFromHexRef(Hexagone* hex) = 0; // return true si la Tuile a été placé
     void addTuile(Tuile* t);
     void addTuile(const Tuile* t);
 
@@ -34,7 +34,7 @@ public:
     void generateAllHexFantome();
     void updateFantomeOfTuile(const Tuile* t);
 
-    //tmp 
+    // Dessines les hexagones recursivement, les hexagones deja dessine sont dans drawnHexagones.
     static void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones, int hauteur); //, int depth) const;
 protected:
 
@@ -44,12 +44,10 @@ protected:
     static void increase_calc_size_H(strCalc& calc, uint32_t size);
     static void increase_calc_size_V(strCalc& calc, uint32_t size);
 
-    //calc est un tableau de chaîne de caractères sur lequel on dessine les hexagones, il est passé en paramètre des fonctions pour être modifié
-
     //ajoute le texte dans les hexagones(PLA pour place, CAR pour carriere...)
     static void add_hex_data(Hexagone *hex, int x, int y, strCalc& calc);
 
-    // Dessines les hexagones recursivement, les hexagones deja dessine sont dans drawnHexagones.
+    static void updateHexSrcFromFan(Hexagone *src, Hexagone *fan);
 
     
 };
@@ -60,7 +58,7 @@ public:
     CiteJoueur(const Tuile* tuileDeDepart);
     ~CiteJoueur()=default;
 
-    int placerTuileFromHexRef(Hexagone* hex) override;
+    bool placerTuileFromHexRef(Hexagone* hex) override;
     uint32_t compterPoints() const override;
 
 };

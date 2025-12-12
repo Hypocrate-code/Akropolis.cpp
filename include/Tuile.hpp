@@ -50,7 +50,7 @@ public:
         return (i >= 0 && i < static_cast<int>(voisins.size())) ? voisins[i] : nullptr;
     };
 
-    uint32_t getVoisinsNonFantomeBin() const;
+    uint8_t getVoisinsNonFantomeBin() const;
 
 
     const std::array<Hexagone*,8>& getVoisins() const { return voisins; }
@@ -125,6 +125,9 @@ public:
     void set_indice(const int i) { indice = i; }
     void set_cite(Cite* c) { cite = c; }
 
+    uint32_t get_hauteur() const { return hauteur;}
+    void set_hauteur(uint32_t h) {hauteur = h;}
+
     Cite* cite;
 
     std::array<int, 8> getVoisinsHex(int indexHex) const;
@@ -133,6 +136,7 @@ public:
 protected:
     std::vector<Hexagone *> hexagones;
     int indice;
+    uint32_t hauteur;
 };
 
  class TuileDepart : public Tuile

@@ -315,20 +315,20 @@ CiteJoueur::CiteJoueur(const Tuile *tuileDeDepart) : Cite{tuileDeDepart}
     // generateAllHexFantome();
 }
 
-int CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
+bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
 {
-    // std::cout << "\n\n/======== DEBUG PLACER TUILE =========/\n";
-    // std::cout << "Tu vas placer la tuile avec le hexagone de reference : "
-    //           << hex->getType() << " "
-    //           << hex->getCouleur() << "\n";
+
+    std::cout << "\n\n/======== DEBUG PLACER TUILE =========/\n";
+    std::cout << "Tu vas placer la tuile avec le hexagone de reference : "
+              << hex->getType() << " "
+              << hex->getCouleur() << "\n";
     Tuile *owner = hex->getTuileParent();
     if (!owner)
     {
         std::cout << "Erreur: L'hexagone de reference n'appartient a aucune tuile.\n";
-        exit(1);
-        return 1;
+        return 0;
     }
-     // hex->afficherData();
+    hex->afficherData();
     //  owner->rotate();
     //  hex->afficherData();
 
@@ -362,7 +362,7 @@ int CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     if (IthexFantome == hexs_fantome.end())
     {
         std::cout << "Erreur: Aucun hexagone avec l'ID " << id << " trouve.\n";
-        return 1;
+        return 0;
     }
 
     Hexagone *hexFantome = *IthexFantome;
@@ -370,16 +370,15 @@ int CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     //           << hexFantome->getType() << " "
     //           << hexFantome->getCouleur() << "\n";
 
-    hexFantome->getVoisinsList();
     uint32_t FanVoisinsBin = hexFantome->getVoisinsNonFantomeBin();
     uint32_t SrcVoisinsBin = hex->getVoisinsNonFantomeBin();
 
     uint32_t res = FanVoisinsBin & SrcVoisinsBin;
 
-    if (res != 0)
+    if (res != 0) // AND condition
     {
         std::cout << "Impossible de placer la tuile ici\n";
-        return 1;
+        return 0;
     }
 
     // etablir les connextions entre les hexagones de la tuile et les hexagones fantomes
@@ -397,71 +396,114 @@ int CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
 
     // lambda pour ajoouter les donner a lex
 
-    auto updateHexSrcFromFan = [](Hexagone *src, Hexagone *fan)
-    {
-        uint32_t FanVoisinsBinl = fan->getVoisinsNonFantomeBin();
+    std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisinsBin) << "\n";
 
-        for (int i = 0; i < 8; ++i)
-        {
-            if (FanVoisinsBinl & (0b10000000 >> i))
-            {
-                std::cout << "index voisin a connecter: " << i << "\n";
-                // si bit == 1 alors il faut faire la connection
-                Hexagone *voisinFantome = fan->getVoisinIndice(i);
-                src->setVoisinIndice(i, voisinFantome);
-            }
-        }
-    };
+    Hexagone *hex1 = nullptr;
+    Hexagone *hex1Fan = nullptr; // lhex fantome qui va etre remplacer par hex1
+    Hexagone *hex1Bot = nullptr;
+    uint32_t hex1DirFromHex0 = -1;
 
-    updateHexSrcFromFan(hex, hexFantome);
-    // std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisinsBin) << "\n";
+    Hexagone *hex2 = nullptr;
+    Hexagone *hex2Fan = nullptr; // hex fantome qui va etre remplacer par hex2
+    Hexagone *hex2Bot = nullptr;
+    uint32_t hex2DirFromHex0 = -1;
 
     for (int i = 0; i < 8; i++)
     {
         if (SrcVoisinsBin & (0b10000000 >> i))
         {
-            // std::cout << "hex a connecter: " << i << "\n";
-            // on a trouver la direction dun voisin, il faut lupdate avec les donner de la tuile fantome associer
-            // comme on a la direction on peut trouver la tuile fantome associer
-            Hexagone *nextHexFan = hexFantome->getVoisinIndice(i);
-            // std::cout << "Voisin fantome trouve: " << nextHexFan << "\n";
-            if (nextHexFan == nullptr)
+            std::cout << "hex a connecter: " << i << "\n";
+            // on a trouvé la direction dun voisin, il faut lupdate avec les donnees de la tuile fantome
+            // comme on a la direction on peut trouver la tuile fantome associe
+            if (!hex1)
             {
-                // ici il y a de lair donc rien a faire.
-                //std::cout 
-                //JE SAIS PAS POURQUOI MAIS QUELQUE CHOSE NE VA PAS ICI
-                // JAI LIMPRESSION QUE CA VEUX DIRE LA TUILE A UN HEX DANS LES AIRS DONC IL FAUT cancel
-                // MAIS PAS TOUJOURS.....
-                continue;
-            }
-            if (!nextHexFan || nextHexFan->getType() != Type::Fantome)
-            {
-                std::cout << "Impossible de placer la tuile, le voisin n'est pas un fantome\n";
-                exit(1);
-                return 1;
+                hex1 = hex->getVoisinIndice(i);
+                hex1Fan = hexFantome->getVoisinIndice(i);
+                if (hexFantome && hexFantome->getVoisinsBOT())
+                    hex1Bot = hexFantome->getVoisinsBOT()->getVoisinIndice(i);
+                if (hex1Fan && hex1Fan->getType() != Type::Fantome)
+                    hex1Fan = 0;
+                hex1DirFromHex0 = i;
             }
             else
             {
-
-                // on doit maintenant update le nextHexSrc avec les donnees du nextHexFan
-                Hexagone *nextHexSrc = hex->getVoisinIndice(i);
-                if (!nextHexSrc)
-                {
-                    std::cout << "Erreur: Le voisin source est null a l'indice " << i << "\n";
-                    exit(1);
-                }
-                updateHexSrcFromFan(nextHexSrc, nextHexFan);
-                //std::cout << "HEREREREREREE" << std::endl;
-                //nextHexSrc->afficherData();
+                hex2 = hex->getVoisinIndice(i);
+                hex2Fan = hexFantome->getVoisinIndice(i);
+                if (hexFantome && hexFantome->getVoisinsBOT())
+                    hex2Bot = hexFantome->getVoisinsBOT()->getVoisinIndice(i);
+                if (hex2Fan && hex2Fan->getType() != Type::Fantome)
+                    hex2Fan = 0;
+                hex2DirFromHex0 = i;
             }
         }
     }
+    // std::cout << "ici hex1fan et 2fan " << hex1Fan << " " << hex2Fan << std::endl;
+    // std::cout << "ici bot 1 et bot 2" << hex1Bot << " " << hex2Bot << std::endl;
 
-    // std::cout << "Details de l'hexagone src apres placement:\n";
-    //hex->afficherData();
+    // if (hex1Fan)
+    //     hex1Fan->afficherData();
+    //
+    // if (hex2Fan)
+    //     hex2Fan->afficherData();
+
+    if (!hexFantome->getVoisinsBOT()) // on est sur la couche 0.
+    {
+        std::cout << "placement a l'etage 0" << std::endl;
+        updateHexSrcFromFan(hex, hexFantome);
+        if (hex1Fan)
+            updateHexSrcFromFan(hex1, hex1Fan);
+        if (hex2Fan)
+            updateHexSrcFromFan(hex2, hex2Fan);
+    }
+    else
+    { // on est pas sur la couche 0
+
+        // check du dessous
+        // if (hex1Fan && hex2Fan)
+        //{ // on a 2 hexagones fantome a la place de la futur place alors facile. on a juste a verifier si en dessous on a bien 2 tuiles differente et on place
+        // on a bien 2 hex fantom
+        // alors on peut faire lechange
+
+        // maintenant verifier si on a bien 2 tuiles different en dessous;
+        //            std::cout << "need to check for 2 dif tuiles" << std::endl;
+        //        }
+
+        if ((hex1Bot && hex1Bot->getType() == Type::Fantome) || (hex2Bot && hex2Bot->getType() == Type::Fantome))
+        { //  ici on passe par les hexgaone du desous, car au dessus il y a surement de l'air.
+            std::cout << "Impossible de placer la Tuile ici. Un ou les hexagones du dessous nexiste pas" << std::endl;
+            return 0;
+        }
+        else
+        { // on a bien 2 hexagones en desous (qui ne sont pas de l'air ou des fantomes)
+            std::cout << "Les deux hexagones du dessous ne sont pas de l'air ou fantome, PLacement de la Tuile" << std::endl;
+
+            // test pour debug au cas ou
+            if (!hex1Bot->getVoisinsTOP() || !hex2Bot->getVoisinsTOP())
+            {
+                std::cout << "gros problem dans lalgo, jai rien compris" << std::endl;
+                return 0;
+            }
+
+            updateHexSrcFromFan(hex, hexFantome);
+            // std::cout << "done hex " << std::endl;
+            updateHexSrcFromFan(hex1, hex1Bot->getVoisinIndice(6)); // get TOP
+            // std::cout << "done hex 1" << std::endl;
+            updateHexSrcFromFan(hex2, hex2Bot->getVoisinIndice(6));
+            // std::cout << "done hex 2" << std::endl;
+            hex1->getTuileParent()->set_hauteur(hexFantome->getVoisinsBOT()->getTuileParent()->get_hauteur()); // update la hauteur de la tuile
+
+            if (hex1Fan)
+                hex1Fan->setVoisins(nullptr);
+
+            if (hex2Fan)
+                hex2Fan->setVoisins(nullptr);
+
+            hexFantome->setVoisins(nullptr);
+        }
+    }
+
     addTuile(owner);
-    return 0;
-    // placerSurID(id, tl);
+    return 1;
 
     // updateFantomeOfTuile(tl);
 }
@@ -688,7 +730,7 @@ void Cite::updateFantomeOfTuile(const Tuile *t)
                 {
 
                     // std::cout << "Created TOP fantome for hex indice " << hexagones[j]->getIndice() << std::endl;
-                    //hexagones[j]->afficherData();
+                    // hexagones[j]->afficherData();
                     continue;
                 }
 
@@ -726,3 +768,19 @@ void Cite::release_hex_fantome()
     }
     hexs_fantome.clear();
 }
+
+void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
+{
+    uint8_t FanVoisinsBinl = fan->getVoisinsNonFantomeBin();
+    for (int i = 0; i < 8; ++i)
+    {
+        if (FanVoisinsBinl & (0b10000000 >> i))
+        {
+            std::cout << "index voisin a connecter: " << i << "\n";
+            // si bit == 1 alors il faut faire la connection
+            Hexagone *voisinFantome = fan->getVoisinIndice(i);
+            src->setVoisinIndice(i, voisinFantome);
+            voisinFantome->setVoisinIndice(Utils::opposite_index(i), src);
+        }
+    }
+};
