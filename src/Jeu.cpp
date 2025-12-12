@@ -228,7 +228,7 @@ void Jeu::tourJoueur(Joueur* joueur) {
     Hexagone* hex0 = tChoisie->get_hexagones()[0]; //Le Hexagone 0
     //On va travailler avec l'hexagone 0 de la tuile choisie.
     int res = joueur->getCite()->placerTuileFromHexRef(hex0);
-    while (res == 1) res = joueur->getCite()->placerTuileFromHexRef(hex0);
+    while (0 == res) res = joueur->getCite()->placerTuileFromHexRef(hex0);
 
     // --- Affichage final de la cité après le placement ---
     std::cout << "\nTuile correctement placée :\n";
