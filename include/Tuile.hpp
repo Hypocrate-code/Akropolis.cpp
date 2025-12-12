@@ -97,6 +97,9 @@ public:
 
     void removeConnection(const Hexagone* hex); //eleve la connection avec les voisins qui on la valeur the hex
 
+    std::array<Hexagone*, 6> getVoisins3D() const;
+    int getNiveau()const;
+
     std::array<int, 8> getVoisinsList() const;
 protected:
     Type type;

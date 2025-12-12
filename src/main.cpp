@@ -11,20 +11,33 @@
 
 int main(){
     try {
-        std::cout << "Start of program." << std::endl << std::endl;
+        //test rotate 
+        // Hexagone hex1{Type::Place, Couleur::Rouge};
+        // Hexagone hex2{Type::Place, Couleur::Bleu};
+        // Hexagone hex3{Type::Place, Couleur::Jaune};
+        //
+        // Tuile tl1{hex2, hex1, hex3};
+        // CiteJoueur c1{&tl1};
+        //
+        // c1.afficher();
+        // tl1.rotate();
+        // c1.afficher();
+
+
+        std::cout << "\n=============================" << std::endl;
+        std::cout << "Bienvenue sur Akropolis.cpp !" << std::endl;
+        std::cout << "=============================" << std::endl << std::endl;
         Jeu* j = Jeu::getInstance();
         int nJoueur;
-        std::cout << "=============================" << std::endl;
-        std::cout << "Welcome to Akropolis.cpp !" << std::endl;
-        std::cout << "=============================" << std::endl << std::endl;
-        std::cout << "A game is about to launch, how many are you :  ";
+        std::cout << "Une partie est sur le point de commencer, combien êtes-vous :  ";
         std::cin >> nJoueur;
         j->Initialiser(nJoueur);
         j->Lancer();
-        
-        std::cout << std::endl << "Program correctly ended." << std::endl;
+
+        std::cout << std::endl << "Fin d'exécution d'Akropolis.cpp" << std::endl;
         return 0;
 
+    
 
         // Hexagone hex1{Type::Place, Couleur::Rouge};
         // Hexagone hex2{Type::Place, Couleur::Bleu};
@@ -47,7 +60,6 @@ int main(){
 
     }
     catch (Exception& e) {
-        std::cout << "Test222";
         std::cout << e.getInfo();
         return 1;
     }

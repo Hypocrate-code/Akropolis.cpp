@@ -110,9 +110,9 @@ void Jeu::Initialiser(const int& nbJoueur) {
 
     // Accueil du joueur i+1
     std::string name;
-    std::cout << std::endl << "What's your name, player " << i+1 << " :  ";
+    std::cout << std::endl << "Quel est ton prénom, joueur " << i+1 << " :  ";
     std::cin >> name;
-    std::cout << "Thanks " << name << "." << std::endl << std::endl;
+    std::cout << "Merci " << name << "." << std::endl << std::endl;
 
     // Création des hexagones pour la tuile de départ du joueur i+1
     for (size_t j = 0; j < 3; j++) {
@@ -143,13 +143,17 @@ void Jeu::Lancer() {
         for (auto& j : joueurs) {
             tourJoueur(j); // Inclut affichage cité et placement de tuile
         }
-        // Après que tous les joueurs ont joué, demander si continuer
+
+        // Après que tous les joueurs aient joué, demander si +1 tour
         char reponse;
         std::cout << "\nVoulez-vous continuer la partie ? (o/n) : ";
         std::cin >> reponse;
         if (reponse != 'o' && reponse != 'O') {
             fin = true;
         }
+    }
+    for (auto& j : joueurs) {
+        std::cout << j->getCite()->compterPoints() << std::endl;
     }
 }
 
@@ -179,46 +183,55 @@ void Jeu::afficherHexagones() const {
 
 
 void Jeu::tourJoueur(Joueur* joueur) {
-    // ===== Début du tour ===== 
-    std::cout << "\n=== Tour de " << joueur->getNom() << " ===\n";
+
+    // ===== Infos début du tour =====
+    std::cout << "\n==========================\n\n";
 
     // --- Afficher les informations du joueur avant son tour ---
-    std::cout << "Informations du joueur :\n";
     std::cout << "Nom : " << joueur->getNom() << std::endl;
     std::cout << "Nombre de pierres : " << joueur->getNbPierres() << std::endl;
 
-    // --- 1) Affichage de la cité ---
-    std::cout << "\n1) Cite du joueur :\n";
+    // --- Premier affichage de la cité ---
     joueur->getCite()->afficher();
 
-    // --- 2) Chantier global partagé ---
+    std::cout << "Pressez Entrer pour afficher le Chantier...";
+
+    cin.ignore();
+    cin.ignore();
+
+  // --- Affichage chantier global partagé ---
     if (chantier.empty()) {            
       mettreAJourChantier();         
     }
-    std::cout << "\n2) Chantier :\n";
     afficherChantier();                        // Affiche le chantier actuel
 
-    // --- 3) Choix de la tuile et débit de pierres (pour le moment manuel) ---
-    std::cout << "\n3) Choix de la tuile et débit de pierres :\n";
-    std::cout << "Nombre de pierres disponibles : " << joueur->getNbPierres() << std::endl;
-    
-    Tuile* tChoisie = choisirTuileDuChantier(); // Le joueur choisit une tuile  
-    Hexagone* hex0 = tChoisie->get_hexagones()[0]; //Le Hexagone 0
+    // --- Choix de la tuile et débit de pierres (pour le moment manuel) ---
+    std::cout << "Pierres disponibles : " << joueur->getNbPierres() << "\n" << std::endl;
+    Tuile* tChoisie = choisirTuileDuChantier(); // Le joueur choisit une tuile
+    joueur->getCite()->afficher();
+    std::cout << "-- Tuile choisie --" << std::endl;
+    tChoisie->afficherData();
+    // --- Demande de rotation ---
+    char reponse;
+    std::cout << "\nTourner la tuile ? (o/n) : ";
+    std::cin >> reponse;
+    while (reponse == 'o' || reponse == 'O') {
+      tChoisie->rotate();
+      tChoisie->afficherData();
+      std::cout << "\nTourner la tuile ? (o/n) : ";
+      std::cin >> reponse;
+    }
 
-
-    // --- 4) Possibilité de rotation (non implémentée encore) ---
-    std::cout << "\n4) Rotation de la tuile : (en construction)\n";
-
+    joueur->getCite()->afficher();
+    tChoisie->afficherData();
     // --- 5) Placement de la tuile ---
-    std::cout << "\n5) Placement de la tuile :\n";
-
-    //On va travailler avec l'hexagone 0 de la tuile choisi.
-    joueur->getCite()->placerTuileFromHexRef(hex0);
-
-
+    Hexagone* hex0 = tChoisie->get_hexagones()[0]; //Le Hexagone 0
+    //On va travailler avec l'hexagone 0 de la tuile choisie.
+    int res = joueur->getCite()->placerTuileFromHexRef(hex0);
+    while (res == 1) res = joueur->getCite()->placerTuileFromHexRef(hex0);
 
     // --- Affichage final de la cité après le placement ---
-    std::cout << "\nCite après le tour :\n";
+    std::cout << "\nTuile correctement placée :\n";
     joueur->getCite()->afficher();
 
 }
@@ -235,9 +248,9 @@ void Jeu::mettreAJourChantier() {
 
 // === Affiche le chantier actuel ===
 void Jeu::afficherChantier() const {
-    std::cout << "=== Chantier ===\n";
+    std::cout << "\n======= Chantier =======\n\n";
     for (size_t i = 0; i < chantier.size(); ++i) {
-        std::cout << i << " : ";
+        std::cout << "Tuile " << i << " : ";
         chantier[i]->afficherData();
     }
 }
