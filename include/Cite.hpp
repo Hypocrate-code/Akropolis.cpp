@@ -35,8 +35,11 @@ public:
     void updateFantomeOfTuile(const Tuile* t);
 
     // Dessines les hexagones recursivement, les hexagones deja dessine sont dans drawnHexagones.
-    static void draw_hex_recursive(Hexagone* hex, int x, int y, strCalc& calc, std::unordered_set<Hexagone*>& drawnHexagones, int hauteur); //, int depth) const;
+    static void draw_hex_recursive_filtered(Hexagone *hex, int x, int y, strCalc &calc,
+                                       std::unordered_set<Hexagone *> &drawnHexagones, 
+                                       int hauteur, bool drawFantomes);
 protected:
+
 
     std::vector<const Tuile*> tuiles;
 
