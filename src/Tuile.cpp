@@ -78,50 +78,39 @@ void Tuile::afficherData() const
     }
 }
 
-
-Tuile *Tuile::rotate()
-{
-    /*permet la rotation de la tuile en invertissant les hexagones */
-
-    //enregistre les voisins des hex de la tuile 
-     const std::array<Hexagone*,8>& voisins_0=this->get_hexagones()[0]->getVoisins(); 
-     const std::array<Hexagone*,8>& voisins_1=this->get_hexagones()[1]->getVoisins(); 
-     const std::array<Hexagone*,8>& voisins_2=this->get_hexagones()[2]->getVoisins(); 
-
-    //suppresion de tous les voisins des hex
+Tuile *Tuile::rotate(){
+    // Tableau des rotations : chaque ligne contient 3 indices de direction
+    // [0] : direction de hex1 -> hex2
+    // [1] : direction de hex1 -> hex3  
+    // [2] : direction de hex2 -> hex3
+    const int rotations[6][3] = {
+        {5, 0, 1},  // rotation 1 (initiale) : hex1→hex2(SE), hex1→hex3(S),  hex2→hex3(SO)
+        {0, 1, 2},  // rotation 2 :            hex1→hex2(S),  hex1→hex3(SO), hex2→hex3(NO)
+        {1, 2, 3},  // rotation 3 :            hex1→hex2(SO), hex1→hex3(NO), hex2→hex3(N)
+        {2, 3, 4},  // rotation 4 :            hex1→hex2(NO), hex1→hex3(N),  hex2→hex3(NE)
+        {3, 4, 5},  // rotation 5 :            hex1→hex2(N),  hex1→hex3(NE), hex2→hex3(SE)
+        {4, 5, 0}   // rotation 6 :            hex1→hex2(NE), hex1→hex3(SE), hex2→hex3(S)
+    };
+    // Déterminer la rotation actuelle en regardant où est hex2 par rapport à hex1
+    int rotation_actuelle = 0;
+    for (int i = 0; i < 6; i++) {
+        if (hexagones[0]->getVoisinIndice(rotations[i][0]) == hexagones[1]) {
+            rotation_actuelle = i;
+            break;
+        }
+    }
+    // Déconnecter tous les voisins 
     this->reset_hex_links(); 
-
-    // rotation des hexagones
-    std::swap(hexagones[0], hexagones[2]); 
-    std::swap(hexagones[1], hexagones[2]);
-
+    // Passer à la rotation suivante
+    int nouvelle_rotation = (rotation_actuelle + 1) % 6; 
+    // Établir les nouvelles connexions 
+    hexagones[0]->setVoisinIndice(rotations[nouvelle_rotation][0], hexagones[1]);
+    hexagones[0]->setVoisinIndice(rotations[nouvelle_rotation][1], hexagones[2]);
+    hexagones[1]->setVoisinIndice(rotations[nouvelle_rotation][2], hexagones[2]);
     
-    // ch hex prend les voisins ext de l'hex apres lui
-     for (int i=0; i<=0; i++ ){
-        this->hexagones[0]->setVoisinIndice(i,voisins_2[i]); 
-     }
-     for (int i=0; i<=0; i++ ){
-        this->hexagones[1]->setVoisinIndice(i,voisins_0[i]); 
-     }
-     for (int i=0; i<=0; i++ ){
-        this->hexagones[2]->setVoisinIndice(i,voisins_1[i]); 
-     }
-
-
-
-     // on met les bons voisins au centre de la tuile 
-     hexagones[0]->setVoisinsS(hexagones[2]); 
-     hexagones[2]->setVoisinsN(hexagones[0]); 
-
-     hexagones[0]->setVoisinsSE(hexagones[1]); 
-     hexagones[1]->setVoisinsNO(hexagones[0]); 
-
-     hexagones[2]->setVoisinsNE(hexagones[1]); 
-     hexagones[1]->setVoisinsSO(hexagones[2]); 
-     
     return this;
+}
 
-};
 
 void Tuile::reset_hex_links()
 {
