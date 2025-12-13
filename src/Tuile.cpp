@@ -71,7 +71,7 @@ void Tuile::afficherData() const
 {
     strCalc calc = strCalc(6, std::string(50, ' '));
     std::unordered_set<Hexagone*> drawnHexagones;
-    Cite::draw_hex_recursive_filtered(hexagones[0], 10, 6, calc, drawnHexagones, 0, false);
+    Cite::draw_hex_recursive_filtered(hexagones[0], 13, 6, calc, drawnHexagones, 0, false);
     for (auto &line : calc)
     {
         std::cout << colorize_line(line) << std::endl;
