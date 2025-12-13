@@ -153,6 +153,8 @@ TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagon
     hexagones[3]->setVoisinsSE(hexagones[2]);
     hexagones[3]->setVoisinsNE(nullptr);
 
+    hexagones[3]->setTuileParent(this);
+    
 };
 
 std::ostream& operator<<(std::ostream& os, Couleur c) {
