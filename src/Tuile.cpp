@@ -71,7 +71,7 @@ void Tuile::afficherData() const
 {
     strCalc calc = strCalc(6, std::string(50, ' '));
     std::unordered_set<Hexagone*> drawnHexagones;
-    Cite::draw_hex_recursive(hexagones[0], 10, 6, calc, drawnHexagones, 0);
+    Cite::draw_hex_recursive_filtered(hexagones[0], 10, 6, calc, drawnHexagones, 0, false);
     for (auto &line : calc)
     {
         std::cout << colorize_line(line) << std::endl;
@@ -154,7 +154,7 @@ TuileDepart::TuileDepart(Hexagone &hex1, Hexagone &hex2, Hexagone &hex3, Hexagon
     hexagones[3]->setVoisinsNE(nullptr);
 
     hexagones[3]->setTuileParent(this);
-    
+
 };
 
 std::ostream& operator<<(std::ostream& os, Couleur c) {

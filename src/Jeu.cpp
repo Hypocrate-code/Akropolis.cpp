@@ -248,11 +248,28 @@ void Jeu::mettreAJourChantier() {
 
 // === Affiche le chantier actuel ===
 void Jeu::afficherChantier() const {
-    std::cout << "\n======= Chantier =======\n\n";
+    //std::cout << "\n======= Chantier =======\n\n";
+    //for (size_t i = 0; i < chantier.size(); ++i) {
+  //      std::cout << "Tuile " << i << " : ";
+//        chantier[i]->afficherData();
+    //}
+
+    std::cout << "======= Chantier =======\n\n";
+    //draw the tuiles on 1 line
+    strCalc calc = strCalc(10, std::string(chantier.size() * 15, ' '));
     for (size_t i = 0; i < chantier.size(); ++i) {
-        std::cout << "Tuile " << i << " : ";
-        chantier[i]->afficherData();
+        std::unordered_set<Hexagone*> drawnHexagones;
+        Cite::draw_hex_recursive_filtered(chantier[i]->get_hexagones()[0], 6 + i * 20, 2, calc, drawnHexagones, 0, false);
     }
+    std::cout << "Tuile indices : \n      ";
+    for (size_t i = 0; i < chantier.size(); ++i) {
+        std::cout << "[" << i << "]" << std::string(17, ' ');
+    }
+    std::cout << std::endl;
+    for (auto &line : calc) {
+        std::cout << Utils::colorize_line(line) << std::endl;
+    }
+
 }
 
 // === Permet au joueur de choisir une tuile dans le chantier ===

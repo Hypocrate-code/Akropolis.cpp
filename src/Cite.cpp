@@ -109,58 +109,6 @@ void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc)
     }
 }
 
-void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
-
-                              std::unordered_set<Hexagone *> &drawnHexagones, int hauteur)
-{
-
-    if (!hex || drawnHexagones.count(hex))
-        return;
-
-    drawnHexagones.insert(hex);
-
-    print_hex(hex, x, y, calc);
-    if (hex->getType() == Type::Fantome)
-        return;
-
-    // Proper hexagon grid offsets for pointy-top hexagones
-
-    static const std::vector<std::pair<int, int>> directionOffsets = {
-        {0, 4},   // S  (index 0) - hauteur hexagone = 5
-        {-7, 2},  // SO (index 5) - largeur hexagone = 9
-        {-7, -2}, // NO (index 4) - largeur hexagone = 9
-        {0, -4},  // N  (index 3) - hauteur hexagone = 5
-        {7, -2},  // NE (index 2) - largeur hexagone = 9
-        {7, 2}    // SE (index 1) - largeur hexagone = 9
-    };
-
-    const Hexagone *neighbors[] = {
-        hex->getVoisinsS(),  // 0: Sud
-        hex->getVoisinsSO(), // 1: Sud-Ouest
-        hex->getVoisinsNO(), // 2: Nord-Ouest
-        hex->getVoisinsN(),  // 3: Nord
-        hex->getVoisinsNE(), // 4: Nord-Est
-        hex->getVoisinsSE(), // 5: Sud-Est
-        hex->getVoisinsTOP()};
-
-    for (int i = 0; i < sizeof(neighbors) / sizeof(Hexagone *); ++i)
-    {
-        if (neighbors[i])
-        {
-            Hexagone *neighbor = const_cast<Hexagone *>(neighbors[i]);
-            int newX = x + directionOffsets[i].first;
-            int newY = y + directionOffsets[i].second;
-            draw_hex_recursive(neighbor, newX, newY, calc, drawnHexagones, hauteur);
-        }
-    }
-
-    // const Hexagone *topNeighbor = hex->getVoisinsTOP();
-    // if (topNeighbor)
-    //{
-    //     Hexagone *neighbor = const_cast<Hexagone *>(topNeighbor);
-    //     draw_hex_recursive(neighbor, x, y, calc, drawnHexagones, hauteur + 1);
-    // }
-}
 
 void Cite::afficher() const
 
@@ -800,7 +748,7 @@ uint32_t CiteJoueur::compterPoints() const
         points_bleu = *std::max_element(points_hab.begin(), points_hab.end());
     }
 
-    std::cout << "printing points : " << points_bleu * nb_place_bleue * 1 << " . " << points_jaune * nb_place_jaune * 2 << " . " << points_rouge * nb_place_rouge * 2 << " . " << points_vert * nb_place_verte * 3 << " . " << points_violet * nb_place_violet * 2 << std::endl;
+    //std::cout << "printing points : " << points_bleu * nb_place_bleue * 1 << " . " << points_jaune * nb_place_jaune * 2 << " . " << points_rouge * nb_place_rouge * 2 << " . " << points_vert * nb_place_verte * 3 << " . " << points_violet * nb_place_violet * 2 << std::endl;
 
     uint32_t total = points_bleu * nb_place_bleue * 1 + points_jaune * nb_place_jaune * 2 + points_rouge * nb_place_rouge * 2 + points_vert * nb_place_verte * 3 + points_violet * nb_place_violet * 2;
     return total;
