@@ -16,11 +16,6 @@ void Cite::print_hex(Hexagone *hex, int x, int y, strCalc &calc)
     std::string colorCode = get_color_code(hex->getCouleur());
     if (!(hex->getType() == Type::Fantome && hex->getVoisinsBOT()))
     {
-        // std::cout << hex->getType() << " " << hex->getIndice() << " at (" << x << "," << y << ") not drawn, fantome hex." << std::endl;
-        // std::cout << hex->getVoisinsTOP() << " " << hex->getVoisinsBOT() << std::endl;
-        // colorCode   = get_color_code(hex->getVoisinsBOT()->getCouleur());
-        // return ;
-
         // Ensure we're within bounds
         if (y < 2 || y + 3 >= calc.size())
         {
@@ -81,9 +76,6 @@ void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc)
         // std::string topLine = center_string(colorCode + typeStr + resetCode, 3);
         if (hex->getType() == Type::Fantome)
         {
-            // std::string indice = std::to_string(hex->getIndice());
-            // calc[y].erase(x, indice.length());
-            // calc[y].insert(x - indice.length() / 2, indice);
             std::string idstr = std::to_string(hex->getIndice());
             calc[y - 1].replace(x - 2, idstr.length(), idstr);
 
@@ -106,11 +98,6 @@ void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc)
             calc[y].insert(x - 3, topLine);
         }
 
-        // std::string final = replace_all(topLine ,get_short_type(hex->getType()), typeStr);
-        // std::cout << final << std::endl;
-        // calc[y].insert(x + 4, resetCode);
-        // calc[y].insert(x - 3, get_color_code(hex->getCouleur()));
-        // calc[y].insert(x - 3, topLine);
     }
 
     if (y >= 0 && x - 3 >= 0 && x + 4 <= calc[y].size())
@@ -120,7 +107,6 @@ void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc)
         // calc[y+1].replace(x - 2, 5, midLine);
         calc[y + 1].replace(x - 3, 7, midLine);
     }
-    // Leave line 4 (y+1) empty for clean look
 }
 
 void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
@@ -130,19 +116,6 @@ void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
 
     if (!hex || drawnHexagones.count(hex))
         return;
-
-#ifdef DEBUG
-    {
-        std::cout << hex->getType() << " " << hex->getIndice() << " at height " << hauteur << " not drawn." << std::endl;
-        if (hex->getIndice() == 24)
-        {
-            hex->afficherData();
-
-            
-        }
-        // return;
-    }
-#endif
 
     drawnHexagones.insert(hex);
 
@@ -192,10 +165,10 @@ void Cite::draw_hex_recursive(Hexagone *hex, int x, int y, strCalc &calc,
 void Cite::afficher() const
 
 {
-    std::cout << "Nombre d'hexagone fantome: " << hexs_fantome.size() << std::endl;
+    //std::cout << "Nombre d'hexagone fantome: " << hexs_fantome.size() << std::endl;
     // =================== DEBUG HEXAGONE CONNECTIONS =========================
 
-    std::cout << "=== DEBUG HEXAGONE CONNECTIONS ===" << std::endl;
+    //std::cout << "=== DEBUG HEXAGONE CONNECTIONS ===" << std::endl;
 
     // if (tuiles.empty())
     // {
@@ -203,6 +176,7 @@ void Cite::afficher() const
     // }
 
     // Debug: Print all hexagones and their neighbors
+    /*
     for (size_t i = 0; i < tuiles.size(); ++i)
     {
         std::cout << "Tuile " << i << ":" << std::endl;
@@ -239,9 +213,11 @@ void Cite::afficher() const
                 }
             }
         }
-    }
+}
+        */
 
     //affichage debug de tuiles fantomes
+    /*
     if (1){
         std::cout << "\n--- Hexagones Fantomes dans la Cite ---" << std::endl;
         for (const auto& hexFan : hexs_fantome) {
@@ -278,6 +254,7 @@ void Cite::afficher() const
         }
         std::cout << "--- Fin des Hexagones Fantomes ---\n" << std::endl;
     }
+        */
 
     // std::cout << "Nombre de tuiles dans la cite: " << tuiles.size() << std::endl;
     // if (tuiles.size())
@@ -369,12 +346,6 @@ void Cite::draw_hex_recursive_filtered(Hexagone *hex, int x, int y, strCalc &cal
         }
         return;
     }
-
-#ifdef DEBUG
-    {
-        std::cout << hex->getType() << " " << hex->getIndice() << " at height " << hauteur << " drawn." << std::endl;
-    }
-#endif
 
     drawnHexagones.insert(hex);
     print_hex(hex, x, y, calc);
@@ -844,11 +815,9 @@ Hexagone *Cite::create_new_hex_fantome()
 
 void Cite::generateAllHexFantome()
 {
-    //std::unordered_set<Hexagone*> visited;
-    //expandFromHex(tuiles[0]->get_hexagones()[0], visited);
    for (const Tuile *t : tuiles)
     {
-        std::cout << "nombre de tuile dans la cite : " << tuiles.size() << std::endl;
+        //std::cout << "nombre de tuile dans la cite : " << tuiles.size() << std::endl;
         updateFantomeOfTuile(t);
     }
 }
@@ -958,7 +927,7 @@ void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
     {
         if (FanVoisinsBinl & (0b10000000 >> i))
         {
-            std::cout << "index voisin a connecter: " << i << "\n";
+            //std::cout << "index voisin a connecter: " << i << "\n";
             // si bit == 1 alors il faut faire la connection
             Hexagone *voisinFantome = fan->getVoisinIndice(i);
             src->setVoisinIndice(i, voisinFantome);
@@ -966,38 +935,3 @@ void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
         }
     }
 };
-
-
-void Cite::expandFromHex(
-    Hexagone* hex,
-    std::unordered_set<Hexagone*>& visited
-) {
-    if (!hex) return;
-    if (visited.count(hex)) return;
-    if (hex->getType() == Type::Fantome) return;
-
-    visited.insert(hex);
-
-    for (int dir = 0; dir < 7; ++dir) // 0..5 sides, 6 = TOP
-    {
-        Hexagone* voisin = hex->getVoisinIndice(dir);
-
-        if (voisin == nullptr)
-        {
-            // Create fantom
-            Hexagone* fantom = create_new_hex_fantome();
-
-            // Link both ways immediately
-            hex->setVoisinIndice(dir, fantom);
-            fantom->setVoisinIndice(opposite_index(dir), hex);
-
-            // Recurse on the fantom
-            expandFromHex(fantom, visited);
-        }
-        else
-        {
-            // Recurse on existing neighbor
-            expandFromHex(voisin, visited);
-        }
-    }
-}

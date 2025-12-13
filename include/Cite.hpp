@@ -42,7 +42,6 @@ public:
 protected:
 
 
-void expandFromHex(    Hexagone* hex,    std::unordered_set<Hexagone*>& visited);
     std::vector<const Tuile*> tuiles;
 
     static void print_hex(Hexagone*hex, int x, int y, strCalc& calc);
