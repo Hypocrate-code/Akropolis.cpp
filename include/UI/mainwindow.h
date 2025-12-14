@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
+#include "UI/HexagonalButton.hpp"
+
 
 class MainWindow : public QMainWindow
 {
@@ -12,12 +14,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
 
 private slots:
-    // Your slots here
+    void onHexagonClicked();
 
 private:
     QStackedWidget *stackedWidget;
 
     QWidget *createPage(const QString &title, int pageIndex);
+
+
+    QVector<HexagonalButton*> m_hexButtons;
 };
 
 #endif // MAINWINDOW_H

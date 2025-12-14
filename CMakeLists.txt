@@ -1,68 +1,82 @@
 cmake_minimum_required(VERSION 3.16)
 project(Akropolis)
 
-# ========== MSVC SPECIFIC SETTINGS ==========
-if(MSVC)
-    # Ces options sont REQUISES pour MSVC avec Qt
-    add_compile_options("/Zc:__cplusplus")
-    add_compile_options("/permissive-")
-    message(STATUS "Configuring for MSVC with Qt compatibility")
-endif()
-
-set(DEFAULT_QT_PATH "C:\\Qt\\6.9.3\\mingw_64") # Adjust this path as necessary
-				#ex "C:\\Qt\\6.9.3\\msvc2019_64" 
-
-
-# Check if Qt is already found, if not use default path
-if(NOT Qt6_FOUND)
-    message(STATUS "Qt not found, trying default path: ${DEFAULT_QT_PATH}")
-    set(CMAKE_PREFIX_PATH "${DEFAULT_QT_PATH}" ${CMAKE_PREFIX_PATH})
-endif()
-
-# Enable Qt auto features (MOC, UIC, RCC)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
-
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-set (CMAKE_CXX_FLAGS "-g")
-# Fichiers sources
-file(GLOB SOURCES "src/*.cpp")
-file(GLOB HEADERS "include/*.hpp")
+# Disable AUTOMOC - we'll handle it manually
+set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-# Créer l'exécutable
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
-
-# Include directories
-target_include_directories(${PROJECT_NAME} PRIVATE include)
-
-# Link
+# Set MinGW Qt path (MUST be MinGW version!)
+set(QT_MINGW_PATH "C:/Qt/6.9.3/mingw_64")
+set(CMAKE_PREFIX_PATH "${QT_MINGW_PATH}")
 
 # Find Qt
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
+# Get moc executable path
+get_target_property(QT_MOC_EXECUTABLE Qt6::moc IMPORTED_LOCATION)
+message(STATUS "MOC executable: ${QT_MOC_EXECUTABLE}")
+
+# Source files
+file(GLOB SOURCES "src/*.cpp" "src/UI/*.cpp")
+file(GLOB HEADERS "include/*.hpp" "include/UI/*.h")
+
+# Create list of headers that need MOC (those with Q_OBJECT)
+set(MOC_HEADERS 
+    "include/UI/HexagonalButton.hpp"
+    "include/UI/mainwindow.h"
+)
+
+# Generate moc files manually
+foreach(header ${MOC_HEADERS})
+    get_filename_component(header_name ${header} NAME_WE)
+    set(moc_output "${CMAKE_CURRENT_BINARY_DIR}/moc_${header_name}.cpp")
+    
+    # Generate moc file
+    add_custom_command(
+        OUTPUT ${moc_output}
+        COMMAND ${QT_MOC_EXECUTABLE}
+        ARGS "${CMAKE_CURRENT_SOURCE_DIR}/${header}" -o "${moc_output}"
+        DEPENDS "${header}"
+        COMMENT "Generating moc_${header_name}.cpp"
+    )
+    
+    list(APPEND MOC_SOURCES ${moc_output})
+endforeach()
+
+# Debug output
+message(STATUS "Sources: ${SOURCES}")
+message(STATUS "MOC Sources: ${MOC_SOURCES}")
+
+# Create executable with ALL sources including moc files
+add_executable(${PROJECT_NAME}
+    ${SOURCES}
+    ${MOC_SOURCES}
+    ${HEADERS}
+)
+
+# Include directories
+target_include_directories(${PROJECT_NAME} PRIVATE
+    include
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 # Link Qt
-target_link_libraries(${PROJECT_NAME} 
-    PRIVATE 
-        Qt6::Core
-        Qt6::Widgets
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Qt6::Core
+    Qt6::Widgets
 )
 
-
-# Force moc generation for MainWindow
-qt_generate_moc(
-    include/mainwindow.h
-    ${CMAKE_CURRENT_BINARY_DIR}/moc_mainwindow.cpp
-)
-
-# Add the generated moc file to sources
-target_sources(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/moc_mainwindow.cpp
-)
+# MinGW specific
+if(MINGW)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        -static
+        -static-libgcc
+        -static-libstdc++
+    )
+endif()
 
 if(WIN32)
     # Obtenir le chemin d'installation de Qt

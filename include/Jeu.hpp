@@ -57,6 +57,8 @@ class Jeu {
     
     Pioche* pioche = nullptr;  
     std::vector<Tuile*> chantier; 
+
+    bool QtDisplay = true;
 };
 
 #endif //JEU_H

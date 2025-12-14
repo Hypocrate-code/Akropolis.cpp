@@ -104,6 +104,22 @@ Jeu::Jeu() : mode{ModeDeJeu::Solo} {
 // Initialisation et lancement de la partie avec un nombre de joueur indiqué
 void Jeu::Initialiser(const int& nbJoueur) {
 
+  std::cout << "Jouer avec l'interface Qt ? (o/n) : ";
+  char reponse;
+  std::cin >> reponse;
+  if (reponse == 'o' || reponse == 'O') {
+      QtDisplay = true;
+  } else 
+  {
+      QtDisplay = false;
+  }
+
+  if (QtDisplay) {
+      std::cout << "Lancement de la version Qt d'Akropolis.cpp\n";
+
+  } else {
+      std::cout << "Lancement de la version console d'Akropolis.cpp\n";
+
   std::vector<std::string> names;
 
   for (int i=0; i < nbJoueur ; i++) {
@@ -127,6 +143,8 @@ void Jeu::Initialiser(const int& nbJoueur) {
     // Création du joueur
     joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));   
   }
+  }
+
   //creation de la pioche en commun
   pioche = new Pioche(*this);
 }
@@ -183,6 +201,8 @@ void Jeu::afficherHexagones() const {
 
 
 void Jeu::tourJoueur(Joueur* joueur) {
+    if (!QtDisplay){
+
 
     // ===== Infos début du tour =====
     std::cout << "\n==========================\n\n";
@@ -232,6 +252,10 @@ void Jeu::tourJoueur(Joueur* joueur) {
 
     // --- Affichage final de la cité après le placement ---
     std::cout << "\nTuile correctement placée :\n";
+  }
+
+
+
     joueur->getCite()->afficher();
 
 }
