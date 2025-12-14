@@ -8,3 +8,11 @@ Joueur::Joueur(const char* nom, uint32_t nbPierres, const Tuile* tuileDeDepart) 
     else
         cite = new CiteJoueur(tuileDeDepart);
 }
+Illu::Illu(uint32_t nb_p, const Tuile* tdD)
+    : Joueur("Illustre Architecte", nb_p, tdD)   
+{
+
+    delete cite;                 
+    cite = new CiteIllu(tdD);
+}
+

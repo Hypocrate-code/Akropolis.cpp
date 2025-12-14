@@ -10,6 +10,7 @@
 #include "Tuile.hpp"
 #include "Joueur.hpp"
 #include <array>
+#include "Exception.hpp"
 
 class Pioche; 
 
@@ -23,14 +24,15 @@ class Jeu {
   public:
     ~Jeu()=default;
 
-    static Jeu* getInstance();
+    static Jeu* getInstance(int nbJoueur);
     Jeu(Jeu &other) = delete;
     void operator=(const Jeu&) = delete;
 
     void afficherTuiles() const;
     void afficherHexagones() const;
-    ModeDeJeu getModeDeJeu() const; // A voir si utile, mode solo ?
+    ModeDeJeu getModeDeJeu() const{return mode; }; // A voir si utile, mode solo ?
     void tourJoueur(Joueur* joueur);
+    void tourIllu(Illu* illu); 
     void Initialiser(const int& nbJoueur);
     //void Jouer(Joueur j);   
     void Lancer();   
@@ -44,11 +46,22 @@ class Jeu {
 
     void afficherChantier() const;
 
-    Tuile* choisirTuileDuChantier();
+    Tuile* choisirTuileDuChantier(Joueur* joueur);
+    Tuile* choisirTuileDuChantier(Illu* illu); 
 
+    void set_niveau_difficulte(int n){
+      if(0<=n && n<=2){
+        niveauDeDifficulte=n; }
+      else  {
+          throw Exception("Niveau de difficulté invalide"); 
+      
+      }
+    
+    }
+    
 
   protected:
-    Jeu();
+    Jeu(int nbJoueur);
     static Jeu* instance;
     const ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
     std::vector<Hexagone*> hexs;
@@ -57,6 +70,10 @@ class Jeu {
     
     Pioche* pioche = nullptr;  
     std::vector<Tuile*> chantier; 
+
+    int niveauDeDifficulte=0; 
+
+
 };
 
 #endif //JEU_H
