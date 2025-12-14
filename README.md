@@ -100,24 +100,7 @@ cmake --build . -j8
 ./Akropolis.exe
 ```
 
-## 🔧 Autres Configurations
-
-### Build avec Visual Studio (MSVC)
-```bash
-rm -rf build
-mkdir build
-cd build 
-
-# Configurer pour Visual Studio 2022
-cmake .. -G "Visual Studio 17 2022"
-
-# Compiler en mode Release (plus rapide)
-cmake --build . --config Release
-
-# Exécuter
-\Release\Akropolis.exe
-```
-
+### Résumé : 
 
 ```bash
 # Après avoir modifié du code :
