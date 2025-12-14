@@ -63,3 +63,34 @@ qt_generate_moc(
 target_sources(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/moc_mainwindow.cpp
 )
+
+if(WIN32)
+    # Obtenir le chemin d'installation de Qt
+    get_target_property(QT_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(QT_BIN_DIR "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
+    get_filename_component(QT_ROOT_DIR "${QT_BIN_DIR}" DIRECTORY)
+    
+    # Fonction pour copier les fichiers
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "Déploiement des DLLs Qt..."
+        # DLLs principales
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${QT_BIN_DIR}/Qt6Core.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${QT_BIN_DIR}/Qt6Gui.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${QT_BIN_DIR}/Qt6Widgets.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        
+        # Créer dossier platforms
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms"
+        
+        # Plugin Windows
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${QT_ROOT_DIR}/plugins/platforms/qwindows.dll"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms/"
+    )
+endif()
