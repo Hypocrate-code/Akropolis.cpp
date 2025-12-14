@@ -1,16 +1,22 @@
-//
-// Created by thiba on 06/11/2025.
-//
 #include <iostream>
 #include "Tuile.hpp"
 
 #include "Exception.hpp"
 #include "Jeu.hpp"
-#include "Tuile.hpp"
-#include "Cite.hpp"
+#include <QApplication>
+#include <QLabel>
 
-int main(){
+#include "mainwindow.h"
+
+#include <QLocale>
+#include <QTranslator>
+
+int main( int argc, char *argv[] ){
     try {
+        QApplication a(argc, argv);
+        MainWindow w;
+        w.show();
+        return a.exec();
         //test rotate 
         // Hexagone hex1{Type::Place, Couleur::Rouge};
         // Hexagone hex2{Type::Place, Couleur::Bleu};

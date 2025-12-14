@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 project(Akropolis)
 
-
+# ========== MSVC SPECIFIC SETTINGS ==========
+if(MSVC)
+    # Ces options sont REQUISES pour MSVC avec Qt
+    add_compile_options("/Zc:__cplusplus")
+    add_compile_options("/permissive-")
+    message(STATUS "Configuring for MSVC with Qt compatibility")
+endif()
 
 set(DEFAULT_QT_PATH "C:\\Qt\\6.9.3\\mingw_64") # Adjust this path as necessary
 				#ex "C:\\Qt\\6.9.3\\msvc2019_64" 
@@ -17,7 +23,6 @@ endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
-
 
 
 set(CMAKE_CXX_STANDARD 20)
@@ -45,4 +50,16 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE 
         Qt6::Core
         Qt6::Widgets
+)
+
+
+# Force moc generation for MainWindow
+qt_generate_moc(
+    include/mainwindow.h
+    ${CMAKE_CURRENT_BINARY_DIR}/moc_mainwindow.cpp
+)
+
+# Add the generated moc file to sources
+target_sources(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/moc_mainwindow.cpp
 )
