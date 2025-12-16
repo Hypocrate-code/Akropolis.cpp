@@ -112,4 +112,43 @@ cmake --build . -j8    # Recompile rapidement
 rm -rf build
 cmake .. -G "MinGW Makefiles"
 cmake --build . -j8
+
 ```
+
+## Edit par Thib si vous avez des erreurs à la compilation avec Qt
+
+Personnellement, à l'utilisation de la commande :
+```bash
+cmake .. -G "MinGW Makefiles"
+```
+J'ai eu l'erreur suivante : **"Could not create named generator MinGW Makefiles"**
+
+En exécutant `cmake --help` à la section **Generators** je n'avais rien qui ressemblait à MinGW
+
+2 options sont possibles :
+- soit vous avez déjà mingw et il n'est juste pas correctement link a votre PATH
+- soit vous n'avez pas mingw d'installé
+
+---
+
+Pour la première option, aller à la racine de votre disque dur (pour moi C:/), vous devriez y voir le dossier "mingw64/bin".
+
+(Si ce n'est pas le cas, ou que vous n'avez qu'un dossier semblable à MinGW, se référer à la deuxième option.)
+
+Ouvrez un Terminal windows et tapez "mingw32-make --version" : si vous avez un retour positif, vous devez l'ajouter au PATH de votre WSL (si vous utilisez une WSL) avec `export PATH=/chemin/bin:$PATH`.
+
+---
+
+Pour la seconde option (qui était mon cas), vous n'avez pas les exécutables mingw attendus. Il faut donc les installer avec msys2, et c'est un peu chelou.
+
+Allez sur https://www.msys2.org/, installez l'exécutable et complétez son installation. Une fois fait, vous avez tout un tas de msys2 d'installés, vous devez lancer MSYS2 MSYS et taper la commande `pacman -Syu`. Une fois son déroulement terminé, fermez MSYS2 MSYS.
+
+Lancez à présent MSYS2 MinGW64. Une fois dedans, tapez la commande `pacman -S mingw-w64-x86_64-toolchain`.
+
+Vous devez à la suite de son exécution avoir maintenant le dossier C:/msys64/mingw64/bin.
+
+Ajoutez ce dossier au PATH windows, et vous pourrez exécuter `mingw32-make --version` (même si vous avez une machine x64 !!).
+
+A présent vous pouvez reprendre le fil des commandes pour compiler le projet : cmake a à présent accès à MinGW et son Makefile generator.
+
+GG à vous. Merci d'avoir lu !
