@@ -27,11 +27,37 @@ Jeu* Jeu::getInstance(int nbJoueur) {
   return instance;
 }
 
+void Jeu::EndGame(){
+  for (auto& tuile : tuilesCite) {
+      delete tuile;
+  }
+  tuilesCite.fill(nullptr);
+
+  for (auto& hex : hexs) {
+      delete hex;
+  }
+  hexs.clear();
+
+  for (auto& tuileDepart : tuilesDepart) {
+      delete tuileDepart;
+  }
+  tuilesDepart.clear();
+
+  for (auto& joueur : joueurs) {
+      delete joueur;
+  }
+  joueurs.clear();
+
+  // Libération de l'instance singleton
+  delete instance;
+  instance = nullptr;
+}
+
 // Fin opérations de singleton
 
 
 // Constructeur créant les tuilesCité de la partie
-Jeu::Jeu(int nbJoueur): mode(nbJoueur == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi) {
+Jeu::Jeu(int nbJoueur): mode(nbJoueur == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi), niveauDeDifficulte(0) , pioche(*this) {
 
 
   // Définition des différentes quantités d'hexagones dans chaque catégorie
@@ -145,7 +171,7 @@ void Jeu::Initialiser(const int& nbJoueur) {
   }
   
   //creation de la pioche en commun
-  pioche = new Pioche(*this);
+  pioche.init();
 }
 
 void Jeu::Lancer() {
@@ -285,9 +311,8 @@ void Jeu::tourIllu(Illu* illu){
 //piocher 
 // === Met à jour le chantier global si moins de 5 tuiles ===
 void Jeu::mettreAJourChantier() {
-    if (!pioche) return; // sécurité
-    while (chantier.size() < 5 && !pioche->estVide()) {
-        chantier.push_back(pioche->piocher());
+    while (chantier.size() < 5 && !pioche.estVide()) {
+        chantier.push_back(pioche.piocher());
     }
 }
 

@@ -6,13 +6,11 @@
 #define JEU_H
 
 #include <vector>
-#include "Pioche.hpp" 
+#include "Pioche.hpp"
 #include "Tuile.hpp"
 #include "Joueur.hpp"
 #include <array>
-#include "Exception.hpp"
-
-class Pioche; 
+#include "Exception.hpp" 
 
 enum class ModeDeJeu {
   Multi,
@@ -23,6 +21,7 @@ class Jeu {
 
   public:
     ~Jeu()=default;
+    void EndGame();
 
     static Jeu* getInstance(int nbJoueur);
     Jeu(Jeu &other) = delete;
@@ -68,10 +67,10 @@ class Jeu {
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;
     
-    Pioche* pioche = nullptr;  
+    Pioche pioche;  
     std::vector<Tuile*> chantier; 
 
-    int niveauDeDifficulte=0; 
+    int niveauDeDifficulte; 
 
 
 };

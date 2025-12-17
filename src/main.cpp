@@ -47,6 +47,7 @@ int main(){
         j->Lancer();
 
         std::cout << std::endl << "Fin d'exécution d'Akropolis.cpp" << std::endl;
+        j->EndGame();
         return 0;
 
     
