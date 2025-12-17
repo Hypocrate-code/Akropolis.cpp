@@ -12,12 +12,20 @@ class Joueur{
 
     const std::string& getNom() const { return nom; }
     uint32_t getNbPierres() const { return nbPierres; }
-    CiteJoueur* getCite() const { return cite; }
+    void setNbPierre(uint32_t nouveau_nb_pierre){nbPierres=nouveau_nb_pierre; }
+    Cite* getCite() const { return cite; }
 
 
-    private:
+    protected:
         std::string nom;
         uint32_t nbPierres;
 
-        CiteJoueur* cite;
+        Cite* cite;
 };
+
+class Illu : public Joueur{
+public :
+    Illu(uint32_t nb_p, const Tuile* tdD); 
+private : 
+    
+}; 
