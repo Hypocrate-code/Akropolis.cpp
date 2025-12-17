@@ -266,6 +266,9 @@ void Jeu::tourIllu(Illu* illu){
     // --- Afficher les informations du joueur avant son tour ---
   std::cout << "Nom : " << illu->getNom() << std::endl;
   std::cout << "Nombre de pierres : " << illu->getNbPierres() << std::endl;
+  if (chantier.empty()) {            
+      mettreAJourChantier();         
+    }
 
   afficherChantier();  
 
@@ -328,7 +331,12 @@ Tuile* Jeu::choisirTuileDuChantier(Joueur* joueur) {
     do {
         std::cout << "Choisissez une tuile par son numéro (0-" << chantier.size()-1 << ") : ";
         std::cin >> choix;
-    } while (choix >= chantier.size() || choix>=joueur->getNbPierres());
+        if (choix >= chantier.size()) {
+            std::cout << "Choix invalide. Veuillez réessayer.\n";
+        } else if (choix > joueur->getNbPierres()) {
+            std::cout << "Vous n'avez pas assez de pierres pour cette tuile. Veuillez réessayer.\n";
+        }
+    } while (choix >= chantier.size() || choix>joueur->getNbPierres());
     joueur->setNbPierre(joueur->getNbPierres()-choix); 
     if(this->getModeDeJeu()==ModeDeJeu::Solo){
       // l'illustre architecte récupere les pierres 
@@ -349,6 +357,10 @@ Tuile* Jeu::choisirTuileDuChantier(Joueur* joueur) {
     return t;
 }
 Tuile* Jeu::choisirTuileDuChantier(Illu* illu){
+  if (chantier.empty()) {
+        std::cout << "Le chantier est vide.\n";
+        return nullptr;
+    }
   // permet de retourner le choix de l'illustre architecte et de lui retirer les pierre que cela lui a couté
   // rappel regle : l'illu archi prend la tuile avec au moins une place la moins chère du chantier 
   // s'il n'a pas assez d'argent ou que aucune tuile n'a de place, il prend la tuile gratuite du chantier 
