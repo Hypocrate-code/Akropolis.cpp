@@ -11,7 +11,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow();
 
 private slots:
     void onHexagonClicked();
@@ -19,8 +19,10 @@ private slots:
 private:
     QStackedWidget *stackedWidget;
 
-    QWidget *createPage(const QString &title, int pageIndex);
-
+    QWidget *createHomePage();
+    QWidget *createStartingGamePage();
+    QWidget *createGamePage();
+    QWidget *createEndPage();
 
     QVector<HexagonalButton*> m_hexButtons;
 };

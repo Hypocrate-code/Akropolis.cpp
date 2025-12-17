@@ -6,46 +6,100 @@
 #include <QMessageBox>
 
 
-
-
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow()
+    : QMainWindow()
 {
-    /*
+
     setWindowTitle("Akropolis");
-    resize(400, 300);
+    resize(500, 500);
+    
+    stackedWidget = new QStackedWidget(this);  // attribut stackedWidget initialisé
 
-    stackedWidget = new QStackedWidget(this);
-
-    QWidget *homeScreen = createPage("Ecran titre", 0);
-    QWidget *mainScreen = createPage("Affichage de la partie", 1);
-    QWidget *endScreen = createPage("Fin de partie", 2);
+    QWidget *homeScreen = createHomePage();
+    QWidget *startGameScreen = createStartingGamePage();
+    QWidget *gameScreen = createGamePage();
+    QWidget *endScreen = createEndPage();
 
     stackedWidget->addWidget(homeScreen);
-    stackedWidget->addWidget(mainScreen);
+    stackedWidget->addWidget(startGameScreen);
+    stackedWidget->addWidget(gameScreen);
     stackedWidget->addWidget(endScreen);
 
     setCentralWidget(stackedWidget);
-    */
 
-        // Create central widget
-    QWidget *centralWidget = new QWidget(this);
-    QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+}
+
+QWidget *MainWindow::createHomePage()
+{
+    QWidget *page = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout(page);
     
-    // Title
-    QLabel *title = new QLabel("Hexagonal Game Board", centralWidget);
-    title->setAlignment(Qt::AlignCenter);
-    QFont titleFont = title->font();
-    titleFont.setPointSize(20);
-    titleFont.setBold(true);
-    title->setFont(titleFont);
-    mainLayout->addWidget(title);
+    const QString text("Bienvenue sur Akropolis.cpp !"); 
+    QLabel *label = new QLabel(text);
+
+    // Stylisation à voir plus tard
+    label->setAlignment(Qt::AlignCenter);
+    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
+
+    QPushButton *btnGameScreen = new QPushButton("Jouer une partie");
+
+    layout->addWidget(label);
+    layout->addWidget(btnGameScreen);
+
+    connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
+        stackedWidget->setCurrentIndex(1);  // 1 -> Ecran de la partie
+    });
+
+    return page;
+}
+
+QWidget *MainWindow::createStartingGamePage()
+{
     
+    QWidget *page = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout(page);
+    
+    const QString text("Options de partie"); 
+    QLabel *label = new QLabel(text);
+
+    // Stylisation à voir plus tard
+    label->setAlignment(Qt::AlignCenter);
+    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
+
+    QPushButton *btnGameScreen = new QPushButton("Lancer !");
+    QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
+
+    layout->addWidget(label);
+    layout->addWidget(btnGameScreen);
+    layout->addWidget(btnHomeScreen);
+    // layout->addWidget(btnEndScreen);
+
+    connect(btnHomeScreen, &QPushButton::clicked, this, [=]() {
+        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
+    });
+
+    connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
+        stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
+    });
+
+    return page;
+}
+
+QWidget *MainWindow::createGamePage()
+{
     // Create hexagon grid widget
-    QWidget *gridWidget = new QWidget(centralWidget);
-    QGridLayout *gridLayout = new QGridLayout(gridWidget);
-    gridLayout->setSpacing(2);
-    gridLayout->setContentsMargins(20, 20, 20, 20);
+    QWidget *page = new QWidget();
+    QVBoxLayout *mainLayout = new QVBoxLayout(page);
+    QVBoxLayout *btnContainer = new QVBoxLayout();
+    QGridLayout *gridLayout = new QGridLayout();
+
+    QPushButton *btnEndScreen = new QPushButton("Finir partie (bouton temporaire)");
+    btnContainer->addWidget(btnEndScreen);
+    mainLayout->addLayout(btnContainer);
+    mainLayout->addLayout(gridLayout);
+
+    gridLayout->setSpacing(0);
+    gridLayout->setContentsMargins(0, 0, 0, 0);
     
     // Create hexagonal buttons with different textures
     QStringList texturePaths = {
@@ -56,12 +110,13 @@ MainWindow::MainWindow(QWidget *parent)
         "../assets/tuile_jardin.png",
         "../assets/cube.png"
     };
+    QStringList tileNames = {"Habitation", "Marché", "Quartier", "Temple", "Jardin", "Carrière"};
     
     // Create 4x4 grid of hexagonal buttons
     int buttonSize = 80;
     for (int row = 0; row < 4; ++row) {
         for (int col = 0; col < 4; ++col) {
-            HexagonalButton *button = new HexagonalButton(gridWidget);
+            HexagonalButton *button = new HexagonalButton(page);
             button->setSize(buttonSize);
             
             // Offset even rows for honeycomb pattern
@@ -74,7 +129,6 @@ MainWindow::MainWindow(QWidget *parent)
             }
             
             // Set tooltip
-            QStringList tileNames = {"Habitation", "Market", "Barracks", "Temple", "Garden", "Stone"};
             button->setToolTip(tileNames[(row * 4 + col) % tileNames.size()]);
             
             // Connect signal
@@ -85,54 +139,34 @@ MainWindow::MainWindow(QWidget *parent)
             m_hexButtons.append(button);
         }
     }
-    
-    // Add some empty columns for spacing
-    for (int row = 0; row < 4; ++row) {
-        QWidget *spacer = new QWidget(gridWidget);
-        spacer->setFixedWidth(buttonSize / 2);
-        gridLayout->addWidget(spacer, row, 8);
-    }
-    
-    mainLayout->addWidget(gridWidget, 0, Qt::AlignCenter);
-    setCentralWidget(centralWidget);
-    
-    // Set window properties
-    setWindowTitle("Qt Hexagonal Button Demo");
-    resize(800, 600);
 
+    connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
+        stackedWidget->setCurrentIndex(3);
+    });
+
+    return page;
 }
 
-QWidget *MainWindow::createPage(const QString &title, int pageIndex)
+QWidget *MainWindow::createEndPage()
 {
+    
     QWidget *page = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(page);
-
-    QLabel *label = new QLabel(title);
+    
+    const QString text("Fin de la partie"); 
+    QLabel *label = new QLabel(text);
 
     // Stylisation à voir plus tard
     label->setAlignment(Qt::AlignCenter);
-    label->setStyleSheet("font-size: 20px; font-weight: bold;");
+    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
 
-    QPushButton *btnHomeScreen = new QPushButton("Aller à l'écran titre");
-    QPushButton *btnMainScreen = new QPushButton("Aller dans la partie");
-    QPushButton *btnEndScreen = new QPushButton("Aller à l'écran de fin");
+    QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
 
     layout->addWidget(label);
     layout->addWidget(btnHomeScreen);
-    layout->addWidget(btnMainScreen);
-    layout->addWidget(btnEndScreen);
 
-    // Liens entre les pages (grégaire)
     connect(btnHomeScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(0);
-    });
-
-    connect(btnMainScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(1);
-    });
-
-    connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(2);
+        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
     });
 
     return page;
