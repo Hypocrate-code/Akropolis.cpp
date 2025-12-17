@@ -57,7 +57,7 @@ class Jeu {
       }
     
     }
-    
+    int choisirHexagoneDeReference(Tuile* t);
 
   protected:
     Jeu(int nbJoueur);
