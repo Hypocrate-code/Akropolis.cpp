@@ -1,5 +1,6 @@
 #include "Utils.hpp"
 #include "Tuile.hpp"
+#include <QString>
 
 namespace Utils
 {
@@ -196,22 +197,50 @@ namespace Utils
     }
 
 
-
-
-
-    int opposite_index(int idx)
-{
-    switch (idx)
-    {
-    case 0: return 3; // NE <-> SO
-    case 3: return 0;
-    case 1: return 4; // S  <-> N
-    case 4: return 1;
-    case 2: return 5; // SE <-> NO
-    case 5: return 2;
-    case 6: return 7; // TOP <-> BOT
-    case 7: return 6;
-    default: return idx;
+    QString get_texture(Hexagone* hex) {
+        Type type = hex->getType();
+        Couleur couleur = hex->getCouleur();
+        switch (type)
+        {
+        case Type::Quartier:
+            switch (couleur)
+            {
+                case Couleur::Rouge:
+                    return "../assets/quartier_caserne.png";
+                case Couleur::Bleu:
+                    return "../assets/quartier_habitation.png";
+                case Couleur::Jaune:
+                    return "../assets/quartier_marche.png";
+                case Couleur::Violet:
+                    return "../assets/quartier_temple.png";
+                case Couleur::Vert:
+                    return "../assets/quartier_jardin.png";
+                default:
+                    return "";
+            }
+            
+        case Type::Place:
+            return "";
+        case Type::Fantome:
+            return "";
+        default:
+            return "";
+        }
     }
-}
+
+
+    int opposite_index(int idx) {
+        switch (idx)
+        {
+        case 0: return 3; // NE <-> SO
+        case 3: return 0;
+        case 1: return 4; // S  <-> N
+        case 4: return 1;
+        case 2: return 5; // SE <-> NO
+        case 5: return 2;
+        case 6: return 7; // TOP <-> BOT
+        case 7: return 6;
+        default: return idx;
+        }
+    }
 }

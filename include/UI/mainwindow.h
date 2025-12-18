@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include "UI/HexagonalButton.hpp"
+#include "UI/HexItem.hpp"
 
 
 class MainWindow : public QMainWindow
@@ -13,8 +13,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
 
-private slots:
-    void onHexagonClicked();
+// private slots:
+    // void onHexagonClicked();
 
 private:
     QStackedWidget *stackedWidget;
@@ -24,7 +24,6 @@ private:
     QWidget *createGamePage();
     QWidget *createEndPage();
 
-    QVector<HexagonalButton*> m_hexButtons;
 };
 
 #endif // MAINWINDOW_H

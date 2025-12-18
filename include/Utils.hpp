@@ -1,15 +1,17 @@
 #pragma once
 #include <string>
-// #include "Tuile.hpp"
+#include <QString>
 
 #define DEBUG
 
 
 enum class Couleur;
 enum class Type;
+class Hexagone;
 namespace Utils
 {
     char get_color_char(Couleur color);
+    QString get_texture(Hexagone* hex);
 
     std::string get_color_code(Couleur color);
     std::string get_short_type(Type type);
