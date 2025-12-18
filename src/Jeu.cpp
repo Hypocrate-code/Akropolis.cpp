@@ -207,7 +207,33 @@ void Jeu::Lancer() {
     }
 }
 
-
+int Jeu::choisirHexagoneDeReference(Tuile* t){
+  int hex;
+  std::cout << "\n--- Choisir l'hexagone de référence à placer sur la cité ---\n";
+  for (int i = 0; i < 3; i++) {
+    Hexagone* h = t->get_hexagones()[i];
+    std::cout << "  [" << i << "] : " 
+              << Utils::type_to_string(h->getType()) 
+              << " " << Utils::color_to_string(h->getCouleur()) 
+              << std::endl;
+  }
+  do {
+    std::cout << "\nVotre choix (0-2) : ";
+    std::cin >> hex;
+    
+    if (hex < 0 || hex > 2) {
+      std::cout << "Choix invalide. Veuillez choisir un numéro entre 0 et 2.\n";
+    }
+  } while (hex < 0 || hex > 2);
+  
+  Hexagone* hexChoisi = t->get_hexagones()[hex];
+  std::cout << "\nVous avez choisi l'hexagone " << hex 
+            << " (" << Utils::type_to_string(hexChoisi->getType())
+            << " " << Utils::color_to_string(hexChoisi->getCouleur()) 
+            << ") !\n" << std::endl;
+  
+  return hex;
+}
 
 
 // Méthodes d'affichage
@@ -274,11 +300,14 @@ void Jeu::tourJoueur(Joueur* joueur) {
 
     joueur->getCite()->afficher();
     tChoisie->afficherData();
-    // --- 5) Placement de la tuile ---
-    Hexagone* hex0 = tChoisie->get_hexagones()[0]; //Le Hexagone 0
-    //On va travailler avec l'hexagone 0 de la tuile choisie.
-    int res = joueur->getCite()->placerTuileFromHexRef(hex0);
-    while (0 == res) res = joueur->getCite()->placerTuileFromHexRef(hex0);
+    
+    // --- 5) Placement de la tuile --- MODIFICATION
+    int indexHexRef = choisirHexagoneDeReference(tChoisie);
+    Hexagone* hexRef = tChoisie->get_hexagones()[indexHexRef];
+    
+    int res = joueur->getCite()->placerTuileFromHexRef(hexRef);
+    while (0 == res) 
+      res = joueur->getCite()->placerTuileFromHexRef(hexRef);
 
     // --- Affichage final de la cité après le placement ---
     std::cout << "\nTuile correctement placée :\n";
