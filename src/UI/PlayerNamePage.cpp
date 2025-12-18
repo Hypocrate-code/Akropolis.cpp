@@ -14,7 +14,7 @@ PlayerNamePage::PlayerNamePage(QWidget* parent)
 
 void PlayerNamePage::onConfirmClicked()
 {
-    std::vector<std::string_view> names;
+    std::vector<std::string> names;
     for (const auto& edit : edits)
     {
         if (edit->text().isEmpty())
@@ -24,7 +24,7 @@ void PlayerNamePage::onConfirmClicked()
             names.clear();
             return;
         }
-        names.push_back(edit->text().toStdString());
+        names.push_back(std::string(edit->text().toStdString()));
     }
     emit playerNamesConfirmed(names);
 }

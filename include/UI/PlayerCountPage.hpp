@@ -1,11 +1,7 @@
 #pragma once
 
 #include <QWidget>
-#include <QVBoxLayout>
 #include <QLineEdit>
-#include <QPushButton>
-#include "Jeu.hpp"
-#include <QMessageBox>
 
 class PlayerCountPage : public QWidget {
     Q_OBJECT

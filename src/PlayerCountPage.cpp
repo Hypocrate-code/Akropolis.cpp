@@ -1,5 +1,10 @@
 
 #include "UI/PlayerCountPage.hpp"
+#include <QVBoxLayout>
+#include "UI/GamePushButton.hpp"
+#include <QMessageBox>
+#include <iostream>
+
 
 PlayerCountPage::PlayerCountPage(QWidget *parent) : QWidget(parent)
 {
@@ -7,13 +12,13 @@ PlayerCountPage::PlayerCountPage(QWidget *parent) : QWidget(parent)
     lineEdit = new QLineEdit;
     lineEdit->setObjectName("playerNumberLineEdit");
     lineEdit->setPlaceholderText("Enter number of players");
-    QPushButton *confirmBtn = new QPushButton("Confirm");
+    GamePushButton *confirmBtn = new GamePushButton("Confirm");
     confirmBtn->setObjectName("confirmPlayerNumberBtn");
     layout->addWidget(lineEdit);
     layout->addWidget(confirmBtn);
 
     connect(confirmBtn, &QPushButton::clicked, this, &PlayerCountPage::onConfirmClicked);
-    
+
     setLayout(layout);
 }
 

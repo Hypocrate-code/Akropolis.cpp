@@ -46,7 +46,7 @@ MainWindow::MainWindow()
     });
 
     // Connect playerNameInput vers gameScreen
-    connect(playerNameInput, &PlayerNamePage::playerNamesConfirmed, this, [this](const std::vector<std::string_view>& names) {
+    connect(playerNameInput, &PlayerNamePage::playerNamesConfirmed, this, [this](const std::vector<std::string>& names) {
         Jeu* jeu = Jeu::getInstance();
         jeu->createPlayers(names);
         

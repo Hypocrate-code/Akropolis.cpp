@@ -142,7 +142,7 @@ void Jeu::Initialiser(const int& nbJoueur) {
   pioche = new Pioche(*this);
 }
 
-void Jeu::createPlayers(const std::vector<std::string_view>& names) {
+void Jeu::createPlayers(const std::vector<std::string>& names) {
     for (const auto& name : names) {
         // Création des hexagones pour la tuile de départ du joueur
         for (size_t j = 0; j < 3; j++) {
@@ -155,7 +155,7 @@ void Jeu::createPlayers(const std::vector<std::string_view>& names) {
 
         tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n + 1], *hexs[n + 2], *hexs[n + 3]));
         // Création du joueur
-        joueurs.push_back(new Joueur(std::string(name).c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));
+        joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));
     }
 }
 

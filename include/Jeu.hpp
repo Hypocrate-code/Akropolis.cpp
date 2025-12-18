@@ -10,7 +10,7 @@
 #include "Tuile.hpp"
 #include "Joueur.hpp"
 #include <array>
-#include <string_view>
+#include <string>
 
 class Pioche; 
 
@@ -33,7 +33,7 @@ class Jeu {
     void tourJoueur(Joueur* joueur);
     void Initialiser(const int& nbJoueur);
 
-    void createPlayers(const std::vector<std::string_view>& names);
+    void createPlayers(const std::vector<std::string>& names);
 
 
     //void Jouer(Joueur j);   
