@@ -17,10 +17,30 @@
 
 int main( int argc, char *argv[] ){
     try {
+
+        if (argc > 1 && std::string(argv[1]) == "--no-gui") {
+            std::cout << "\n=============================" << std::endl;
+            std::cout << "Bienvenue sur Akropolis.cpp !" << std::endl;
+            std::cout << "=============================" << std::endl << std::endl;
+            Jeu* j = Jeu::getInstance();
+
+            int nJoueur;
+            std::cout << "Une partie est sur le point de commencer, combien êtes-vous :  ";
+            std::cin >> nJoueur;
+            j->Initialiser(nJoueur);
+            j->Lancer();
+
+            std::cout << std::endl << "Fin d'exécution d'Akropolis.cpp" << std::endl;
+        }
+        else {
+
+
         QApplication a(argc, argv);
         MainWindow w;
         w.show();
+        
         return a.exec();
+        }
         //test rotate 
         // Hexagone hex1{Type::Place, Couleur::Rouge};
         // Hexagone hex2{Type::Place, Couleur::Bleu};
@@ -32,17 +52,6 @@ int main( int argc, char *argv[] ){
         // c1.afficher();
         // tl1.rotate();
         // c1.afficher();
-
-
-        std::cout << "\n=============================" << std::endl;
-        std::cout << "Bienvenue sur Akropolis.cpp !" << std::endl;
-        std::cout << "=============================" << std::endl << std::endl;
-        Jeu* j = Jeu::getInstance();
-        int nJoueur;
-        std::cout << "Une partie est sur le point de commencer, combien êtes-vous :  ";
-        std::cin >> nJoueur;
-        j->Initialiser(nJoueur);
-        j->Lancer();
 
         std::cout << std::endl << "Fin d'exécution d'Akropolis.cpp" << std::endl;
         return 0;

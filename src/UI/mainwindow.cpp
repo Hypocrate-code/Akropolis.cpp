@@ -4,7 +4,9 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QMessageBox>
-
+#include <QLineEdit>
+#include "Jeu.hpp"
+#include <UI/GamePushButton.hpp>
 
 MainWindow::MainWindow()
     : QMainWindow()
@@ -14,6 +16,9 @@ MainWindow::MainWindow()
     resize(500, 500);
     
     stackedWidget = new QStackedWidget(this);  // attribut stackedWidget initialisé
+
+    playerNumberInput = new PlayerCountPage();
+    playerNameInput = new PlayerNamePage();
 
     QWidget *homeScreen = createHomePage();
     QWidget *startGameScreen = createStartingGamePage();
@@ -25,8 +30,37 @@ MainWindow::MainWindow()
     stackedWidget->addWidget(gameScreen);
     stackedWidget->addWidget(endScreen);
 
-    setCentralWidget(stackedWidget);
+    stackedWidget->addWidget(playerNumberInput); // 4 
+    stackedWidget->addWidget(playerNameInput);// 5
 
+    //stackedWidget->addWidget(playerNameInputScreen);
+    //stackedWidget->addWidget(playerCountInputScreen);
+
+    setCentralWidget(stackedWidget);
+    
+    // Connect playerNumberInput vers playerNameInput
+    connect(playerNumberInput, &PlayerCountPage::playerCountConfirmed, this, [this](uint32_t count) {
+        Jeu::getInstance()->setMaxPlayers(count);
+        playerNameInput->setPlayerCount(count);
+        stackedWidget->setCurrentWidget(playerNameInput);
+    });
+
+    // Connect playerNameInput vers gameScreen
+    connect(playerNameInput, &PlayerNamePage::playerNamesConfirmed, this, [this](const std::vector<std::string_view>& names) {
+        Jeu* jeu = Jeu::getInstance();
+        
+        jeu->createPlayers(names);
+        stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
+    });
+
+
+
+}
+
+MainWindow::~MainWindow()
+{
+    // sur une autre branche
+    //Jeu::getInstance()->EndGame();
 }
 
 QWidget *MainWindow::createHomePage()
@@ -46,7 +80,7 @@ QWidget *MainWindow::createHomePage()
     layout->addWidget(label);
     layout->addWidget(btnGameScreen);
 
-    connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
+    connect(btnGameScreen, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentIndex(1);  // 1 -> Ecran de la partie
     });
 
@@ -58,29 +92,50 @@ QWidget *MainWindow::createStartingGamePage()
     
     QWidget *page = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(page);
+
+
+GamePushButton *soloBtn = new GamePushButton("Solo");
+GamePushButton *multiBtn = new GamePushButton("Multijoueur");
+
+
+connect(soloBtn, &GamePushButton::clicked, this, [this](){
+    Jeu::getInstance()->setGameMode(ModeDeJeu::Solo);
+    stackedWidget->setCurrentIndex(2);
+    Jeu::getInstance()->setMaxPlayers(1);
+
+});
+connect(multiBtn, &GamePushButton::clicked, this, [this]() {
+    Jeu::getInstance()->setGameMode(ModeDeJeu::Multi);
+    //playerNumberInput->show();
+    stackedWidget->setCurrentWidget(playerNumberInput);
+});
+
+    layout->addWidget(soloBtn);
+    layout->addWidget(multiBtn);
+
     
-    const QString text("Options de partie"); 
-    QLabel *label = new QLabel(text);
+    //const QString text("Options de partie !!"); 
+    //QLabel *label = new QLabel(text);
 
     // Stylisation à voir plus tard
-    label->setAlignment(Qt::AlignCenter);
-    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
+    //label->setAlignment(Qt::AlignCenter);
+    //label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
 
-    QPushButton *btnGameScreen = new QPushButton("Lancer !");
+    //QPushButton *btnGameScreen = new QPushButton("Lancer !");
     QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
 
-    layout->addWidget(label);
-    layout->addWidget(btnGameScreen);
+    //layout->addWidget(label);
+    //layout->addWidget(btnGameScreen);
     layout->addWidget(btnHomeScreen);
     // layout->addWidget(btnEndScreen);
 
-    connect(btnHomeScreen, &QPushButton::clicked, this, [=]() {
+    connect(btnHomeScreen, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentIndex(0); // 0 -> Accueil
     });
 
-    connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
-    });
+    // connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
+    //     stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
+    // });
 
     return page;
 }

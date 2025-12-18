@@ -27,6 +27,9 @@ file(GLOB HEADERS "include/*.hpp" "include/UI/*.h")
 set(MOC_HEADERS 
     "include/UI/HexagonalButton.hpp"
     "include/UI/mainwindow.h"
+    "include/UI/GamePushButton.hpp"
+    "include/UI/PlayerCountPage.hpp"
+    "include/UI/PlayerNamePage.hpp"
 )
 
 # Generate moc files manually
