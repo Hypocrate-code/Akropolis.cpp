@@ -57,7 +57,7 @@ void Jeu::EndGame(){
 
 
 // Constructeur créant les tuilesCité de la partie
-Jeu::Jeu(int nbJoueur): mode(nbJoueur == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi), niveauDeDifficulte(0) , pioche(*this) {
+Jeu::Jeu(int nbJoueur): mode(nbJoueur == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi), niveauDeDifficulte(0) , pioche(*this),nombreTuilesChantier(nbJoueur+2) {
 
 
   // Définition des différentes quantités d'hexagones dans chaque catégorie
@@ -193,17 +193,24 @@ void Jeu::Lancer() {
             tourIllu(static_cast<Illu*>(joueurs.back())); 
           }
         }
-
-        // Après que tous les joueurs aient joué, demander si +1 tour
-        char reponse;
-        std::cout << "\nVoulez-vous continuer la partie ? (o/n) : ";
-        std::cin >> reponse;
-        if (reponse != 'o' && reponse != 'O') {
-            fin = true;
-        }
+        // Si il n'y a qu'une tuile dans le chantier et que la pioche est vide --> fin de partie 
+        if(chantier.size()==1 && pioche.estVide()){
+          fin =true; 
+        }else{
+          // Après que tous les joueurs aient joué, demander si +1 tour
+          char reponse;
+          std::cout << "\nVoulez-vous continuer la partie ? (o/n) : ";
+          std::cin >> reponse;
+          if (reponse != 'o' && reponse != 'O') {
+              fin = true;
+          }
+      }
     }
+    std::cout<<"============== FIN DE PARTIE =====================\n";
+    std::cout<<"AFFICHAGE DES SCORES \n";  
     for (auto& j : joueurs) {
-        std::cout << j->getCite()->compterPoints(niveauDeDifficulte) << std::endl;
+      std::cout<<j->getNom()<<" : "; 
+      std::cout << j->getCite()->compterPoints(niveauDeDifficulte) <<" points"<<std::endl;
     }
 }
 
@@ -250,7 +257,7 @@ void Jeu::tourJoueur(Joueur* joueur) {
     cin.ignore();
 
   // --- Affichage chantier global partagé ---
-    if (chantier.empty()) {            
+    if (chantier.size()<=1) {            
       mettreAJourChantier();         
     }
     afficherChantier();                        // Affiche le chantier actuel
@@ -284,6 +291,9 @@ void Jeu::tourJoueur(Joueur* joueur) {
     std::cout << "\nTuile correctement placée :\n";
     joueur->getCite()->afficher();
 
+    // Ajout du nombre de pierre en fonction de la tuile placée 
+    joueur->MaJPierres(); 
+
 }
 void Jeu::tourIllu(Illu* illu){
   // ===== Infos début du tour =====
@@ -311,7 +321,7 @@ void Jeu::tourIllu(Illu* illu){
 //piocher 
 // === Met à jour le chantier global si moins de 5 tuiles ===
 void Jeu::mettreAJourChantier() {
-    while (chantier.size() < 5 && !pioche.estVide()) {
+    while (chantier.size() < nombreTuilesChantier && !pioche.estVide()) {
         chantier.push_back(pioche.piocher());
     }
 }

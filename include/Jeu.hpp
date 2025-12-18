@@ -69,7 +69,7 @@ class Jeu {
     
     Pioche pioche;  
     std::vector<Tuile*> chantier; 
-
+    int nombreTuilesChantier; 
     int niveauDeDifficulte; 
 
 

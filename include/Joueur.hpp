@@ -14,6 +14,7 @@ class Joueur{
     uint32_t getNbPierres() const { return nbPierres; }
     void setNbPierre(uint32_t nouveau_nb_pierre){nbPierres=nouveau_nb_pierre; }
     Cite* getCite() const { return cite; }
+    void MaJPierres(); 
 
 
     protected:

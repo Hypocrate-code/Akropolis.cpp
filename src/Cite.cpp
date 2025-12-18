@@ -550,6 +550,8 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
                 hex2Fan->setVoisins(nullptr);
 
             hexFantome->setVoisins(nullptr);
+            
+            
         }
     }
 
@@ -907,12 +909,7 @@ uint32_t CiteIllu::compterPoints( int niveau_difficulte) const {
             }
         }
     }
-    std::cout << "printing points : " << points_bleu*nb_place_bleue*1 << " . " <<
-                    points_jaune *nb_place_jaune*2 << " . " <<
-                    points_rouge *nb_place_rouge*2 <<" . " <<
-                    points_vert*nb_place_verte*3 <<" . " <<
-                    points_violet*nb_place_violet*2 << std::endl;
-    std::cout << "niveau de difficulté : " <<niveau_difficulte<<"\n"; 
+    
     uint32_t total =
           points_bleu   * nb_place_bleue   * 1
         + points_jaune  * nb_place_jaune   * 2
@@ -950,3 +947,4 @@ void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
         }
     }
 };
+
