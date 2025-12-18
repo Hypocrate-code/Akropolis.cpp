@@ -4,15 +4,12 @@
 #include "UI/GamePushButton.hpp"
 
 PlayerNamePage::PlayerNamePage(QWidget* parent)
-    : QWidget(parent), layout(new QVBoxLayout(this))
+    : QWidget(parent), layout(new QVBoxLayout(this)), confirmBtn(new GamePushButton("Confirm"))
 {
-
-    GamePushButton* confirmBtn = new GamePushButton("Confirm");
     layout->addWidget(confirmBtn);
     connect(confirmBtn, &QPushButton::clicked, this, &PlayerNamePage::onConfirmClicked);
-
     setLayout(layout);
-
+    
 }
 
 void PlayerNamePage::onConfirmClicked()
@@ -35,7 +32,7 @@ void PlayerNamePage::onConfirmClicked()
 void PlayerNamePage::setPlayerCount(int count)
 {
     QLayoutItem *item;
-    while ((item = layout->takeAt(0)))
+    while ((item = layout->takeAt(1)) != nullptr)
     {
         delete item->widget();
         delete item;
@@ -49,4 +46,5 @@ void PlayerNamePage::setPlayerCount(int count)
         layout->addWidget(e);
         edits.push_back(e);
     }
+    
 }

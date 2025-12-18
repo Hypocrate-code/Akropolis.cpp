@@ -48,8 +48,13 @@ MainWindow::MainWindow()
     // Connect playerNameInput vers gameScreen
     connect(playerNameInput, &PlayerNamePage::playerNamesConfirmed, this, [this](const std::vector<std::string_view>& names) {
         Jeu* jeu = Jeu::getInstance();
-        
         jeu->createPlayers(names);
+        
+        std::cout << "Partie démarrée avec les joueurs : ";
+        for (const auto& name : names) {
+            std::cout << name << " ";
+        }
+        std::cout << std::endl;
         stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
     });
 

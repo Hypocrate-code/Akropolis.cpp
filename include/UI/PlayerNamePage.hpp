@@ -7,7 +7,7 @@
 #include <vector>
 #include <QVector>
 #include <string_view>
-
+#include "UI/GamePushButton.hpp"
 class PlayerNamePage : public QWidget {
     Q_OBJECT
 public:
@@ -23,5 +23,6 @@ private slots:
 
 private:
     QVBoxLayout* layout;
+    GamePushButton* confirmBtn;
     QVector<QLineEdit*> edits;
 };
