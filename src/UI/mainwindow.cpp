@@ -17,21 +17,21 @@ MainWindow::MainWindow()
     
     stackedWidget = new QStackedWidget(this);  // attribut stackedWidget initialisé
 
-    playerNumberInput = new PlayerCountPage();
-    playerNameInput = new PlayerNamePage();
-
     QWidget *homeScreen = createHomePage();
     QWidget *startGameScreen = createStartingGamePage();
     QWidget *gameScreen = createGamePage();
     QWidget *endScreen = createEndPage();
+
 
     stackedWidget->addWidget(homeScreen);
     stackedWidget->addWidget(startGameScreen);
     stackedWidget->addWidget(gameScreen);
     stackedWidget->addWidget(endScreen);
 
-    stackedWidget->addWidget(playerNumberInput); // 4 
-    stackedWidget->addWidget(playerNameInput);// 5
+
+
+    //stackedWidget->addWidget(playerNumberInput); // 4 
+    //stackedWidget->addWidget(playerNameInput);// 5
 
     //stackedWidget->addWidget(playerNameInputScreen);
     //stackedWidget->addWidget(playerCountInputScreen);
@@ -39,7 +39,7 @@ MainWindow::MainWindow()
     setCentralWidget(stackedWidget);
     
     // Connect playerNumberInput vers playerNameInput
-    connect(playerNumberInput, &PlayerCountPage::playerCountConfirmed, this, [this](uint32_t count) {
+    /*connect(playerNumberInput, &PlayerCountPage::playerCountConfirmed, this, [this](uint32_t count) {
         Jeu::getInstance()->setMaxPlayers(count);
         playerNameInput->setPlayerCount(count);
         stackedWidget->setCurrentWidget(playerNameInput);
@@ -57,6 +57,7 @@ MainWindow::MainWindow()
         std::cout << std::endl;
         stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
     });
+    */
 
 
 
@@ -95,42 +96,10 @@ QWidget *MainWindow::createHomePage()
 QWidget *MainWindow::createStartingGamePage()
 {
     
-    QWidget *page = new QWidget;
-    QVBoxLayout *layout = new QVBoxLayout(page);
+    playerNumberInput = new StartMenu(this);
+    QVBoxLayout *layout = new QVBoxLayout(playerNumberInput);
 
-
-GamePushButton *soloBtn = new GamePushButton("Solo");
-GamePushButton *multiBtn = new GamePushButton("Multijoueur");
-
-
-connect(soloBtn, &GamePushButton::clicked, this, [this](){
-    Jeu::getInstance()->setGameMode(ModeDeJeu::Solo);
-    stackedWidget->setCurrentIndex(2);
-    Jeu::getInstance()->setMaxPlayers(1);
-
-});
-connect(multiBtn, &GamePushButton::clicked, this, [this]() {
-    Jeu::getInstance()->setGameMode(ModeDeJeu::Multi);
-    //playerNumberInput->show();
-    stackedWidget->setCurrentWidget(playerNumberInput);
-});
-
-    layout->addWidget(soloBtn);
-    layout->addWidget(multiBtn);
-
-    
-    //const QString text("Options de partie !!"); 
-    //QLabel *label = new QLabel(text);
-
-    // Stylisation à voir plus tard
-    //label->setAlignment(Qt::AlignCenter);
-    //label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
-
-    //QPushButton *btnGameScreen = new QPushButton("Lancer !");
     QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
-
-    //layout->addWidget(label);
-    //layout->addWidget(btnGameScreen);
     layout->addWidget(btnHomeScreen);
     // layout->addWidget(btnEndScreen);
 
@@ -142,7 +111,7 @@ connect(multiBtn, &GamePushButton::clicked, this, [this]() {
     //     stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
     // });
 
-    return page;
+    return playerNumberInput;
 }
 
 QWidget *MainWindow::createGamePage()
