@@ -34,7 +34,8 @@ class Jeu {
     void Initialiser(const int& nbJoueur);
 
     void createPlayers(const std::vector<std::string>& names);
-
+    //void setDifficultyLevel(uint32_t level) { difficultyLevel = level; }
+    //uint32_t getDifficultyLevel() const { return difficultyLevel; }
 
     //void Jouer(Joueur j);   
     void Lancer();   

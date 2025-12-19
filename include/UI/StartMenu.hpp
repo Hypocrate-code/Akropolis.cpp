@@ -13,7 +13,7 @@ public:
     StartMenu(QWidget* parent = nullptr);
     ~StartMenu() override;
 signals:
-    void playerCountConfirmed(std::vector<std::string> players );
+    void playerSelectionConfirmed(std::vector<std::string> players, uint32_t difficultyLevel);
 
 private slots:
     void onConfirmClicked();

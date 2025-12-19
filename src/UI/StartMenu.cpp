@@ -1,10 +1,10 @@
 #include "UI/StartMenu.hpp"
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
 #include <QComboBox>
+#include <QMessageBox>
+
+#include <iostream>
 
 StartMenu::StartMenu(QWidget* parent)
     : QWidget(parent), layout(new QVBoxLayout(this)),
@@ -75,7 +75,7 @@ StartMenu::StartMenu(QWidget* parent)
             difficultyRow->setVisible(false);
         }
         QLineEdit* newPlayerEdit = new QLineEdit();
-        newPlayerEdit->setPlaceholderText("Joueur " + QString::number(playerCount));
+        newPlayerEdit->setPlaceholderText("Nom Joueur " + QString::number(playerCount));
         playerButtons.push_back(newPlayerEdit);
         lineEditLayout->addWidget(newPlayerEdit);
 
@@ -103,9 +103,11 @@ StartMenu::StartMenu(QWidget* parent)
         }
     });
 
+    connect(confirmBtn, &QPushButton::clicked, this, &StartMenu::onConfirmClicked);
+
     // Champ du premier joueur (min = 1)
     QLineEdit* firstPlayerEdit = new QLineEdit();
-    firstPlayerEdit->setPlaceholderText("Joueur 1");
+    firstPlayerEdit->setPlaceholderText("Nom Joueur 1");
     playerButtons.push_back(firstPlayerEdit);
     lineEditLayout->addWidget(firstPlayerEdit);
 
@@ -127,12 +129,22 @@ StartMenu::~StartMenu() = default;
 
 void StartMenu::onConfirmClicked()
 {
+    std::cout << "Confirm clicked with " << playerCount << " players." << std::endl;
+    if (playerButtons.size() != playerCount) {
+        //popup
+        QMessageBox::warning(this, "Erreur", "Le nombre de joueurs ne correspond pas au nombre de champs de texte.");
+        return;
+    }
     std::vector<std::string> players;
     for (const auto& lineEdit : playerButtons) {
+        if (lineEdit->text().isEmpty()) {
+            QMessageBox::warning(this, "Erreur", "Veuillez remplir tous les noms des joueurs.");
+            return;
+        }
         players.push_back(lineEdit->text().toStdString());
     }
     
-    emit playerCountConfirmed(players);
+    emit playerSelectionConfirmed(players, dificultyLevel);
 }
 
 

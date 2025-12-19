@@ -26,13 +26,8 @@ private:
     QWidget *createHomePage();
     QWidget *createStartingGamePage();
     QWidget *createGamePage();
-    //QWidget *createPlayerCountInputPage();
-    //QWidget *createPlayerNameInputPage();
     QWidget *createEndPage();
 
-
-    //PlayerCountPage *playerNumberInput;
-    //PlayerNamePage *playerNameInput;
     StartMenu* playerNumberInput;
 
     QVector<HexagonalButton*> m_hexButtons;

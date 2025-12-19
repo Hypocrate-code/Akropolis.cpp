@@ -22,44 +22,24 @@ MainWindow::MainWindow()
     QWidget *gameScreen = createGamePage();
     QWidget *endScreen = createEndPage();
 
-
     stackedWidget->addWidget(homeScreen);
     stackedWidget->addWidget(startGameScreen);
     stackedWidget->addWidget(gameScreen);
     stackedWidget->addWidget(endScreen);
 
-
-
-    //stackedWidget->addWidget(playerNumberInput); // 4 
-    //stackedWidget->addWidget(playerNameInput);// 5
-
-    //stackedWidget->addWidget(playerNameInputScreen);
-    //stackedWidget->addWidget(playerCountInputScreen);
-
     setCentralWidget(stackedWidget);
     
-    // Connect playerNumberInput vers playerNameInput
-    /*connect(playerNumberInput, &PlayerCountPage::playerCountConfirmed, this, [this](uint32_t count) {
-        Jeu::getInstance()->setMaxPlayers(count);
-        playerNameInput->setPlayerCount(count);
-        stackedWidget->setCurrentWidget(playerNameInput);
-    });
-
-    // Connect playerNameInput vers gameScreen
-    connect(playerNameInput, &PlayerNamePage::playerNamesConfirmed, this, [this](const std::vector<std::string>& names) {
+    // Connect startMenu vers gameScreen
+    connect(static_cast<StartMenu*>(startGameScreen), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
         Jeu* jeu = Jeu::getInstance();
+
         jeu->createPlayers(names);
+        jeu->setGameMode(names.size() == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi);
+        //jeu->setDifficultyLevel(difficultyLevel);
         
-        std::cout << "Partie démarrée avec les joueurs : ";
-        for (const auto& name : names) {
-            std::cout << name << " ";
-        }
-        std::cout << std::endl;
+        // LANCER LA PARTIE ICI
         stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
     });
-    */
-
-
 
 }
 
