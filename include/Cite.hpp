@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <array>
 
 
 class Tuile;
@@ -26,7 +27,7 @@ public:
 
 
 
-    virtual uint32_t compterPoints( int niveau_difficulte=0) const = 0;
+    virtual uint32_t compterPoints( int niveau_difficulte=0, std::array<int, 5> variantes = {}) const = 0;
 
     virtual void afficher() const =0;
     void QTDraw() const;
@@ -48,7 +49,6 @@ public:
 protected:
 
     std::vector<const Tuile*> tuiles;
-
     static void print_hex(Hexagone*hex, int x, int y, strCalc& calc);
     static void increase_calc_size_H(strCalc& calc, uint32_t size);
     static void increase_calc_size_V(strCalc& calc, uint32_t size);
@@ -71,10 +71,10 @@ public:
     ~CiteJoueur()=default;
     // Version Qt: hex fantôme directement fourni
     bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome);
-    
-    uint32_t compterPoints( int niveau_difficulte=0) const override;
+    uint32_t compterPoints( int niveau_difficulte=0, std::array<int, 5> variantes = {}) const override;
     void afficher()const override; 
     void addTuile(Tuile* t);
+
 
 };
 
@@ -83,8 +83,8 @@ class CiteIllu : public Cite{
     
 public:
     CiteIllu(const Tuile* tuileDeDepart):Cite(tuileDeDepart){};
-    uint32_t compterPoints( int niveau_difficulte=0) const override;
     bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome)override{return false; };
+    uint32_t compterPoints( int niveau_difficulte=0, std::array<int, 5> variantes = {}) const override;
     void afficher()const override;  
 private:
 

@@ -144,7 +144,8 @@ Jeu::Jeu() : mode(ModeDeJeu::Solo), niveauDeDifficulte(0), pioche(*this)
 void Jeu::StartMenuC()
 {
   std::vector<std::string> names;
-
+  std::array<int, 5> variantes; 
+ 
   std::cout << "\n=============================" << std::endl;
   std::cout << "Bienvenue sur Akropolis.cpp !" << std::endl;
   std::cout << "=============================" << std::endl
@@ -155,6 +156,32 @@ void Jeu::StartMenuC()
   std::cout << "Une partie est sur le point de commencer, combien êtes-vous :  ";
   std::cin >> nJoueur;
 
+  int index_variante =0; 
+  std::cout<<"Voici les differentes variantes disponibles : "<<std::endl; 
+  std::cout<<" 0. Marches. Si vos Quartiers Marchands sont adjacents à une place Marche, leurs points sont doubles"<<std::endl; 
+  std::cout<<" 1. Jardins. INDISPONIBLE "<<std::endl; 
+  std::cout<<" 2. Casernes.Si vos Casernes ont 3 ou 4 espaces vides adjacents, leurs points sont doublés. "<<std::endl; 
+  std::cout<<" 3. Habitations. Si votre groupe d’Habitations a une valeur de 10 ou plus, ses points sont doubles"<<std::endl;
+  std::cout<<" 4. Temples. Si vos Temples sont placés sur un niveau superieur, leurs points sont doubles"<<std::endl;
+  
+  char reponse;
+  std::cout<<"Voulez vous rajoutez une variante ? o/n  ";
+  cin>>reponse;
+  while (reponse != 'n' && reponse != 'N')
+    {
+      
+      do{
+        cout<<"Quelle variante voulez vous ajoutez ? "; 
+        std::cin>>index_variante;
+        if (index_variante < 0 || index_variante> 2){
+          std::cout << "Numero de variante invalide. Dois être compris entre 0 et 4" << std::endl;
+        }
+    } while (index_variante < 0 || index_variante> 2);
+      variantes[index_variante] = 1; 
+      cout<<"Merci. Cette variable a ete ajoute. En voulez vous d'autres ? o/n "; 
+      cin>>reponse; 
+  }
+ 
   for (int i = 0; i < nJoueur; i++)
   {
 
@@ -188,13 +215,14 @@ void Jeu::StartMenuC()
     } while (this->niveauDeDifficulte < 0 || this->niveauDeDifficulte > 2);
   }
 
-  j->InitialiserPartie(names, this->niveauDeDifficulte); // difficulté 0 par défaut en mode console
+  j->InitialiserPartie(names, this->niveauDeDifficulte,variantes); // difficulté 0 par défaut en mode console
 }
 
-void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t difficultyLevel)
+void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t difficultyLevel, std::array<int, 5> variantes)
 {
   nombreTuilesChantier = names.size() + 2;
   niveauDeDifficulte = difficultyLevel;
+  this->variantes = variantes; 
 
   for (size_t i = 0; i < names.size(); i++)
   {
@@ -317,7 +345,7 @@ void Jeu::Lancer()
   for (auto &j : joueurs)
   {
     std::cout << j->getNom() << " : ";
-    std::cout << j->getCite()->compterPoints(niveauDeDifficulte) << " points" << std::endl;
+    std::cout << j->getCite()->compterPoints(niveauDeDifficulte, variantes) << " points" << std::endl;
   }
 }
 

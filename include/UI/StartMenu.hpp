@@ -6,6 +6,7 @@
 #include "UI/AkrLabel.hpp"
 #include <QLineEdit>
 #include <QComboBox>
+#include <array>
 
 class StartMenu : public QWidget {
     Q_OBJECT
@@ -13,7 +14,7 @@ public:
     StartMenu(QWidget* parent = nullptr);
     ~StartMenu() override;
 signals:
-    void playerSelectionConfirmed(std::vector<std::string> players, uint32_t difficultyLevel);
+    void playerSelectionConfirmed(std::vector<std::string> players, uint32_t difficultyLevel, std::array<int,5>variantes);
 
 private slots:
     void onConfirmClicked();
@@ -28,8 +29,9 @@ private:
     
     QComboBox* dificultyComboBox;
     
-    
+    QVBoxLayout* variantesLayout;
     uint32_t playerCount;
     uint32_t dificultyLevel;
     std::vector<QWidget*> playerWidget;
+    std::array<int,5> variantes;
 };
