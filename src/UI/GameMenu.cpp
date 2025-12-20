@@ -112,6 +112,15 @@ void GameMenu::connectSignals()
     connect(rotateBtn, &QPushButton::clicked, this, &GameMenu::onRotateTuile);
     connect(confirmBtn, &QPushButton::clicked, this, &GameMenu::onConfirmPlacement);
     connect(cancelBtn, &QPushButton::clicked, this, &GameMenu::onCancelAction);
+
+
+
+    connect(hexviewCite, &HexView::hexagonClicked, this, &GameMenu::onHexagonSelected);
+    // When a hexagon is clicked in the chantier view (for selection)
+    connect(hexViewChantier, &HexView::hexagonClicked, this, [this](const Hexagone* hex) {
+        qDebug() << "Chantier hexagon clicked";
+        // You can add logic here to handle chantier clicks if needed
+    });
 }
 
 void GameMenu::updateDisplay()

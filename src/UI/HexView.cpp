@@ -20,6 +20,9 @@ void HexView::drawRecursive(const Hexagone* hex, QPoint centre)
 {   
     HexItem* item = new HexItem(hex, centre, radiusHex);
     scene->addItem(item);
+    
+    connect(item, &HexItem::hexagonClicked, this, &HexView::onHexItemClicked);
+    
     int direction = 0;
     
     const Hexagone *h = pile.top();
@@ -37,6 +40,11 @@ void HexView::drawRecursive(const Hexagone* hex, QPoint centre)
         direction++;
     }
 
+}
+
+void HexView::onHexItemClicked(const Hexagone* hex)
+{
+    emit hexagonClicked(hex);
 }
 void HexView::launchDrawRecursive(const Hexagone* hex, QPoint centre) {
     pile.push(hex);
