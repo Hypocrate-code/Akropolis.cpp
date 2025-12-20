@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         Jeu *j = Jeu::getInstance();
 
         if (argc > 1 && std::string(argv[1]) == "--no-gui")
-        {   
+        {
             j->setQtDisplay(false);
             j->StartMenuC();
             j->Lancer();
@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
         else
         {
 
-            QApplication a(argc, argv);
+         QApplication a(argc, argv);
             MainWindow w;
-            w.show();
+           w.show();
 
-            return a.exec();
+           return a.exec();
         }
 
         return 0;

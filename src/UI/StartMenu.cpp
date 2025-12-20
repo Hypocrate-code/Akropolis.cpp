@@ -3,16 +3,16 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QMessageBox>
-
+#include <QCheckBox>
 #include <iostream>
 
 StartMenu::StartMenu(QWidget* parent)
     : QWidget(parent), layout(new QVBoxLayout(this)),
       decBtn(new QPushButton("Enlever joueurs")),
       incBtn(new QPushButton("Ajouter joueurs")),
-      confirmBtn(new GamePushButton("Confirmer")), playerCount(1), dificultyLevel(0),
+    confirmBtn(new GamePushButton("Confirmer")), playerCount(1), dificultyLevel(0),variantes({}),
       lineEditLayout(new QVBoxLayout()), countInput(new QLineEdit()),
-      dificultyComboBox(new QComboBox())
+    dificultyComboBox(new QComboBox()), variantesLayout(new QVBoxLayout)
 {
     QHBoxLayout* btnLayout = new QHBoxLayout();
 
@@ -32,6 +32,8 @@ StartMenu::StartMenu(QWidget* parent)
     incBtn->setFixedWidth(120);
     decBtn->setFixedWidth(120);
 
+
+
     // Ligne de difficulté (label + combobox)
     QWidget* difficultyRow = new QWidget();
     QHBoxLayout* diffLayout = new QHBoxLayout(difficultyRow);
@@ -41,6 +43,23 @@ StartMenu::StartMenu(QWidget* parent)
     dificultyComboBox->addItem("Hippodamos (niveau Facile)");
     dificultyComboBox->addItem("Métagénès (niveau Moyen)");
     dificultyComboBox->addItem("Callicratès (niveau Difficile)");
+
+
+    //Selection de variantes (label + checks boxs)
+    QLabel* var = new QLabel("Variantes règles : ");
+    QCheckBox* marche = new QCheckBox("Variante marché");
+    //QCheckBox* jardin = new QCheckBox("Variante jardin NON DISPO");
+    QCheckBox* temple = new QCheckBox("Variante temple");
+    QCheckBox* habitations = new QCheckBox("Variante habitations");
+    QCheckBox* caserne = new QCheckBox("Variante caserne");
+
+
+    variantesLayout->addWidget(var);
+    variantesLayout->addWidget(marche);
+    //variantesLayout->addWidget(jardin); //NON DISPO
+    variantesLayout->addWidget(temple);
+    variantesLayout->addWidget(habitations);
+    variantesLayout->addWidget(caserne);
 
     connect(dificultyComboBox, &QComboBox::currentIndexChanged, this, [this](int index) {
         dificultyLevel = static_cast<uint32_t>(index);
@@ -103,6 +122,29 @@ StartMenu::StartMenu(QWidget* parent)
         }
     });
 
+    //connexion des check box avec variantes
+    connect(marche, &QCheckBox::toggled, this, [this](bool checked) {
+        variantes[0] = checked ? 1 : 0;
+    });
+
+    //variante jardin non dispo
+    //connect(jardin, &QCheckBox::toggled, this, [this](bool checked) {
+    //    variantes[1] = checked ? 1 : 0;
+    //});
+    connect(temple, &QCheckBox::toggled, this, [this](bool checked) {
+        variantes[2] = checked ? 1 : 0;
+    });
+    connect(habitations, &QCheckBox::toggled, this, [this](bool checked) {
+        variantes[3] = checked ? 1 : 0;
+    });
+
+    connect(caserne, &QCheckBox::toggled, this, [this](bool checked) {
+        variantes[4] = checked ? 1 : 0;
+    });
+
+
+
+
     connect(confirmBtn, &QPushButton::clicked, this, &StartMenu::onConfirmClicked);
 
     // Champ du premier joueur (min = 1)
@@ -114,12 +156,15 @@ StartMenu::StartMenu(QWidget* parent)
     layout->addLayout(btnLayout);
     layout->addLayout(lineEditLayout);
 
-    // Ajoute la ligne difficulté (label + combobox) et le bouton Confirmer
+    // Ajoute la ligne difficulté (label + combobox), choix des variantes et le bouton Confirmer
     layout->addWidget(difficultyRow);
+    layout->addLayout(variantesLayout);
     layout->addWidget(confirmBtn);
 
     // Afficher la difficulté uniquement quand playerCount == 1
     difficultyRow->setVisible(playerCount == 1);
+
+
 
     setLayout(layout);
 }
@@ -144,7 +189,7 @@ void StartMenu::onConfirmClicked()
         players.push_back(lineEdit->text().toStdString());
     }
     
-    emit playerSelectionConfirmed(players, dificultyLevel);
+    emit playerSelectionConfirmed(players, dificultyLevel, variantes);
 }
 
 
