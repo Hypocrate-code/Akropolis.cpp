@@ -14,10 +14,7 @@ class HexView : public QGraphicsView
     
 private:
     QGraphicsScene* scene = new QGraphicsScene(this);
-    std::unordered_set<const Hexagone *> visited;
-    std::stack<const Hexagone *> pile;
     int radiusHex;
-    void drawRecursive(const Hexagone* hex, QPoint centre);
 
 public:
     HexView(int radius = 77, QWidget* parent = nullptr);
@@ -25,7 +22,7 @@ public:
     HexView(const Hexagone* hex, int radius = 77, QWidget* parent = nullptr);
     void launchDrawRecursive(const Hexagone* hex, QPoint centre = QPoint(0,0));
     const void setDrag(bool isDraggable) {isDraggable ? setDragMode(QGraphicsView::ScrollHandDrag) : setDragMode(QGraphicsView::NoDrag);};
-    void clearView() {scene->clear(); visited.clear(); while(!pile.empty()) pile.pop();};
+    void clearView() {scene->clear();};
 
     // ~HexView();
 

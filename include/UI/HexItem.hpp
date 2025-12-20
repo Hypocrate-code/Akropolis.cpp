@@ -1,10 +1,9 @@
 #ifndef HEXITEM_HPP
 #define HEXITEM_HPP
-#include <QGraphicsPolygonItem>
 #include <QGraphicsObject>
 #include <QGraphicsView>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsColorizeEffect>
+#include <QPainterPath>
 #include "Utils.hpp"
 
 class Hexagone;
@@ -29,16 +28,17 @@ signals:
 
 protected:
 
-    // Effets visuels hover
-
+    // Hover visual handled in paint() with lightweight overlay
     void hoverEnterEvent(QGraphicsSceneHoverEvent*) override
     {
-        effect->setStrength(0.2);
+        hovered = true;
+        update();
     }
 
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override
     {
-        effect->setStrength(0);
+        hovered = false;
+        update();
     }
 
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override
@@ -52,10 +52,9 @@ protected:
 
 private:
     QBrush m_normal;
-    QBrush m_hover;
-    QGraphicsColorizeEffect* effect;
     const Hexagone* m_hexagon;
     QPolygonF m_polygon;
+    bool hovered = false;
     
     void emitClicked()
     {

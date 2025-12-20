@@ -4,6 +4,7 @@
 #include <memory>
 
 class Tuile;
+
 class Joueur{
     public:
 

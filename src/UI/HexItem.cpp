@@ -1,7 +1,6 @@
 // #include "UI/HexagonalButton.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include "UI/HexItem.hpp"
-#include <iostream>
 #include "Tuile.hpp"
 #include <QPainter>
 #include <QPainterPath>
@@ -22,7 +21,6 @@ QPolygonF QCreateHexagon(QPointF center, qreal radius)
 
 HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObject(), m_hexagon(hex)
     {
-        //std::cout << "Creating HexItem for hexagon of type " << Utils::type_to_string(hex->getType()) << " and color " << Utils::color_to_string(hex->getCouleur()) << std::endl;
         m_polygon = QCreateHexagon(center, radius);
 
         // Import de la texture
@@ -46,10 +44,9 @@ HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObje
 
         m_normal = brush;
         
-        effect = new QGraphicsColorizeEffect;
-        effect->setColor(Qt::green);
-        effect->setStrength(0);
-        setGraphicsEffect(effect);
+
+        if (hex->getType() == Type::Fantome)
+            setOpacity(0.35);
 
         setAcceptHoverEvents(true);
         setAcceptedMouseButtons(Qt::LeftButton);
@@ -78,4 +75,11 @@ void HexItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->setBrush(m_normal);
     painter->setPen(Qt::NoPen);
     painter->drawPolygon(m_polygon);
+
+    // Lightweight hover highlight overlay (green tint)
+    if (hovered) {
+        painter->setBrush(QColor(0, 255, 0, 70));
+        painter->setPen(Qt::NoPen);
+        painter->drawPolygon(m_polygon);
+    }
 }

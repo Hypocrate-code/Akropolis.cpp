@@ -1,6 +1,9 @@
 #include "UI/HexView.hpp"
 #include "UI/HexItem.hpp"
 #include "Tuile.hpp"
+#include <utility>
+#include <unordered_set>
+#include <stack>
 
 HexView::HexView(int radius, QWidget* parent) : QGraphicsView(parent), radiusHex(radius)
 {
@@ -16,37 +19,34 @@ HexView::HexView(const Hexagone* hex, int radius, QWidget* parent) : QGraphicsVi
     setScene(scene);
     launchDrawRecursive(hex);
 }
-void HexView::drawRecursive(const Hexagone* hex, QPoint centre)
-{   
-    HexItem* item = new HexItem(hex, centre, radiusHex);
-    scene->addItem(item);
-    
-    connect(item, &HexItem::hexagonClicked, this, &HexView::onHexItemClicked);
-    
-    int direction = 0;
-    
-    const Hexagone *h = pile.top();
-    pile.pop();
-    if (visited.count(h))
-        return;
-    visited.insert(h);
-
-    for(Hexagone* v : hex->getVoisins()) {
-        if (v != nullptr || visited.count(v))
-        {
-            pile.push(v);
-            drawRecursive(v, Utils::getCentreVoisin(centre, direction, radiusHex));
-        }
-        direction++;
-    }
-
-}
 
 void HexView::onHexItemClicked(const Hexagone* hex)
 {
     emit hexagonClicked(hex);
 }
 void HexView::launchDrawRecursive(const Hexagone* hex, QPoint centre) {
-    pile.push(hex);
-    drawRecursive(hex, centre);
-};
+    if (!hex) return;
+
+    std::unordered_set<const Hexagone*> seen;
+    std::stack<std::pair<const Hexagone*, QPoint>> st;
+    st.push({hex, centre});
+
+    while (!st.empty()) {
+        auto [h, pos] = st.top();
+        st.pop();
+        if (!h || seen.count(h)) continue;
+        seen.insert(h);
+
+        HexItem* item = new HexItem(h, pos, radiusHex);
+        scene->addItem(item);
+        connect(item, &HexItem::hexagonClicked, this, &HexView::onHexItemClicked);
+
+        int direction = 0;
+        for (Hexagone* v : h->getVoisins()) {
+            if (v && !seen.count(v)) {
+                st.push({v, Utils::getCentreVoisin(pos, direction, radiusHex)});
+            }
+            ++direction;
+        }
+    }
+}
