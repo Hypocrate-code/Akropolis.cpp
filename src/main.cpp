@@ -15,6 +15,9 @@
 #include <QTranslator>
 #include <execution>
 
+
+
+
 int main( int argc, char *argv[] ){
     try {
 

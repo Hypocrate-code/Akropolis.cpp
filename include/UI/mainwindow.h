@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include "UI/HexagonalButton.hpp"
+#include "UI/HexItem.hpp"
 
 //#include "UI/PlayerCountPage.hpp"
 //#include "UI/PlayerNamePage.hpp"
@@ -17,8 +17,8 @@ public:
     MainWindow();
     ~MainWindow();
 
-private slots:
-    void onHexagonClicked();
+// private slots:
+    // void onHexagonClicked();
 
 private:
     QStackedWidget *stackedWidget;

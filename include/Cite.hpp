@@ -38,8 +38,10 @@ public:
     static void draw_hex_recursive_filtered(Hexagone *hex, int x, int y, strCalc &calc,
                                        std::unordered_set<Hexagone *> &drawnHexagones, 
                                        int hauteur, bool drawFantomes);
-protected:
 
+    const Tuile* getTuileDeDepart() const { return tuiles[0]; }
+
+protected:
 
     std::vector<const Tuile*> tuiles;
 

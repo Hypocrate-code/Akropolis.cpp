@@ -1,5 +1,7 @@
 #include "Utils.hpp"
 #include "Tuile.hpp"
+#include <QDebug>
+#include <QVector2D>
 
 namespace Utils
 {
@@ -195,23 +197,91 @@ namespace Utils
         return str;
     }
 
-
-
-
-
-    int opposite_index(int idx)
-{
-    switch (idx)
+    QPoint getCentreVoisin(QPoint originalCenter, int direction, int radius)
     {
-    case 0: return 3; // NE <-> SO
-    case 3: return 0;
-    case 1: return 4; // S  <-> N
-    case 4: return 1;
-    case 2: return 5; // SE <-> NO
-    case 5: return 2;
-    case 6: return 7; // TOP <-> BOT
-    case 7: return 6;
-    default: return idx;
+        int height = 2 * cos(M_PI / 6) * radius;
+        int width = 2 * radius;
+        int delta = 1;
+        std::array<QVector2D, 8> vects {
+            QVector2D(0, height - delta), 
+            QVector2D(-1.5 * radius + delta, (height / 2) - delta), 
+            QVector2D(-1.5 * radius + delta, -1 * (height / 2) + delta), 
+            QVector2D(0, -1 * height + delta),  
+            QVector2D(1.5 * radius - delta, -1 * (height / 2) + delta), 
+            QVector2D(1.5 * radius - delta, height / 2 - delta), 
+            QVector2D(0,0),
+            QVector2D(0,0)
+        };
+        return originalCenter + vects[direction].toPoint();
+    };
+
+
+    
+    int radiusTexture = 231;
+    float heightHexTexture = cos(M_PI/6) * 2 * radiusTexture;
+    int widthHexTexture = 2 * radiusTexture;
+    QPixmap get_texture(const Hexagone* hex) {
+        QPixmap baseTexture("../assets.png");
+        Type type = hex->getType();
+        Couleur couleur = hex->getCouleur();
+        QPixmap finalTexture;
+        switch (type)
+        {
+            case Type::Quartier:
+                switch (couleur)
+                {
+                    case Couleur::Rouge:
+                        return baseTexture.copy(widthHexTexture - (widthHexTexture - radiusTexture)/2, heightHexTexture/2, widthHexTexture, heightHexTexture);
+                    case Couleur::Bleu:
+                        return baseTexture.copy(widthHexTexture + radiusTexture, 0, widthHexTexture, heightHexTexture);
+                    case Couleur::Jaune:
+                        return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture, widthHexTexture, heightHexTexture);
+                    case Couleur::Violet:
+                        return baseTexture.copy(0, heightHexTexture*2, widthHexTexture, heightHexTexture);
+                    case Couleur::Vert:
+                        return baseTexture.copy(0, heightHexTexture, widthHexTexture, heightHexTexture);
+                    default:
+                        return baseTexture;
+                }
+                break;
+            case Type::Place:
+                switch (couleur)
+                {
+                    case Couleur::Rouge:
+                        return baseTexture.copy(0, 0, widthHexTexture, heightHexTexture);
+                    case Couleur::Bleu:
+                        return baseTexture.copy(widthHexTexture + (radiusTexture * 5/2), heightHexTexture/2, widthHexTexture, heightHexTexture);
+                    case Couleur::Jaune:
+                        return baseTexture.copy(widthHexTexture  + (radiusTexture * 5/2), heightHexTexture*3/2, widthHexTexture, heightHexTexture);
+                    case Couleur::Violet:
+                        return baseTexture.copy(radiusTexture * 3/2, heightHexTexture * 5 / 2, widthHexTexture, heightHexTexture);
+                    case Couleur::Vert:
+                        return baseTexture.copy(radiusTexture * 3/2, heightHexTexture * 3/2, widthHexTexture, heightHexTexture);
+                    default:
+                        return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+                }
+            case Type::Fantome:
+                return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+            case Type::Carriere:
+                return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*2, widthHexTexture, heightHexTexture);
+            default:
+                return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+        }
     }
-}
+
+
+    int opposite_index(int idx) {
+        switch (idx)
+        {
+        case 0: return 3; // NE <-> SO
+        case 3: return 0;
+        case 1: return 4; // S  <-> N
+        case 4: return 1;
+        case 2: return 5; // SE <-> NO
+        case 5: return 2;
+        case 6: return 7; // TOP <-> BOT
+        case 7: return 6;
+        default: return idx;
+        }
+    }
 }
