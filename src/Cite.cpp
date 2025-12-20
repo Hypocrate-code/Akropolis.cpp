@@ -561,7 +561,7 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     // updateFantomeOfTuile(tl);
 }
 
-uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
+uint32_t CiteJoueur::compterPoints( int niveau_difficulte, std::array<int,5>variantes) const
 {
     uint32_t nb_place_bleue = 0;
     uint32_t nb_place_rouge = 0;
@@ -635,6 +635,7 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
                 {
                     const std::array<Hexagone *, 6> voisins = h->getVoisins3D();
                     bool cond = true;
+                    int var = 1; 
                     for (int i = 0; i < 6; i++)
                     {
 
@@ -646,8 +647,20 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
                             }
                         }
                     }
-                    if (cond == true)
-                        points_jaune += 1 * niveau;
+                    //variante si on a une place jaune, on double les points
+                     if(variantes[0]==1){
+                         for (int i = 0; i < 6; i++){
+                                if (voisins[i] != nullptr){
+                                    if (voisins[i]->getCouleur() == Couleur::Jaune && voisins[i]->getType() == Type::Place){
+                                        var=2; 
+                                }
+                            }
+                        }
+                    }
+                    if (cond == true) points_jaune += 1 * niveau * var;
+                    
+                   
+                        
                 }
                 // calcul points jardins : +1 pt pour chaque jardin
                 if (h->getCouleur() == Couleur::Vert)
@@ -659,6 +672,7 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
                 {
 
                     const std::array<Hexagone *, 6> &voisins = h->getVoisins3D();
+                    int var =1; 
 
                     // on vérifie si entierment entouré au niveau 0
                     bool cond = true;
@@ -674,8 +688,9 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
                             cond = false;
                         }
                     }
+                    if(variantes[2]==1) var = niveau; 
                     if (cond)
-                        points_violet += 1 * niveau;
+                        points_violet += 1 * niveau * var;
                 }
                 // calcul habitation: on doit calculer les groupes d'habitations
                 if (h->getCouleur() == Couleur::Bleu)
@@ -718,7 +733,7 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
                 {
                     bool cond = false;
                     const std::array<Hexagone *, 6> &voisins = h->getVoisins3D();
-
+                    int var = 1; 
                     for (int i = 0; i < 6; i++)
                     {
                         if (voisins[i] != nullptr)
@@ -731,8 +746,24 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
                             cond = true;
                         }
                     }
-                    if (cond)
-                        points_rouge += 1 * niveau;
+                    if(variantes[4]==1){
+                        int cases_vides = 0; 
+                        for (int i = 0; i < 6; i++){
+                            if (voisins[i] != nullptr){
+                                if (voisins[i]->getType() == Type::Fantome)
+                                    cases_vides++; 
+                            }
+                        else
+                        {
+                            cases_vides++; 
+                        }
+
+                    }
+                    if(cases_vides>=3){
+                        var = 2; 
+                    }
+                    }
+                    if (cond) points_rouge += 1 * niveau * var;
                 }
             }
         }
@@ -748,6 +779,11 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
     if (!habitations_visitees.empty())
     {
         points_bleu = *std::max_element(points_hab.begin(), points_hab.end());
+        if(variantes[3]==1){
+            if(points_bleu>=10){
+                points_bleu=points_bleu*2; 
+            }
+        }
     }
 
     //std::cout << "printing points : " << points_bleu * nb_place_bleue * 1 << " . " << points_jaune * nb_place_jaune * 2 << " . " << points_rouge * nb_place_rouge * 2 << " . " << points_vert * nb_place_verte * 3 << " . " << points_violet * nb_place_violet * 2 << std::endl;
@@ -869,7 +905,7 @@ void Cite::release_hex_fantome()
     }
     hexs_fantome.clear();
 }; 
-uint32_t CiteIllu::compterPoints( int niveau_difficulte) const {
+uint32_t CiteIllu::compterPoints( int niveau_difficulte, std::array<int,5> variantes) const {
 
     uint32_t nb_carriere = 0;
 

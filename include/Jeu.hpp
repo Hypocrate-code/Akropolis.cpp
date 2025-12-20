@@ -32,16 +32,15 @@ class Jeu {
 
     void afficherTuiles() const;
     void afficherHexagones() const;
-    void tourJoueur(Joueur* joueur);
-    void tourIllu(Illu* illu); 
 
 
     // FONCTIONNES AFFICHAGE PARTIE EN MODE CONSOLE
     void StartMenuC();
-
+    void tourJoueur(Joueur* joueur);
+    void tourIllu(Illu* illu);
 
     // FONCTIONS APPELLES PAR QT ET CONSOLE:
-    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel);
+    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel, std::array<int, 5>variantes={});
 
     //void setDifficultyLevel(uint32_t level) { difficultyLevel = level; }
     //uint32_t getDifficultyLevel() const { return difficultyLevel; }
@@ -98,7 +97,8 @@ class Jeu {
 
     bool QtDisplay = true;
     int nombreTuilesChantier; 
-    int niveauDeDifficulte; 
+    int niveauDeDifficulte;
+    std::array<int, 5> variantes; 
 
 
 };
