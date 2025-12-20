@@ -10,6 +10,7 @@
 #include "Tuile.hpp"
 #include "Joueur.hpp"
 #include <array>
+#include <string>
 
 class Pioche; 
 
@@ -29,9 +30,13 @@ class Jeu {
 
     void afficherTuiles() const;
     void afficherHexagones() const;
-    ModeDeJeu getModeDeJeu() const; // A voir si utile, mode solo ?
     void tourJoueur(Joueur* joueur);
     void Initialiser(const int& nbJoueur);
+
+    void createPlayers(const std::vector<std::string>& names);
+    //void setDifficultyLevel(uint32_t level) { difficultyLevel = level; }
+    //uint32_t getDifficultyLevel() const { return difficultyLevel; }
+
     //void Jouer(Joueur j);   
     void Lancer();   
     std::array<Tuile*, 61> tuilesCite;
@@ -46,14 +51,24 @@ class Jeu {
 
     Tuile* choisirTuileDuChantier();
 
+    ModeDeJeu getModeDeJeu() const; // A voir si utile, mode solo ?
+    void setGameMode(ModeDeJeu mdj) { mode = mdj; }
+
+    uint32_t getNbPlayers() const { return joueurs.size(); }
+    void setMaxPlayers(uint32_t n) { joueurs.reserve(n); maxPlayers = n; }
+    uint32_t getMaxPlayers() const { return maxPlayers; }
+    void addJoueur(Joueur* j) { joueurs.push_back(j); }
+    const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
+
 
   protected:
     Jeu();
     static Jeu* instance;
-    const ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
+    ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;
+    uint32_t maxPlayers;
     
     Pioche* pioche = nullptr;  
     std::vector<Tuile*> chantier; 

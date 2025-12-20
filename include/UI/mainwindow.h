@@ -5,6 +5,9 @@
 #include <QStackedWidget>
 #include "UI/HexItem.hpp"
 
+//#include "UI/PlayerCountPage.hpp"
+//#include "UI/PlayerNamePage.hpp"
+#include "UI/StartMenu.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -12,6 +15,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
+    ~MainWindow();
 
 // private slots:
     // void onHexagonClicked();
@@ -24,6 +28,10 @@ private:
     QWidget *createGamePage();
     QWidget *createEndPage();
 
+    StartMenu* playerNumberInput;
+
+    QVector<HexagonalButton*> m_hexButtons;
 };
+
 
 #endif // MAINWINDOW_H

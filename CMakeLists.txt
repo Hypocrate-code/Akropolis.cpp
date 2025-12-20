@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Set MinGW Qt path (MUST be MinGW version!)
-set(QT_MINGW_PATH "C:/Qt/6.9.3/mingw_64")
+set(QT_MINGW_PATH "C:/Qt/6.10.1/mingw_64")
 set(CMAKE_PREFIX_PATH "${QT_MINGW_PATH}")
 
 # Find Qt
@@ -27,6 +27,8 @@ file(GLOB HEADERS "include/*.hpp" "include/UI/*.h")
 set(MOC_HEADERS 
     "include/UI/HexagonalButton.hpp"
     "include/UI/mainwindow.h"
+    "include/UI/GamePushButton.hpp"
+    "include/UI/StartMenu.hpp" 
 )
 
 # Generate moc files manually

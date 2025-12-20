@@ -9,6 +9,9 @@
 #include "UI/HexView.hpp"
 #include "Tuile.hpp"
 
+#include <QLineEdit>
+#include "Jeu.hpp"
+#include <UI/GamePushButton.hpp>
 
 MainWindow::MainWindow()
     : QMainWindow()
@@ -30,7 +33,25 @@ MainWindow::MainWindow()
     stackedWidget->addWidget(endScreen);
 
     setCentralWidget(stackedWidget);
+    
+    // Connect startMenu vers gameScreen
+    connect(static_cast<StartMenu*>(startGameScreen), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
+        Jeu* jeu = Jeu::getInstance();
 
+        jeu->createPlayers(names);
+        jeu->setGameMode(names.size() == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi);
+        //jeu->setDifficultyLevel(difficultyLevel);
+        
+        // LANCER LA PARTIE ICI
+        stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
+    });
+
+}
+
+MainWindow::~MainWindow()
+{
+    // sur une autre branche
+    //Jeu::getInstance()->EndGame();
 }
 
 QWidget *MainWindow::createHomePage()
@@ -50,7 +71,7 @@ QWidget *MainWindow::createHomePage()
     layout->addWidget(label);
     layout->addWidget(btnGameScreen);
 
-    connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
+    connect(btnGameScreen, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentIndex(1);  // 1 -> Ecran de la partie
     });
 
@@ -60,33 +81,22 @@ QWidget *MainWindow::createHomePage()
 QWidget *MainWindow::createStartingGamePage()
 {
     
-    QWidget *page = new QWidget;
-    QVBoxLayout *layout = new QVBoxLayout(page);
-    
-    const QString text("Options de partie"); 
-    QLabel *label = new QLabel(text);
+    playerNumberInput = new StartMenu(this);
+    QVBoxLayout *layout = new QVBoxLayout(playerNumberInput);
 
-    // Stylisation à voir plus tard
-    label->setAlignment(Qt::AlignCenter);
-    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
-
-    QPushButton *btnGameScreen = new QPushButton("Lancer !");
     QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
-
-    layout->addWidget(label);
-    layout->addWidget(btnGameScreen);
     layout->addWidget(btnHomeScreen);
     // layout->addWidget(btnEndScreen);
 
-    connect(btnHomeScreen, &QPushButton::clicked, this, [=]() {
+    connect(btnHomeScreen, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentIndex(0); // 0 -> Accueil
     });
 
-    connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
-    });
+    // connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
+    //     stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
+    // });
 
-    return page;
+    return playerNumberInput;
 }
 
 QWidget *MainWindow::createGamePage()

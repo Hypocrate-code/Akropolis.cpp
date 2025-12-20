@@ -31,7 +31,7 @@ Jeu* Jeu::getInstance() {
 
 
 // Constructeur créant les tuilesCité de la partie
-Jeu::Jeu() : mode{ModeDeJeu::Solo} {
+Jeu::Jeu() : mode{ModeDeJeu::Solo}, tuilesCite{}, hexs{}, maxPlayers{0} {
 
   // Définition des différentes quantités d'hexagones dans chaque catégorie
   // Soit 183 hors hexagones pour tuiles de départ (eux créer dans Initialiser)
@@ -101,18 +101,11 @@ Jeu::Jeu() : mode{ModeDeJeu::Solo} {
 }
 
 
+ 
 // Initialisation et lancement de la partie avec un nombre de joueur indiqué
 void Jeu::Initialiser(const int& nbJoueur) {
 
-  std::cout << "Jouer avec l'interface Qt ? (o/n) : ";
-  char reponse;
-  std::cin >> reponse;
-  if (reponse == 'o' || reponse == 'O') {
-      QtDisplay = true;
-  } else 
-  {
-      QtDisplay = false;
-  }
+  
 
   if (QtDisplay) {
       std::cout << "Lancement de la version Qt d'Akropolis.cpp\n";
@@ -147,6 +140,23 @@ void Jeu::Initialiser(const int& nbJoueur) {
 
   //creation de la pioche en commun
   pioche = new Pioche(*this);
+}
+
+void Jeu::createPlayers(const std::vector<std::string>& names) {
+    for (const auto& name : names) {
+        // Création des hexagones pour la tuile de départ du joueur
+        for (size_t j = 0; j < 3; j++) {
+            hexs.push_back(new Hexagone(Type::Carriere, Couleur::nulle));
+        }
+        hexs.push_back(new Hexagone(Type::Place, Couleur::Bleu));
+
+        // Création de la tuile de départ
+        const size_t n = hexs.size() - 4;
+
+        tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n + 1], *hexs[n + 2], *hexs[n + 3]));
+        // Création du joueur
+        joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));
+    }
 }
 
 void Jeu::Lancer() {
