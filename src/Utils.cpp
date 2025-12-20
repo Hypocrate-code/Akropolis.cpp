@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QVector2D>
 
+#include <iostream>
+
 namespace Utils
 {
     int indiceDeDroite(int direction) {
@@ -261,6 +263,7 @@ namespace Utils
                         return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
                 }
             case Type::Fantome:
+                std::cout<<"Warning: Attempting to get texture for Fantome type hexagon." << std::endl;    
                 return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
             case Type::Carriere:
                 return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*2, widthHexTexture, heightHexTexture);

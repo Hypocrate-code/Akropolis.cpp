@@ -22,7 +22,7 @@ QPolygonF QCreateHexagon(QPointF center, qreal radius)
 
 HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObject(), m_hexagon(hex)
     {
-        std::cout << "Creating HexItem for hexagon of type " << Utils::type_to_string(hex->getType()) << " and color " << Utils::color_to_string(hex->getCouleur()) << std::endl;
+        //std::cout << "Creating HexItem for hexagon of type " << Utils::type_to_string(hex->getType()) << " and color " << Utils::color_to_string(hex->getCouleur()) << std::endl;
         m_polygon = QCreateHexagon(center, radius);
 
         // Import de la texture
@@ -74,7 +74,7 @@ void HexItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     Q_UNUSED(option);
     Q_UNUSED(widget);
     
-    //painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(m_normal);
     painter->setPen(Qt::NoPen);
     painter->drawPolygon(m_polygon);

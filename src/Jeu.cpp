@@ -237,6 +237,18 @@ void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t diff
   pioche.init();
 
   currentPlayer = joueurs[0];
+
+  // Initialisation du chantier avec des tuiles piochées
+  mettreAJourChantier();
+
+  //tuile fantome gen
+  for (auto &j : joueurs)
+  {
+    if (j->getNom() != "Illustre Architecte")
+    {
+      j->getCite()->generateAllHexFantome();
+    }
+  }
 }
 
 /*
