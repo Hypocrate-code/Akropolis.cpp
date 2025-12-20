@@ -26,7 +26,7 @@ class Jeu {
     ~Jeu()=default;
     void EndGame();
 
-    static Jeu* getInstance(int nbJoueur);
+    static Jeu* getInstance();
     Jeu(Jeu &other) = delete;
     void operator=(const Jeu&) = delete;
 
@@ -34,9 +34,15 @@ class Jeu {
     void afficherHexagones() const;
     void tourJoueur(Joueur* joueur);
     void tourIllu(Illu* illu); 
-    void Initialiser(const int& nbJoueur);
 
-    void createPlayers(const std::vector<std::string>& names);
+
+    // FONCTIONNES AFFICHAGE PARTIE EN MODE CONSOLE
+    void StartMenuC();
+
+
+    // FONCTIONS APPELLES PAR QT ET CONSOLE:
+    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel);
+
     //void setDifficultyLevel(uint32_t level) { difficultyLevel = level; }
     //uint32_t getDifficultyLevel() const { return difficultyLevel; }
 
@@ -55,8 +61,8 @@ class Jeu {
     Tuile* choisirTuileDuChantier(Joueur* joueur);
     Tuile* choisirTuileDuChantier(Illu* illu); 
 
-    ModeDeJeu getModeDeJeu() const; // A voir si utile, mode solo ?
-    void setGameMode(ModeDeJeu mdj) { mode = mdj; }
+    inline ModeDeJeu getModeDeJeu() const {return mode; }; // A voir si utile, mode solo ?
+    //void setGameMode(ModeDeJeu mdj) { mode = mdj; }
 
     uint32_t getNbPlayers() const { return joueurs.size(); }
     void setMaxPlayers(uint32_t n) { joueurs.reserve(n); maxPlayers = n; }
@@ -75,8 +81,11 @@ class Jeu {
     }
     int choisirHexagoneDeReference(Tuile* t);
 
+    void setQtDisplay(bool qt){ QtDisplay=qt; }
+
   protected:
-    Jeu(int nbJoueur);
+    Jeu();
+
     static Jeu* instance;
     ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
     std::vector<Hexagone*> hexs;

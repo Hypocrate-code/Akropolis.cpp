@@ -36,10 +36,7 @@ MainWindow::MainWindow()
     
     // Connect startMenu vers gameScreen
     connect(static_cast<StartMenu*>(startGameScreen), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
-        Jeu* jeu = Jeu::getInstance();
-
-        jeu->createPlayers(names);
-        jeu->setGameMode(names.size() == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi);
+        Jeu::getInstance()->InitialiserPartie(names, difficultyLevel);
         //jeu->setDifficultyLevel(difficultyLevel);
         
         // LANCER LA PARTIE ICI
@@ -159,3 +156,11 @@ QWidget *MainWindow::createEndPage()
 //             QString("Clicked: %1").arg(button->toolTip()));
 //     }
 // }
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    // Handle any cleanup before closing
+    Jeu::getInstance()->EndGame();
+    event->accept(); // Accept the close event
+}

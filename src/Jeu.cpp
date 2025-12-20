@@ -17,34 +17,42 @@ using std::map;
 
 // Opérations de singleton
 
-Jeu* Jeu::instance = nullptr;
+Jeu *Jeu::instance = nullptr;
 
-Jeu* Jeu::getInstance(int nbJoueur) {
-  if (instance) {
+Jeu *Jeu::getInstance()
+{
+  if (instance)
+  {
     return instance;
   }
-  instance = new Jeu(nbJoueur);
+  instance = new Jeu();
   return instance;
 }
 
-void Jeu::EndGame(){
-  for (auto& tuile : tuilesCite) {
-      delete tuile;
+void Jeu::EndGame()
+{
+  std::cout << "destructor called\n";
+  for (auto &tuile : tuilesCite)
+  {
+    delete tuile;
   }
   tuilesCite.fill(nullptr);
 
-  for (auto& hex : hexs) {
-      delete hex;
+  for (auto &hex : hexs)
+  {
+    delete hex;
   }
   hexs.clear();
 
-  for (auto& tuileDepart : tuilesDepart) {
-      delete tuileDepart;
+  for (auto &tuileDepart : tuilesDepart)
+  {
+    delete tuileDepart;
   }
   tuilesDepart.clear();
 
-  for (auto& joueur : joueurs) {
-      delete joueur;
+  for (auto &joueur : joueurs)
+  {
+    delete joueur;
   }
   joueurs.clear();
 
@@ -55,10 +63,9 @@ void Jeu::EndGame(){
 
 // Fin opérations de singleton
 
-
 // Constructeur créant les tuilesCité de la partie
-Jeu::Jeu(int nbJoueur): mode(nbJoueur == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi), niveauDeDifficulte(0) , pioche(*this),nombreTuilesChantier(nbJoueur+2) {
-
+Jeu::Jeu() : mode(ModeDeJeu::Solo), niveauDeDifficulte(0), pioche(*this)
+{
 
   // Définition des différentes quantités d'hexagones dans chaque catégorie
   // Soit 183 hors hexagones pour tuiles de départ (eux créer dans Initialiser)
@@ -96,16 +103,23 @@ Jeu::Jeu(int nbJoueur): mode(nbJoueur == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi)
   constexpr std::array<Couleur, 6> couleurs{Couleur::Rouge, Couleur::Vert, Couleur::Bleu, Couleur::Jaune, Couleur::Violet, Couleur::nulle};
 
   // Création des hexagones dans l'ordre
-  for (auto& type : types) {
-    if (type == Type::Carriere) {
-      for (size_t i = 0; i < totauxParCouleur[type][Couleur::nulle]; i++) {
+  for (auto &type : types)
+  {
+    if (type == Type::Carriere)
+    {
+      for (size_t i = 0; i < totauxParCouleur[type][Couleur::nulle]; i++)
+      {
         hexs.push_back(new Hexagone(Type::Carriere, Couleur::nulle));
       }
     }
-    else {
-      for (const Couleur& couleur : couleurs) {
-        if (couleur == Couleur::nulle) continue;
-        for (size_t i = 0; i < totauxParCouleur[type][couleur]; i++) {
+    else
+    {
+      for (const Couleur &couleur : couleurs)
+      {
+        if (couleur == Couleur::nulle)
+          continue;
+        for (size_t i = 0; i < totauxParCouleur[type][couleur]; i++)
+        {
           hexs.push_back(new Hexagone(type, couleur));
         }
       }
@@ -117,41 +131,79 @@ Jeu::Jeu(int nbJoueur): mode(nbJoueur == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi)
   std::ranges::shuffle(hexs.begin(), hexs.end(), std::default_random_engine(seed));
 
   // Création des tuilesCité
-  for (size_t i = 0 ; i < tuilesCite.size() ; i++) {
-    const size_t j = i*3;
-    tuilesCite[i] = new Tuile(*hexs[j], *hexs[j+1], *hexs[j+2]);
+  for (size_t i = 0; i < tuilesCite.size(); i++)
+  {
+    const size_t j = i * 3;
+    tuilesCite[i] = new Tuile(*hexs[j], *hexs[j + 1], *hexs[j + 2]);
     tuilesCite[i]->set_indice(i);
   }
 
   // -> Passer les tuiles à la Pioche / Chantier ??
-
 }
 
-
- 
 // Initialisation et lancement de la partie avec un nombre de joueur indiqué
-void Jeu::Initialiser(const int& nbJoueur) { 
-
-  
-
-  if (QtDisplay) {
-      std::cout << "Lancement de la version Qt d'Akropolis.cpp\n";
-
-  } else {
-      std::cout << "Lancement de la version console d'Akropolis.cpp\n";
-
+void Jeu::StartMenuC()
+{
   std::vector<std::string> names;
 
-  for (int i=0; i < nbJoueur ; i++) {
+  std::cout << "\n=============================" << std::endl;
+  std::cout << "Bienvenue sur Akropolis.cpp !" << std::endl;
+  std::cout << "=============================" << std::endl
+            << std::endl;
+  Jeu *j = Jeu::getInstance();
+
+  int nJoueur;
+  std::cout << "Une partie est sur le point de commencer, combien êtes-vous :  ";
+  std::cin >> nJoueur;
+
+  for (int i = 0; i < nJoueur; i++)
+  {
 
     // Accueil du joueur i+1
     std::string name;
-    std::cout << std::endl << "Quel est ton prénom, joueur " << i+1 << " :  ";
+    std::cout << std::endl
+              << "Quel est ton prénom, joueur " << i + 1 << " :  ";
     std::cin >> name;
-    std::cout << "Merci " << name << "." << std::endl << std::endl;
+    std::cout << "Merci " << name << "." << std::endl
+              << std::endl;
+    names.push_back(name);
+  }
+
+  std::cout << "Vous avez choisi de jouer à " << nJoueur << " joueurs." << std::endl;
+  if (nJoueur == 1)
+  {
+    std::cout << "Vous avez choisi de jouer en mode solo contre l'illustre architecte.\n"
+              << std::endl;
+    std::cout << "Choisissez le niveau de difficulté de l'illustre architecte (de 0 à 2) : \n"
+              << "0. Hippodamos (niveau Facile) : tous les Quartiers d’Hippodamos sont considérés comme étant au 1er niveau.\n"
+              << "1. Métagénès (niveau Moyen) : tous les Quartiers de Métagénès sont considérés comme étant au 1er niveau. Chaque Carrière de Métagénès lui rapporte 2 points supplémentaires.\n"
+              << "2. Callicratès (niveau Difficile) : tous les Quartiers de Callicratès sont considérés comme étant au 2e niveau.\n";
+    do
+    {
+      std::cin >> this->niveauDeDifficulte;
+
+      if (this->niveauDeDifficulte < 0 || this->niveauDeDifficulte > 2)
+      {
+        std::cout << "Niveau de difficulté invalide. Veuillez choisir un niveau entre 0 et 2." << std::endl;
+      }
+    } while (this->niveauDeDifficulte < 0 || this->niveauDeDifficulte > 2);
+  }
+
+  j->InitialiserPartie(names, this->niveauDeDifficulte); // difficulté 0 par défaut en mode console
+}
+
+void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t difficultyLevel)
+{
+  std::cout << "\n--- Initialisation de la partie ---\n";
+  nombreTuilesChantier = names.size() + 2;
+  niveauDeDifficulte = difficultyLevel;
+
+  for (size_t i = 0; i < names.size(); i++)
+  {
 
     // Création des hexagones pour la tuile de départ du joueur i+1
-    for (size_t j = 0; j < 3; j++) {
+    for (size_t j = 0; j < 3; j++)
+    {
       hexs.push_back(new Hexagone(Type::Carriere, Couleur::nulle));
     }
     hexs.push_back(new Hexagone(Type::Place, Couleur::Bleu));
@@ -159,32 +211,33 @@ void Jeu::Initialiser(const int& nbJoueur) {
     // Création de la tuile de départ
     const size_t n = hexs.size() - 4;
 
-    tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n+1], *hexs[n+2], *hexs[n+3]));
+    tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n + 1], *hexs[n + 2], *hexs[n + 3]));
     // Création du joueur
-    joueurs.push_back(new Joueur(name.c_str(), i+1, tuilesDepart[tuilesDepart.size() - 1]));   
+    joueurs.push_back(new Joueur(names[i].c_str(), i + 1, tuilesDepart[tuilesDepart.size() - 1]));
   }
 
   // creation du joueur illustre architecte pour la partie en mode solo
-  if(nbJoueur==1){
-    for (size_t j = 0; j < 3; j++) {
+  if (names.size() == 1)
+  {
+    for (size_t j = 0; j < 3; j++)
+    {
       hexs.push_back(new Hexagone(Type::Carriere, Couleur::nulle));
     }
-  
-  hexs.push_back(new Hexagone(Type::Place, Couleur::Bleu));
+
+    hexs.push_back(new Hexagone(Type::Place, Couleur::Bleu));
     // Création de la tuile de départ
     const size_t n = hexs.size() - 4;
 
-    tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n+1], *hexs[n+2], *hexs[n+3]));
+    tuilesDepart.push_back(new TuileDepart(*hexs[n], *hexs[n + 1], *hexs[n + 2], *hexs[n + 3]));
     // Création du joueur
-    joueurs.push_back(new Illu( 2, tuilesDepart[tuilesDepart.size() - 1]));
-  }
+    joueurs.push_back(new Illu(2, tuilesDepart[tuilesDepart.size() - 1]));
   }
 
-  
-  //creation de la pioche en commun
+  // creation de la pioche en commun
   pioche.init();
 }
 
+/*
 void Jeu::createPlayers(const std::vector<std::string>& names) {
     for (const auto& name : names) {
         // Création des hexagones pour la tuile de départ du joueur
@@ -201,101 +254,123 @@ void Jeu::createPlayers(const std::vector<std::string>& names) {
         joueurs.push_back(new Joueur(name.c_str(), 2, tuilesDepart[tuilesDepart.size() - 1]));
     }
 }
+*/
 
-void Jeu::Lancer() {
-    bool fin = false;
-    // Tant que le jeu n'est pas terminé
-    while (!fin) {
-        // Générer les hex fantômes pour chaque joueur au début de la manche
-        for (auto& j : joueurs) {
-          if(j->getNom()!="Illustre Architecte"){
-            j->getCite()->generateAllHexFantome();
-          }
-            
-        }
-        // Chaque joueur joue son tour
-        for (auto& j : joueurs) {
-          if(j->getNom()!="Illustre Architecte"){
-            tourJoueur(j); // Inclut affichage cité et placement de tuile
-          }else{
-            tourIllu(static_cast<Illu*>(joueurs.back())); 
-          }
-        }
-        // Si il n'y a qu'une tuile dans le chantier et que la pioche est vide --> fin de partie 
-        if(chantier.size()==1 && pioche.estVide()){
-          fin =true; 
-        }else{
-          // Après que tous les joueurs aient joué, demander si +1 tour
-          char reponse;
-          std::cout << "\nVoulez-vous continuer la partie ? (o/n) : ";
-          std::cin >> reponse;
-          if (reponse != 'o' && reponse != 'O') {
-              fin = true;
-          }
+void Jeu::Lancer()
+{
+  bool fin = false;
+  // Tant que le jeu n'est pas terminé
+  while (!fin)
+  {
+    // Générer les hex fantômes pour chaque joueur au début de la manche
+    for (auto &j : joueurs)
+    {
+      if (j->getNom() != "Illustre Architecte")
+      {
+        j->getCite()->generateAllHexFantome();
       }
     }
-    std::cout<<"============== FIN DE PARTIE =====================\n";
-    std::cout<<"AFFICHAGE DES SCORES \n";  
-    for (auto& j : joueurs) {
-      std::cout<<j->getNom()<<" : "; 
-      std::cout << j->getCite()->compterPoints(niveauDeDifficulte) <<" points"<<std::endl;
+
+    // Chaque joueur joue son tour
+    for (auto &j : joueurs)
+    {
+      if (j->getNom() != "Illustre Architecte")
+      {
+        tourJoueur(j); // Inclut affichage cité et placement de tuile
+      }
+      else
+      {
+        tourIllu(static_cast<Illu *>(joueurs.back()));
+      }
     }
+    // Si il n'y a qu'une tuile dans le chantier et que la pioche est vide --> fin de partie
+    if (chantier.size() == 1 && pioche.estVide())
+    {
+      fin = true;
+    }
+    else
+    {
+      // Après que tous les joueurs aient joué, demander si +1 tour
+      char reponse;
+      std::cout << "\nVoulez-vous continuer la partie ? (o/n) : ";
+      std::cin >> reponse;
+      if (reponse != 'o' && reponse != 'O')
+      {
+        fin = true;
+      }
+    }
+  }
+  std::cout << "============== FIN DE PARTIE =====================\n";
+  std::cout << "AFFICHAGE DES SCORES \n";
+  for (auto &j : joueurs)
+  {
+    std::cout << j->getNom() << " : ";
+    std::cout << j->getCite()->compterPoints(niveauDeDifficulte) << " points" << std::endl;
+  }
 }
 
-int Jeu::choisirHexagoneDeReference(Tuile* t){
+int Jeu::choisirHexagoneDeReference(Tuile *t)
+{
   int hex;
   std::cout << "\n--- Choisir l'hexagone de référence à placer sur la cité ---\n";
-  for (int i = 0; i < 3; i++) {
-    Hexagone* h = t->get_hexagones()[i];
-    std::cout << "  [" << i << "] : " 
-              << Utils::type_to_string(h->getType()) 
-              << " " << Utils::color_to_string(h->getCouleur()) 
+  for (int i = 0; i < 3; i++)
+  {
+    Hexagone *h = t->get_hexagones()[i];
+    std::cout << "  [" << i << "] : "
+              << Utils::type_to_string(h->getType())
+              << " " << Utils::color_to_string(h->getCouleur())
               << std::endl;
   }
-  do {
+  do
+  {
     std::cout << "\nVotre choix (0-2) : ";
     std::cin >> hex;
-    
-    if (hex < 0 || hex > 2) {
+
+    if (hex < 0 || hex > 2)
+    {
       std::cout << "Choix invalide. Veuillez choisir un numéro entre 0 et 2.\n";
     }
   } while (hex < 0 || hex > 2);
-  
-  Hexagone* hexChoisi = t->get_hexagones()[hex];
-  std::cout << "\nVous avez choisi l'hexagone " << hex 
+
+  Hexagone *hexChoisi = t->get_hexagones()[hex];
+  std::cout << "\nVous avez choisi l'hexagone " << hex
             << " (" << Utils::type_to_string(hexChoisi->getType())
-            << " " << Utils::color_to_string(hexChoisi->getCouleur()) 
-            << ") !\n" << std::endl;
-  
+            << " " << Utils::color_to_string(hexChoisi->getCouleur())
+            << ") !\n"
+            << std::endl;
+
   return hex;
 }
 
-
 // Méthodes d'affichage
 
-void Jeu::afficherTuiles() const {
+void Jeu::afficherTuiles() const
+{
   // for(const auto& tuile : tuilesCite) {
   //   tuile->afficherData();
   // }  Print les tuiles de manière plus ordonnée :
-  for (size_t i = 0 ; i < tuilesCite.size() ; i++) {
-    std::cout << "Tuile " << i+1 << std::endl;
+  for (size_t i = 0; i < tuilesCite.size(); i++)
+  {
+    std::cout << "Tuile " << i + 1 << std::endl;
     tuilesCite[i]->afficherData();
     std::cout << std::endl;
   }
 }
 
-void Jeu::afficherHexagones() const {
-  for(size_t i = 0; i < hexs.size() ; i++) {
-    std::cout << "Hexagone " << i+1 << std::endl;
+void Jeu::afficherHexagones() const
+{
+  for (size_t i = 0; i < hexs.size(); i++)
+  {
+    std::cout << "Hexagone " << i + 1 << std::endl;
     hexs[i]->afficherData();
     std::cout << std::endl;
   }
 }
 
-
-void Jeu::tourJoueur(Joueur* joueur) {
-    if (!QtDisplay){
-
+void Jeu::tourJoueur(Joueur *joueur)
+{
+  if (!QtDisplay)
+  {
 
     // ===== Infos début du tour =====
     std::cout << "\n==========================\n\n";
@@ -306,21 +381,22 @@ void Jeu::tourJoueur(Joueur* joueur) {
 
     // --- Premier affichage de la cité ---
     joueur->getCite()->afficher();
-
     std::cout << "Pressez Entrer pour afficher le Chantier...";
 
     cin.ignore();
     cin.ignore();
 
-  // --- Affichage chantier global partagé ---
-    if (chantier.size()<=1) {            
-      mettreAJourChantier();         
+    // --- Affichage chantier global partagé ---
+    if (chantier.size() <= 1)
+    {
+      mettreAJourChantier();
     }
-    afficherChantier();                        // Affiche le chantier actuel
+    afficherChantier(); // Affiche le chantier actuel
 
     // --- Choix de la tuile et débit de pierres (pour le moment manuel) ---
-    std::cout << "Pierres disponibles : " << joueur->getNbPierres() << "\n" << std::endl;
-    Tuile* tChoisie = choisirTuileDuChantier(joueur); // Le joueur choisit une tuile
+    std::cout << "Pierres disponibles : " << joueur->getNbPierres() << "\n"
+              << std::endl;
+    Tuile *tChoisie = choisirTuileDuChantier(joueur); // Le joueur choisit une tuile
     joueur->getCite()->afficher();
     std::cout << "-- Tuile choisie --" << std::endl;
     tChoisie->afficherData();
@@ -328,7 +404,8 @@ void Jeu::tourJoueur(Joueur* joueur) {
     char reponse;
     std::cout << "\nTourner la tuile ? (o/n) : ";
     std::cin >> reponse;
-    while (reponse == 'o' || reponse == 'O') {
+    while (reponse == 'o' || reponse == 'O')
+    {
       tChoisie->rotate();
       tChoisie->afficherData();
       std::cout << "\nTourner la tuile ? (o/n) : ";
@@ -337,158 +414,175 @@ void Jeu::tourJoueur(Joueur* joueur) {
 
     joueur->getCite()->afficher();
     tChoisie->afficherData();
-    
+
     // --- 5) Placement de la tuile --- MODIFICATION
     int indexHexRef = choisirHexagoneDeReference(tChoisie);
-    Hexagone* hexRef = tChoisie->get_hexagones()[indexHexRef];
-    
+    Hexagone *hexRef = tChoisie->get_hexagones()[indexHexRef];
+
     int res = joueur->getCite()->placerTuileFromHexRef(hexRef);
-    while (0 == res) 
+    while (0 == res)
       res = joueur->getCite()->placerTuileFromHexRef(hexRef);
 
     // --- Affichage final de la cité après le placement ---
     std::cout << "\nTuile correctement placée :\n";
   }
 
+  joueur->getCite()->afficher();
 
-
-    joueur->getCite()->afficher();
-
-    // Ajout du nombre de pierre en fonction de la tuile placée 
-    joueur->MaJPierres(); 
-
+  // Ajout du nombre de pierre en fonction de la tuile placée
+  joueur->MaJPierres();
 }
-void Jeu::tourIllu(Illu* illu){
+void Jeu::tourIllu(Illu *illu)
+{
   // ===== Infos début du tour =====
-    std::cout << "\n==========================\n\n";
+  std::cout << "\n==========================\n\n";
 
-    // --- Afficher les informations du joueur avant son tour ---
+  // --- Afficher les informations du joueur avant son tour ---
   std::cout << "Nom : " << illu->getNom() << std::endl;
   std::cout << "Nombre de pierres : " << illu->getNbPierres() << std::endl;
-  if (chantier.empty()) {            
-      mettreAJourChantier();         
-    }
+  if (chantier.empty())
+  {
+    mettreAJourChantier();
+  }
 
-  afficherChantier();  
+  afficherChantier();
 
-  illu->getCite()->addTuile(choisirTuileDuChantier(illu)); 
+  illu->getCite()->addTuile(choisirTuileDuChantier(illu));
 
-  //affichage des tuiles apres son tour 
-  illu->getCite()->afficher(); 
-  //afficher score après l'ajout de la nouvelle tuile 
-  std::cout<<"Score : "<<illu->getCite()->compterPoints(niveauDeDifficulte); 
-  
-
+  // affichage des tuiles apres son tour
+  illu->getCite()->afficher();
+  // afficher score après l'ajout de la nouvelle tuile
+  std::cout << "Score : " << illu->getCite()->compterPoints(niveauDeDifficulte);
 }
 
-//piocher 
-// === Met à jour le chantier global si moins de 5 tuiles ===
-void Jeu::mettreAJourChantier() {
-    while (chantier.size() < nombreTuilesChantier && !pioche.estVide()) {
-        chantier.push_back(pioche.piocher());
-    }
+// piocher
+//  === Met à jour le chantier global si moins de 5 tuiles ===
+void Jeu::mettreAJourChantier()
+{
+  while (chantier.size() < nombreTuilesChantier && !pioche.estVide())
+  {
+    chantier.push_back(pioche.piocher());
+  }
 }
 
 // === Affiche le chantier actuel ===
-void Jeu::afficherChantier() const {
-    //std::cout << "\n======= Chantier =======\n\n";
-    //for (size_t i = 0; i < chantier.size(); ++i) {
+void Jeu::afficherChantier() const
+{
+  // std::cout << "\n======= Chantier =======\n\n";
+  // for (size_t i = 0; i < chantier.size(); ++i) {
   //      std::cout << "Tuile " << i << " : ";
-//        chantier[i]->afficherData();
-    //}
+  //        chantier[i]->afficherData();
+  //}
 
-    std::cout << "======= Chantier =======\n\n";
-    //draw the tuiles on 1 line
-    strCalc calc = strCalc(10, std::string(chantier.size() * 15, ' '));
-    for (size_t i = 0; i < chantier.size(); ++i) {
-        std::unordered_set<Hexagone*> drawnHexagones;
-        Cite::draw_hex_recursive_filtered(chantier[i]->get_hexagones()[0], 6 + i * 20, 2, calc, drawnHexagones, 0, false);
-    }
-    std::cout << "Tuile indices : \n      ";
-    for (size_t i = 0; i < chantier.size(); ++i) {
-        std::cout << "[" << i << "]" << std::string(17, ' ');
-    }
-    std::cout << std::endl;
-    for (auto &line : calc) {
-        std::cout << Utils::colorize_line(line) << std::endl;
-    }
-
+  std::cout << "======= Chantier =======\n\n";
+  // draw the tuiles on 1 line
+  strCalc calc = strCalc(10, std::string(chantier.size() * 15, ' '));
+  for (size_t i = 0; i < chantier.size(); ++i)
+  {
+    std::unordered_set<Hexagone *> drawnHexagones;
+    Cite::draw_hex_recursive_filtered(chantier[i]->get_hexagones()[0], 6 + i * 20, 2, calc, drawnHexagones, 0, false);
+  }
+  std::cout << "Tuile indices : \n      ";
+  for (size_t i = 0; i < chantier.size(); ++i)
+  {
+    std::cout << "[" << i << "]" << std::string(17, ' ');
+  }
+  std::cout << std::endl;
+  for (auto &line : calc)
+  {
+    std::cout << Utils::colorize_line(line) << std::endl;
+  }
 }
 
 // === Permet au joueur de choisir une tuile dans le chantier ===
-Tuile* Jeu::choisirTuileDuChantier(Joueur* joueur) {
-    if (chantier.empty()) {
-        std::cout << "Le chantier est vide.\n";
-        return nullptr;
+Tuile *Jeu::choisirTuileDuChantier(Joueur *joueur)
+{
+  if (chantier.empty())
+  {
+    std::cout << "Le chantier est vide.\n";
+    return nullptr;
+  }
+
+  // Affichage pour vérification
+  // afficherChantier();
+
+  size_t choix;
+  do
+  {
+    std::cout << "Choisissez une tuile par son numéro (0-" << chantier.size() - 1 << ") : ";
+    std::cin >> choix;
+    if (choix >= chantier.size())
+    {
+      std::cout << "Choix invalide. Veuillez réessayer.\n";
     }
-
-    // Affichage pour vérification
-    //afficherChantier();
-
-    size_t choix;
-    do {
-        std::cout << "Choisissez une tuile par son numéro (0-" << chantier.size()-1 << ") : ";
-        std::cin >> choix;
-        if (choix >= chantier.size()) {
-            std::cout << "Choix invalide. Veuillez réessayer.\n";
-        } else if (choix > joueur->getNbPierres()) {
-            std::cout << "Vous n'avez pas assez de pierres pour cette tuile. Veuillez réessayer.\n";
-        }
-    } while (choix >= chantier.size() || choix>joueur->getNbPierres());
-    joueur->setNbPierre(joueur->getNbPierres()-choix); 
-    if(this->getModeDeJeu()==ModeDeJeu::Solo){
-      // l'illustre architecte récupere les pierres 
-      this->joueurs.back()->setNbPierre(this->joueurs.back()->getNbPierres()+ choix); 
+    else if (choix > joueur->getNbPierres())
+    {
+      std::cout << "Vous n'avez pas assez de pierres pour cette tuile. Veuillez réessayer.\n";
     }
+  } while (choix >= chantier.size() || choix > joueur->getNbPierres());
+  joueur->setNbPierre(joueur->getNbPierres() - choix);
+  if (this->getModeDeJeu() == ModeDeJeu::Solo)
+  {
+    // l'illustre architecte récupere les pierres
+    this->joueurs.back()->setNbPierre(this->joueurs.back()->getNbPierres() + choix);
+  }
 
-    Tuile* t = chantier[choix];
-    chantier.erase(chantier.begin() + choix);
+  Tuile *t = chantier[choix];
+  chantier.erase(chantier.begin() + choix);
 
-    // Affichage du chantier restant pour vérification
-    /*
-    std::cout << "=== Chantier après choix ===\n";
-    for (size_t i = 0; i < chantier.size(); ++i) {
-        std::cout << i << " : ";
-        chantier[i]->afficherData();
-    }*/
+  // Affichage du chantier restant pour vérification
+  /*
+  std::cout << "=== Chantier après choix ===\n";
+  for (size_t i = 0; i < chantier.size(); ++i) {
+      std::cout << i << " : ";
+      chantier[i]->afficherData();
+  }*/
 
-    return t;
+  return t;
 }
-Tuile* Jeu::choisirTuileDuChantier(Illu* illu){
-  if (chantier.empty()) {
-        std::cout << "Le chantier est vide.\n";
-        return nullptr;
-    }
+Tuile *Jeu::choisirTuileDuChantier(Illu *illu)
+{
+  if (chantier.empty())
+  {
+    std::cout << "Le chantier est vide.\n";
+    return nullptr;
+  }
   // permet de retourner le choix de l'illustre architecte et de lui retirer les pierre que cela lui a couté
-  // rappel regle : l'illu archi prend la tuile avec au moins une place la moins chère du chantier 
-  // s'il n'a pas assez d'argent ou que aucune tuile n'a de place, il prend la tuile gratuite du chantier 
-  //c'est à dire celle à la position 0; 
-  bool tuile_ok = false; 
-  bool place = false; 
-  int index=0; 
-for(auto tuile_chantier:chantier){
-    for(auto hex:chantier[index]->get_hexagones()){
-      if(hex->getType()==Type::Place){
-        if(illu->getNbPierres()>=index){//vérifier juste que l'index correspond bien au prix
-          illu->setNbPierre(illu->getNbPierres()-index); 
-          cout<<"L'illustre architect a choisi la tuile "<<index<<"du chantier \n"; 
-          auto t=tuile_chantier; 
+  // rappel regle : l'illu archi prend la tuile avec au moins une place la moins chère du chantier
+  // s'il n'a pas assez d'argent ou que aucune tuile n'a de place, il prend la tuile gratuite du chantier
+  // c'est à dire celle à la position 0;
+  bool tuile_ok = false;
+  bool place = false;
+  int index = 0;
+  for (auto tuile_chantier : chantier)
+  {
+    for (auto hex : chantier[index]->get_hexagones())
+    {
+      if (hex->getType() == Type::Place)
+      {
+        if (illu->getNbPierres() >= index)
+        { // vérifier juste que l'index correspond bien au prix
+          illu->setNbPierre(illu->getNbPierres() - index);
+          cout << "L'illustre architect a choisi la tuile " << index << "du chantier \n";
+          auto t = tuile_chantier;
           chantier.erase(chantier.begin() + index);
-          return t; }else{
-          //cas où l'illArchi n'a pas assez de pierre pour s'acheter de place
-          cout<<"L'illustre architect a choisi la tuile 0 du chantier \n"; 
+          return t;
+        }
+        else
+        {
+          // cas où l'illArchi n'a pas assez de pierre pour s'acheter de place
+          cout << "L'illustre architect a choisi la tuile 0 du chantier \n";
 
-          auto t = chantier[0]; 
+          auto t = chantier[0];
           chantier.erase(chantier.begin());
-          return t; 
-          
+          return t;
         }
       }
     }
   }
-  // cas ou y n'y a pas de place 
-  cout<<"L'illustre architect a choisi la tuile 0 du chantier \n"; 
-  auto t = chantier[0]; 
+  // cas ou y n'y a pas de place
+  cout << "L'illustre architect a choisi la tuile 0 du chantier \n";
+  auto t = chantier[0];
   chantier.erase(chantier.begin());
-  return t;  
+  return t;
 }
