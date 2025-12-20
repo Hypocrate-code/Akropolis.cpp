@@ -20,6 +20,8 @@ public:
     HexView(const Hexagone* hex, int radius = 77, QWidget* parent = nullptr);
     void launchDrawRecursive(const Hexagone* hex, QPoint centre = QPoint(0,0));
     const void setDrag(bool isDraggable) {isDraggable ? setDragMode(QGraphicsView::ScrollHandDrag) : setDragMode(QGraphicsView::NoDrag);};
+    void clearView() {scene->clear(); visited.clear(); while(!pile.empty()) pile.pop();};
+    
     // ~HexView();
 };
 

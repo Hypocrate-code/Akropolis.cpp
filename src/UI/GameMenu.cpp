@@ -8,9 +8,10 @@
 #include <QSpinBox>
 #include <QComboBox>
 #include <iostream>
+#include <QMessageBox>
 
 GameMenu::GameMenu(QWidget *parent)
-    : QMainWindow(parent), currentPlayer(nullptr), selectedTuile(nullptr), 
+    : QMainWindow(parent), selectedTuile(nullptr), 
       selectedHex(nullptr), isPlacementMode(false),
       centralWidget(new QWidget(this)),
       mainLayout(new QHBoxLayout()),
@@ -116,10 +117,9 @@ void GameMenu::updateDisplay()
 {
     updateChantier();
     updateCite();
-    
     Jeu*j = Jeu::getInstance();
     if (j && j->getJoueurs().size() > 0) {
-        currentPlayer = j->getJoueurs()[0]; // Ou à adapter selon le joueur actuel
+        Joueur* currentPlayer = j->getCurrentPlayer();
         
         if (currentPlayer) {
             uint32_t points = currentPlayer->getCite()->compterPoints(j->getNiveauDeDifficulte());
@@ -145,13 +145,13 @@ void GameMenu::updateChantier()
     if (j->getChantier().empty()) {
         j->mettreAJourChantier();
 
-        //hexViewChantier->scene->clear();
+        hexViewChantier->clearView();
         statusLabel->setText("Chantier vide - Attente de mise à jour...");
         return;
     }
     
     // Nettoyer la scène précédente
-    //hexViewChantier->scene->clear();
+    hexViewChantier->clearView();
     
     // Dessiner chaque tuile du chantier
     for (size_t i = 0; i < j->getChantier().size(); ++i) {
@@ -175,13 +175,20 @@ void GameMenu::updateChantier()
 void GameMenu::updateCite()
 {
     Jeu* j = Jeu::getInstance();
-    if (!j || !currentPlayer) return;
+    Joueur* currentPlayer = j->getCurrentPlayer();
+    if (!j || !currentPlayer){
+        QMessageBox::warning(this, "Erreur", "Jeu ou joueur courant non initialisé.");
+        return;
+    } 
     
     Cite *cite = currentPlayer->getCite();
-    if (!cite) return;
+    if (!cite){
+        QMessageBox::warning(this, "Erreur", "Cité du joueur non trouvée.");
+        return;
+    }
     
     // Nettoyer la scène précédente
-    //hexviewCite->scene->clear();
+    hexviewCite->clearView();
     
     // Récupérer la première tuile comme point de départ
     std::vector<const Tuile*> tuiles = cite->getTuiles();
@@ -240,6 +247,7 @@ void GameMenu::onHexagonSelected(const Hexagone* hex)
 void GameMenu::onConfirmPlacement()
 {
     Jeu* j = Jeu::getInstance();
+    Joueur* currentPlayer = j->getCurrentPlayer();
     if (!selectedTuile || !selectedHex || !currentPlayer) {
         statusLabel->setText("Erreur: sélection incomplète");
         return;

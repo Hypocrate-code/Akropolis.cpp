@@ -81,6 +81,9 @@ class Jeu {
     
     }
 
+
+    Joueur* getCurrentPlayer() const { return currentPlayer; }
+
     const std::vector<Tuile*>& getChantier() const { return chantier; }
 
     int choisirHexagoneDeReference(Tuile* t);
@@ -94,6 +97,8 @@ class Jeu {
       }
     }
 
+
+
   protected:
     Jeu();
 
@@ -102,6 +107,9 @@ class Jeu {
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;
+    Joueur* currentPlayer;
+
+
     uint32_t maxPlayers;
     
     Pioche pioche;  

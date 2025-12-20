@@ -37,7 +37,6 @@ private:
     Tuile* getCurrentTuile() const;
 
     // Core game references
-    Joueur* currentPlayer;
     Tuile* selectedTuile;
     const Hexagone* selectedHex;
     bool isPlacementMode;

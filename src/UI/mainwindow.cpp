@@ -39,9 +39,12 @@ MainWindow::MainWindow()
         Jeu::getInstance()->InitialiserPartie(names, difficultyLevel);
         //jeu->setDifficultyLevel(difficultyLevel);
         
+        gameMenu->updateDisplay();
         // LANCER LA PARTIE ICI
         stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
     });
+
+
 
 }
 

@@ -6,6 +6,8 @@
 #include <QGraphicsColorizeEffect>
 #include "Utils.hpp"
 
+class Hexagone;
+
 class HexItem : public QGraphicsPolygonItem
 {
 public:

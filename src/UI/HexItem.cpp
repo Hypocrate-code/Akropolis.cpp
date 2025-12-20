@@ -1,6 +1,8 @@
 // #include "UI/HexagonalButton.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include "UI/HexItem.hpp"
+#include <iostream>
+#include "Tuile.hpp"
 
 
 QPolygon QCreateHexagon(QPointF center, qreal radius)
@@ -18,6 +20,7 @@ QPolygon QCreateHexagon(QPointF center, qreal radius)
 
 HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsPolygonItem()
     {
+        std::cout << "Creating HexItem for hexagon of type " << Utils::type_to_string(hex->getType()) << " and color " << Utils::color_to_string(hex->getCouleur()) << std::endl;
         QPolygonF poly = QCreateHexagon(center, radius);
 
         // Import de la texture

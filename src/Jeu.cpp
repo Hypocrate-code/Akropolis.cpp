@@ -235,6 +235,8 @@ void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t diff
 
   // creation de la pioche en commun
   pioche.init();
+
+  currentPlayer = joueurs[0];
 }
 
 /*
