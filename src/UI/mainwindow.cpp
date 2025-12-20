@@ -5,8 +5,8 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QMessageBox>
-#include <QGraphicsScene>
-#include <QGraphicsPolygonItem>
+
+#include "UI/HexView.hpp"
 #include "Tuile.hpp"
 
 
@@ -97,67 +97,20 @@ QWidget *MainWindow::createGamePage()
     QVBoxLayout *btnContainer = new QVBoxLayout();
 
     QPushButton *btnEndScreen = new QPushButton("Finir partie (bouton temporaire)");
+    
+    connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
+        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
+    });
+
     btnContainer->addWidget(btnEndScreen);
     mainLayout->addLayout(btnContainer);
 
-    // Création de la scène graphique
-    QGraphicsScene* scene = new QGraphicsScene(this);
-    
-    // Création de l'hexagone visuel, à partir du polygone (hex) et de son brush, sa texture (brush)
-    Hexagone* temp = new Hexagone(Type::Quartier, Couleur::Rouge);
-    HexItem* item = new HexItem(temp);
-
-    scene->addItem(item);
-
     // Création d'UNE vue de la scène graphique créée
-    QGraphicsView* view = new QGraphicsView(scene);
+    HexView* view = new HexView(50, page);
+    view->setDrag(true);
     
     mainLayout->addWidget(view);
-
-
-    
-    // // Create hexagonal buttons with different textures
-    // QStringList texturePaths = {
-    //     "../assets/tuile_habitation.png",
-    //     "../assets/tuile_marche.png", 
-    //     "../assets/tuile_caserne.png",
-    //     "../assets/tuile_temple.png",
-    //     "../assets/tuile_jardin.png",
-    //     "../assets/cube.png"
-    // };
-    // QStringList tileNames = {"Habitation", "Marché", "Quartier", "Temple", "Jardin", "Carrière"};
-    
-    // // Create 4x4 grid of hexagonal buttons
-    // int buttonSize = 80;
-    // for (int row = 0; row < 4; ++row) {
-    //     for (int col = 0; col < 4; ++col) {
-    //         HexagonalButton *button = new HexagonalButton(page);
-    //         button->setSize(buttonSize);
-            
-    //         // Offset even rows for honeycomb pattern
-    //         int actualCol = col * 2 + (row % 2);
-            
-    //         // Set texture (cycle through available textures)
-    //         if (texturePaths.size() > 0) {
-    //             int textureIndex = (row * 4 + col) % texturePaths.size();
-    //             button->setTexture(texturePaths[textureIndex]);
-    //         }
-            
-    //         // Set tooltip
-    //         button->setToolTip(tileNames[(row * 4 + col) % tileNames.size()]);
-            
-    //         // Connect signal
-    //         connect(button, &HexagonalButton::clicked, this, &MainWindow::onHexagonClicked);
-            
-    //         // Add to grid with offset for honeycomb effect
-    //         gridLayout->addWidget(button, row, actualCol);
-    //         m_hexButtons.append(button);
-    //     }
-    // }
-
-    // connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
-    //     stackedWidget->setCurrentIndex(3);
-    // });
+    // view->launchDrawRecursive(temp5, QPoint(350, 0));
 
     return page;
 }

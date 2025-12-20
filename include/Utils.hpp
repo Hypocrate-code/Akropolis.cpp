@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#include <QString>
+#include <QPixmap>
+#include <QPoint>
 
 #define DEBUG
 
@@ -11,7 +12,8 @@ class Hexagone;
 namespace Utils
 {
     char get_color_char(Couleur color);
-    QString get_texture(Hexagone* hex);
+    QPixmap get_texture(const Hexagone* hex);
+    QPoint getCentreVoisin(QPoint originalCenter, int direction, int radius = 100);
 
     std::string get_color_code(Couleur color);
     std::string get_short_type(Type type);

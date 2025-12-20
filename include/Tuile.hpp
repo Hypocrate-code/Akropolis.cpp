@@ -3,6 +3,7 @@
 #include <array>
 #include <ostream>
 #include <cstdint>
+#include <QPoint>
 
 #include "Utils.hpp"
 
@@ -54,6 +55,8 @@ public:
 
 
     const std::array<Hexagone*,8>& getVoisins() const { return voisins; }
+
+    QPoint getVoisinCentre(int pos, QPoint baseCentre);
 
     // accesseurs écriture
 

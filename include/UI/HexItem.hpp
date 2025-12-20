@@ -10,7 +10,7 @@ class HexItem : public QGraphicsPolygonItem
 {
 public:
 
-    HexItem(Hexagone* hex);
+    HexItem(const Hexagone* hex, QPoint center, int radius);
 
 protected:
 
