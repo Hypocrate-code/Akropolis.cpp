@@ -19,7 +19,7 @@ public:
     Cite(const Tuile* tuileDeDepart);
     ~Cite() = default;
 
-
+    std::vector<const Tuile*>getTuiles(){return  tuiles;}
     virtual bool placerTuileFromHexRef(Hexagone* hex) = 0; // return true si la Tuile a été placé
     void addTuile(const Tuile* t);
 

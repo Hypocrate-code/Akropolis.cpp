@@ -259,3 +259,11 @@ int Hexagone::getNiveau()const{
         }
     return niveau; 
 };
+
+
+int Hexagone::gainPierre()const{
+    if(this->getVoisinsBOT()!=nullptr){
+        if(this->getVoisinsBOT()->getType()==Type::Carriere)return 1;
+        else return 0; 
+    }else return 0; 
+}

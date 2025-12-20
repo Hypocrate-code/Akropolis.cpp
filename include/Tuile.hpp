@@ -101,6 +101,8 @@ public:
     int getNiveau()const;
 
     std::array<int, 8> getVoisinsList() const;
+
+    int gainPierre()const; 
 protected:
     Type type;
     Couleur couleur;
