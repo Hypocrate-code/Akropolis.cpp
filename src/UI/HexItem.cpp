@@ -24,7 +24,14 @@ HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObje
         m_polygon = QCreateHexagon(center, radius);
 
         // Import de la texture
-        QPixmap texture(Utils::get_texture(hex));
+        if (!hex) return;
+
+        QPixmap texture;//Utils::get_texture(hex));
+
+        if (hex->getType() == Type::Fantome && hex->getVoisinsBOT()) 
+            texture = Utils::get_texture(hex->getVoisinsBOT());
+        else
+            texture = Utils::get_texture(hex);
         
         QRectF bounds = m_polygon.boundingRect();
         // Mise à l'échelle de la texture
