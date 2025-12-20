@@ -27,3 +27,6 @@ debug.cpp
 
 .vscode
 russell/
+
+*.exe
+*.app

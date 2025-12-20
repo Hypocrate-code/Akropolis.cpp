@@ -66,97 +66,89 @@ git push -u origin <nom-de-branche>
 
 ```
 
----
+# Instructions de Build
 
-## <a id="compilation">Compilation du projet</a>
+## Prérequis
+- **Qt** installé sur votre système
+- **Compilateur C++20** (GCC/Clang pour MinGW, ou MSVC pour Visual Studio)
 
-Tout d'abord, plusieurs outils sont requis.
-Pour vérifier que vous les avez, rentrez les commandes suivantes dans un terminal :
-
-- `gcc --version`
-- `make --version`
-- `cmake --version`
-
-Dans une WSL ou sur MacOS, normalement vous avez déjà gcc, make et CMake d'installés.
-Si vous voulez vraiment utiliser le terminal de windows, plein de tutoriels sont en ligne sur comment installer ces exécutables.
-
-#### Compilateur GCC
-
-Un compilateur prend des fichiers C ou C++, crée des fichier objets .o et les link ensemble avec les headers.
-
-On utilise communément <a href="https://en.wikipedia.org/wiki/GNU_Compiler_Collection">GCC (GNU Compiler Collection)</a>.
-
-Une commande utilisant gcc ressemble à ça : `gcc main.c Tuile.c -o Akropolis`, le `-o` pour output signifie que l'exécutable créé sera `Akropolis`.
-
-Or, pour ne pas passer tous les fichiers du projet en argument de la commande, on utilise un MakeFile.
-
-#### Make
-
-Make est un autre outil, permet d'automatiser la compilation, à partir d'un fichier Makefile contenant les commandes qu'il doit faire, il les éxecute dans l'ordre.
-Mais c'est toujours galère parce qu'il écrire dans le Makefile toutes les commandes qu'il faut faire.
-Donc on automatise ça avec CMake
-
-#### CMake (Create Makefile)
-
-Permet donc d'automatiser la création du Makefile.
-A partir d'un CMakeLists.txt contenant des informations sur quels fichiers source prendre, quels fichiers header prendre, et des options liées au compilateur, il crée un Makefile.
-Une fois ce Makefile créé, on a plus besoin d'utiliser CMake tant qu'on a pas de nouveaux fichiers .cpp.
-
-Créez donc le fichier CMakeLists.txt avec une config qui marche pour notre projet, je propose celui-ci :
-
+### Étape 1: Configurer le chemin Qt
+Ouvrez `CMakeLists.txt` et modifiez la ligne 12 avec votre chemin d'installation Qt :
 ```cmake
-cmake_minimum_required(VERSION 3.16)
-project(Akropolis)
-
-set(CMAKE_C_COMPILER gcc)
-set(CMAKE_CXX_COMPILER )
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Fichiers sources
-file(GLOB SOURCES "src/*.cpp")
-
-# Créer l'exécutable
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-target_include_directories(${PROJECT_NAME} PRIVATE include)
-
-# Link
-# find_package(QT...)
-# target_link_libraries(${PROJECT_NAME}) ...
+set(DEFAULT_QT_PATH "C:/Qt/6.9.3/mingw_64")  # <-- Remplacez par VOTRE chemin
 ```
 
-#### Ce que ça donne sur un IDE
+**Trouver votre chemin Qt :**
+- Windows : Regardez dans `C:\Qt\` (ex: `C:\Qt\6.9.3\msvc2022_64` ou `C:\Qt\6.9.3\mingw_64`)
 
-Pour compiler et lancer le projet depuis votre IDE, il doit être capable de faire les étapes précédentes, avec le fichier CMakeLists.txt dans le projet.
-Cela correspond exactement aux lignes de commande qui suivent.
+### Étape 2: Build avec MinGW
+```bash
+# Nettoyer le dossier build s'il existe déjà
+rm -rf build
+mkdir build
+cd build 
 
-#### Ce que ça donne en lignes de commande
+# Configurer avec MinGW
+cmake .. -G "MinGW Makefiles"
 
-Avec le CMakeLists.txt créé, vous pouvez rentrer ceci en lignes de commande :
+# Compiler
+cmake --build . -j8
+```
+
+### Étape 3: Exécuter le programme
+```bash
+./Akropolis.exe
+```
+
+### Résumé : 
 
 ```bash
-
-# 0. Aller dans le dossier du projet
-cd chemin/vers/racine/projet
-
-# 1. Créer un dossier dans lequel seront stockés l'exécutable, et les fichiers propres au build.
-mkdir build
-
-# 2. Aller dans ce nouveau dossier.
+# Après avoir modifié du code :
 cd build
+cmake --build . -j8    # Recompile rapidement
+./Akropolis.exe        # Teste le programme
 
-# 3. Utilisez CMake avec le CMakeLists.txt du projet.
-cmake ..
-# Le Makefile est alors créé à votre chemin actuel (build/).
-
-# 4. Build le projet.
-cmake --build . -j4
-# Make va utiliser le Makefile pour créer un exécutable.
-
-# 5. Lancer l'exécutable.
-./Akropolis
-
+# Si vous changez CMakeLists.txt :
+rm -rf build
+cmake .. -G "MinGW Makefiles"
+cmake --build . -j8
 
 ```
+
+## Edit par Thib si vous avez des erreurs à la compilation avec Qt
+
+Personnellement, à l'utilisation de la commande :
+```bash
+cmake .. -G "MinGW Makefiles"
+```
+J'ai eu l'erreur suivante : **"Could not create named generator MinGW Makefiles"**
+
+En exécutant `cmake --help` à la section **Generators** je n'avais rien qui ressemblait à MinGW
+
+2 options sont possibles :
+- soit vous avez déjà mingw et il n'est juste pas correctement link a votre PATH
+- soit vous n'avez pas mingw d'installé
+
+---
+
+Pour la première option, aller à la racine de votre disque dur (pour moi C:/), vous devriez y voir le dossier "mingw64/bin".
+
+(Si ce n'est pas le cas, ou que vous n'avez qu'un dossier semblable à MinGW, se référer à la deuxième option.)
+
+Ouvrez un Terminal windows et tapez "mingw32-make --version" : si vous avez un retour positif, vous devez l'ajouter au PATH de votre WSL (si vous utilisez une WSL) avec `export PATH=/chemin/bin:$PATH`.
+
+---
+
+Pour la seconde option (qui était mon cas), vous n'avez pas les exécutables mingw attendus. Il faut donc les installer avec msys2, et c'est un peu chelou.
+
+Allez sur https://www.msys2.org/, installez l'exécutable et complétez son installation. Une fois fait, vous avez tout un tas de msys2 d'installés, vous devez lancer MSYS2 MSYS et taper la commande `pacman -Syu`. Une fois son déroulement terminé, fermez MSYS2 MSYS.
+
+Lancez à présent MSYS2 MinGW64. Une fois dedans, tapez la commande `pacman -S mingw-w64-x86_64-toolchain`.
+
+Vous devez à la suite de son exécution avoir maintenant le dossier C:/msys64/mingw64/bin.
+
+Ajoutez ce dossier au PATH windows, et vous pourrez exécuter `mingw32-make --version` (même si vous avez une machine x64 !!).
+
+A présent vous pouvez reprendre le fil des commandes pour compiler le projet : cmake a à présent accès à MinGW et son Makefile generator.
+
+GG à vous. Merci d'avoir lu !

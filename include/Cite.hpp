@@ -42,8 +42,9 @@ public:
                                        std::unordered_set<Hexagone *> &drawnHexagones, 
                                        int hauteur, bool drawFantomes);
 
-protected:
+    const Tuile* getTuileDeDepart() const { return tuiles[0]; }
 
+protected:
 
     std::vector<const Tuile*> tuiles;
 

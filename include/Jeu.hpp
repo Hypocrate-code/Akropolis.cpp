@@ -10,6 +10,9 @@
 #include "Tuile.hpp"
 #include "Joueur.hpp"
 #include <array>
+#include <string>
+
+class Pioche; 
 #include "Exception.hpp" 
 
 enum class ModeDeJeu {
@@ -23,16 +26,26 @@ class Jeu {
     ~Jeu()=default;
     void EndGame();
 
-    static Jeu* getInstance(int nbJoueur);
+    static Jeu* getInstance();
     Jeu(Jeu &other) = delete;
     void operator=(const Jeu&) = delete;
 
     void afficherTuiles() const;
     void afficherHexagones() const;
-    ModeDeJeu getModeDeJeu() const{return mode; }; // A voir si utile, mode solo ?
     void tourJoueur(Joueur* joueur);
     void tourIllu(Illu* illu); 
-    void Initialiser(const int& nbJoueur);
+
+
+    // FONCTIONNES AFFICHAGE PARTIE EN MODE CONSOLE
+    void StartMenuC();
+
+
+    // FONCTIONS APPELLES PAR QT ET CONSOLE:
+    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel);
+
+    //void setDifficultyLevel(uint32_t level) { difficultyLevel = level; }
+    //uint32_t getDifficultyLevel() const { return difficultyLevel; }
+
     //void Jouer(Joueur j);   
     void Lancer();   
     std::array<Tuile*, 61> tuilesCite;
@@ -48,6 +61,15 @@ class Jeu {
     Tuile* choisirTuileDuChantier(Joueur* joueur);
     Tuile* choisirTuileDuChantier(Illu* illu); 
 
+    inline ModeDeJeu getModeDeJeu() const {return mode; }; // A voir si utile, mode solo ?
+    //void setGameMode(ModeDeJeu mdj) { mode = mdj; }
+
+    uint32_t getNbPlayers() const { return joueurs.size(); }
+    void setMaxPlayers(uint32_t n) { joueurs.reserve(n); maxPlayers = n; }
+    uint32_t getMaxPlayers() const { return maxPlayers; }
+    void addJoueur(Joueur* j) { joueurs.push_back(j); }
+    const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
+
     void set_niveau_difficulte(int n){
       if(0<=n && n<=2){
         niveauDeDifficulte=n; }
@@ -59,16 +81,22 @@ class Jeu {
     }
     int choisirHexagoneDeReference(Tuile* t);
 
+    void setQtDisplay(bool qt){ QtDisplay=qt; }
+
   protected:
-    Jeu(int nbJoueur);
+    Jeu();
+
     static Jeu* instance;
-    const ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
+    ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;
+    uint32_t maxPlayers;
     
     Pioche pioche;  
     std::vector<Tuile*> chantier; 
+
+    bool QtDisplay = true;
     int nombreTuilesChantier; 
     int niveauDeDifficulte; 
 

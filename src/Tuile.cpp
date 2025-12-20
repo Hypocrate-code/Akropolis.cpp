@@ -111,7 +111,6 @@ Tuile *Tuile::rotate(){
     return this;
 }
 
-
 void Tuile::reset_hex_links()
 {
     for (auto &hex : hexagones)

@@ -1,15 +1,19 @@
 #pragma once
 #include <string>
-// #include "Tuile.hpp"
+#include <QPixmap>
+#include <QPoint>
 
 #define DEBUG
 
 
 enum class Couleur;
 enum class Type;
+class Hexagone;
 namespace Utils
 {
     char get_color_char(Couleur color);
+    QPixmap get_texture(const Hexagone* hex);
+    QPoint getCentreVoisin(QPoint originalCenter, int direction, int radius = 100);
 
     std::string get_color_code(Couleur color);
     std::string get_short_type(Type type);
