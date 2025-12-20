@@ -22,8 +22,14 @@ HexView::HexView(const Hexagone* hex, int radius, QWidget* parent) : QGraphicsVi
 
 void HexView::onHexItemClicked(const Hexagone* hex)
 {
-    emit hexagonClicked(hex);
+    //revoie lhex tout en haut
+    const Hexagone* topHex = hex;;
+    while (topHex->getVoisinsTOP()) {
+        topHex = topHex->getVoisinsTOP();
+    }
+    emit hexagonClicked(topHex);
 }
+
 void HexView::launchDrawRecursive(const Hexagone* hex, QPoint centre) {
     if (!hex) return;
 

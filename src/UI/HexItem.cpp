@@ -23,20 +23,20 @@ QPolygonF QCreateHexagon(QPointF center, qreal radius)
 
 HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObject(), m_hexagon(hex)
     {   
-        if (hex && hex->getVoisinsTOP() && hex->getVoisinsTOP()->getType() == Type::Fantome) {
-            m_hexagon = hex->getVoisinsTOP();
-        }
+        //if (hex && hex->getVoisinsTOP() && hex->getVoisinsTOP()->getType() == Type::Fantome) {
+        //    m_hexagon = hex->getVoisinsTOP();
+        //}
         m_polygon = QCreateHexagon(center, radius);
 
         // Import de la texture
         if (!m_hexagon) return;
 
-        QPixmap texture = Utils::get_texture(m_hexagon);
+        QPixmap texture;// = Utils::get_texture(m_hexagon);
 
-        //if (hex->getType() == Type::Fantome && hex->getVoisinsBOT()) 
-        //    texture = Utils::get_texture(hex->getVoisinsBOT());
-        //else
-        //    texture = Utils::get_texture(hex);
+        if (hex->getType() == Type::Fantome && hex->getVoisinsBOT()) 
+            texture = Utils::get_texture(hex->getVoisinsBOT());
+        else
+            texture = Utils::get_texture(hex);
         
         QRectF bounds = m_polygon.boundingRect();
         // Mise à l'échelle de la texture
@@ -57,8 +57,12 @@ HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObje
         m_normal = brush;
         
 
-        if (hex ->getType() == Type::Fantome)
-            setOpacity(0.55);
+        if (hex->getType() == Type::Fantome){
+            setOpacity(0.25);
+            //if (hex->getVoisinsBOT()){
+            //    setOpacity(0);
+            //}
+        }
 
         setAcceptHoverEvents(true);
         setAcceptedMouseButtons(Qt::LeftButton);
