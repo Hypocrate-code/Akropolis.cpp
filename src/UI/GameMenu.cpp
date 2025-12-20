@@ -208,7 +208,7 @@ void GameMenu::updateCite()
         statusLabel->setText("Cité vide");
         return;
     }
-    
+   
     const Tuile *firstTuile = tuiles[0];
     if (firstTuile) {
         const auto& hexagones = firstTuile->get_hexagones();
@@ -289,7 +289,8 @@ void GameMenu::onHexagonSelected(const Hexagone* hex)
                     (hex->getType() == Type::Carriere) ? "Carrière" :
                     (hex->getType() == Type::Quartier) ? "Quartier" :
                     (hex->getType() == Type::Place) ? "Place" : "Inconnu"
-                ));
+                )+ "lhex du dessus est " + QString::fromStdString(Utils::type_to_string(hex->getVoisinsTOP()->getType())) 
+            );
             return;
         }
         

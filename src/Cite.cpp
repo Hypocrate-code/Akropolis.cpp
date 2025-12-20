@@ -347,9 +347,7 @@ void CiteJoueur::addTuile(Tuile *t)
 {
     tuiles.push_back(t);
     t->cite = this;
-    // remove the old fantomes then update..
-    //...
-    // updateFantomeOfTuile(t);
+
     release_hex_fantome();
     generateAllHexFantome();
 }
