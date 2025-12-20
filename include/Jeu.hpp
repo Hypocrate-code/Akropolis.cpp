@@ -97,7 +97,16 @@ class Jeu {
       }
     }
 
+    // Système de placement de tuile
+    // Retourne le coût en pierre de la tuile sélectionnée
+    int getTuilePrice(Tuile* tuile) const;
+    
+    // Placement console : demande l'hexagone fantôme puis délègue au placement commun
+    bool placerTuileConsole(Joueur* joueur, Tuile* tuile, Hexagone* hexChantier);
 
+    // Gère le placement complet: placement + déduction pierres + retrait du chantier
+    // Retourne true si succès, false sinon
+    bool executerPlacementTuile(Joueur* joueur, Tuile* tuile, Hexagone* hexChantier, Hexagone* hexCite);
 
   protected:
     Jeu();

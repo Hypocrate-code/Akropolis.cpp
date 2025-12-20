@@ -20,7 +20,8 @@ public:
     ~Cite() = default;
 
     std::vector<const Tuile*>getTuiles(){return  tuiles;}
-    virtual bool placerTuileFromHexRef(Hexagone* hex) = 0; // return true si la Tuile a été placé
+    //virtual bool placerTuileC(Hexagone* hex) = 0; // return true si la Tuile a été placé
+    virtual bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome) = 0; // return true si la Tuile a été placé
     void addTuile(const Tuile* t);
 
 
@@ -68,8 +69,9 @@ public:
 
     CiteJoueur(const Tuile* tuileDeDepart);
     ~CiteJoueur()=default;
-
-    bool placerTuileFromHexRef(Hexagone* hex) override;
+    // Version Qt: hex fantôme directement fourni
+    bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome);
+    
     uint32_t compterPoints( int niveau_difficulte=0) const override;
     void afficher()const override; 
     void addTuile(Tuile* t);
@@ -82,7 +84,7 @@ class CiteIllu : public Cite{
 public:
     CiteIllu(const Tuile* tuileDeDepart):Cite(tuileDeDepart){};
     uint32_t compterPoints( int niveau_difficulte=0) const override;
-    bool placerTuileFromHexRef(Hexagone* hex)override{return false; };
+    bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome)override{return false; };
     void afficher()const override;  
 private:
 

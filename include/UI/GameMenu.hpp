@@ -25,7 +25,7 @@ public:
     void updateCite();
 
 public slots:
-    void onTuileSelected(int index);
+    void onTuileSelected(const Hexagone* hex);
     void onHexagonSelected(const Hexagone* hex);
     void onConfirmPlacement();
     void onRotateTuile();
@@ -38,8 +38,12 @@ private:
 
     // Core game references
     Tuile* selectedTuile;
-    const Hexagone* selectedHex;
-    bool isPlacementMode;
+    const Hexagone* selectedHexChantier;  // hex sélectionné du chantier
+    const Hexagone* selectedHexCite;      // hex sélectionné de la cité
+    bool isChantierSelectionMode;         // mode sélection d'une tuile du chantier
+    bool isRotationMode;                  // mode rotation après sélection d'une tuile
+    bool isCiteSelectionMode;             // mode sélection du placement dans la cité
+    int tuilePrice;                       // prix de la tuile sélectionnée
 
     // Main layouts
     QWidget* centralWidget;

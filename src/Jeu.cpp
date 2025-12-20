@@ -383,9 +383,12 @@ void Jeu::afficherHexagones() const
 
 void Jeu::tourJoueur(Joueur *joueur)
 {
-  if (!QtDisplay)
-  {
-
+  
+  CiteJoueur* citeJoueur = dynamic_cast<CiteJoueur*>(joueur->getCite());
+  if(!citeJoueur){
+    throw Exception("Erreur : le joueur n'a pas de cité.");
+    return;
+  }
     // ===== Infos début du tour =====
     std::cout << "\n==========================\n\n";
 
@@ -394,7 +397,8 @@ void Jeu::tourJoueur(Joueur *joueur)
     std::cout << "Nombre de pierres : " << joueur->getNbPierres() << std::endl;
 
     // --- Premier affichage de la cité ---
-    joueur->getCite()->afficher();
+
+    citeJoueur->afficher();
     std::cout << "Pressez Entrer pour afficher le Chantier...";
 
     cin.ignore();
@@ -411,7 +415,7 @@ void Jeu::tourJoueur(Joueur *joueur)
     std::cout << "Pierres disponibles : " << joueur->getNbPierres() << "\n"
               << std::endl;
     Tuile *tChoisie = choisirTuileDuChantier(joueur); // Le joueur choisit une tuile
-    joueur->getCite()->afficher();
+    citeJoueur->afficher();
     std::cout << "-- Tuile choisie --" << std::endl;
     tChoisie->afficherData();
     // --- Demande de rotation ---
@@ -426,26 +430,26 @@ void Jeu::tourJoueur(Joueur *joueur)
       std::cin >> reponse;
     }
 
-    joueur->getCite()->afficher();
+    citeJoueur->afficher();
     tChoisie->afficherData();
 
-    // --- 5) Placement de la tuile --- MODIFICATION
+    // --- 5) Placement de la tuile ---
     int indexHexRef = choisirHexagoneDeReference(tChoisie);
     Hexagone *hexRef = tChoisie->get_hexagones()[indexHexRef];
 
-    int res = joueur->getCite()->placerTuileFromHexRef(hexRef);
+    int res = placerTuileConsole(joueur, tChoisie, hexRef);
     while (0 == res)
-      res = joueur->getCite()->placerTuileFromHexRef(hexRef);
+      res = placerTuileConsole(joueur, tChoisie, hexRef);
 
     // --- Affichage final de la cité après le placement ---
     std::cout << "\nTuile correctement placée :\n";
-  }
+  
 
-  joueur->getCite()->afficher();
+  citeJoueur->afficher();
 
-  // Ajout du nombre de pierre en fonction de la tuile placée
-  joueur->MaJPierres();
+  // Ajout des pierres issues des carrières selon la tuile placée
 }
+
 void Jeu::tourIllu(Illu *illu)
 {
   // ===== Infos début du tour =====
@@ -461,12 +465,38 @@ void Jeu::tourIllu(Illu *illu)
 
   afficherChantier();
 
-  illu->getCite()->addTuile(choisirTuileDuChantier(illu));
+  CiteIllu* citeIllu = dynamic_cast<CiteIllu*>(illu->getCite());
+  if(!citeIllu){
+    throw Exception("Erreur : l'illustre architecte n'a pas de cité.");
+    return;
+  }
 
-  // affichage des tuiles apres son tour
-  illu->getCite()->afficher();
-  // afficher score après l'ajout de la nouvelle tuile
-  std::cout << "Score : " << illu->getCite()->compterPoints(niveauDeDifficulte);
+  Tuile* t = choisirTuileDuChantier(illu);
+  if (t) {
+    int price = getTuilePrice(t);
+    if (price < 0) price = 0;
+
+    // Si pas assez de pierres, il prend la tuile gratuite (index 0) comme fallback
+    if (illu->getNbPierres() < price && !chantier.empty()) {
+      t = chantier.front();
+      price = 0;
+    }
+
+    // Déduire les pierres puis retirer la tuile du chantier
+    if (illu->getNbPierres() >= price) {
+      illu->setNbPierre(illu->getNbPierres() - price);
+    }
+    removeTuileFromChantier(t);
+
+    // Ajouter la tuile à la cité de l'Illustre
+      citeIllu->afficher();  
+    citeIllu->addTuile(t);
+
+    std::cout << "Score : " << citeIllu->compterPoints(niveauDeDifficulte);
+  } else {
+    std::cout << "Erreur lors du choix de la tuile par l'illustre architecte.\n";
+    return;
+  }
 }
 
 // piocher
@@ -489,6 +519,7 @@ void Jeu::afficherChantier() const
   //}
 
   std::cout << "======= Chantier =======\n\n";
+  std::cout << "Nombre de tuiles dans le chantier : " << chantier.size() << "\n\n";
   // draw the tuiles on 1 line
   strCalc calc = strCalc(10, std::string(chantier.size() * 15, ' '));
   for (size_t i = 0; i < chantier.size(); ++i)
@@ -534,15 +565,10 @@ Tuile *Jeu::choisirTuileDuChantier(Joueur *joueur)
       std::cout << "Vous n'avez pas assez de pierres pour cette tuile. Veuillez réessayer.\n";
     }
   } while (choix >= chantier.size() || choix > joueur->getNbPierres());
-  joueur->setNbPierre(joueur->getNbPierres() - choix);
-  if (this->getModeDeJeu() == ModeDeJeu::Solo)
-  {
-    // l'illustre architecte récupere les pierres
-    this->joueurs.back()->setNbPierre(this->joueurs.back()->getNbPierres() + choix);
-  }
-  
+
+  // Ne pas débiter ni retirer la tuile ici: cela se fera
+  // uniquement après un placement réussi via executerPlacementTuile.
   Tuile *t = chantier[choix];
-  removeTuileFromChantier(chantier[choix]);
   
   
   // Affichage du chantier restant pour vérification
@@ -587,9 +613,7 @@ Tuile *Jeu::choisirTuileDuChantier(Illu *illu)
         {
           // cas où l'illArchi n'a pas assez de pierre pour s'acheter de place
           cout << "L'illustre architect a choisi la tuile 0 du chantier \n";
-
           auto t = chantier[0];
-          chantier.erase(chantier.begin());
           return t;
         }
       }
@@ -598,6 +622,108 @@ Tuile *Jeu::choisirTuileDuChantier(Illu *illu)
   // cas ou y n'y a pas de place
   cout << "L'illustre architect a choisi la tuile 0 du chantier \n";
   auto t = chantier[0];
-  chantier.erase(chantier.begin());
   return t;
+}
+
+int Jeu::getTuilePrice(Tuile* tuile) const
+{
+  // Chercher l'index de la tuile dans le chantier
+  for (size_t i = 0; i < chantier.size(); ++i) {
+    if (chantier[i] == tuile) {
+      return static_cast<int>(i);  // Le coût = la position dans le chantier
+    }
+  }
+  return -1;  // Tuile non trouvée
+}
+
+bool Jeu::placerTuileConsole(Joueur* joueur, Tuile* tuile, Hexagone* hexChantier)
+{
+  if (!joueur || !tuile || !hexChantier) {
+    return false;
+  }
+
+  CiteJoueur* citeJoueur = dynamic_cast<CiteJoueur*>(joueur->getCite());
+  if (!citeJoueur) {
+    return false;
+  }
+
+  int id = -1;
+  bool idValide = false;
+
+  std::cout << "Tu vas placer la tuile avec le hexagone de reference : "
+            << hexChantier->getType() << " "
+            << hexChantier->getCouleur() << "\n";
+
+  while (!idValide)
+  {
+    std::cout << "Entrez le numero d'hexagone ou vous voulez placer la tuile : ";
+    std::cin >> id;
+
+    for (auto *hexFan : citeJoueur->hexs_fantome)
+    {
+      if (hexFan->getIndice() == id)
+      {
+        idValide = true;
+        break;
+      }
+    }
+
+    if (!idValide)
+    {
+      std::cout << "ID invalide. Veuillez entrer un numero correct.\n";
+    }
+  }
+
+  auto IthexFantome = std::find_if(citeJoueur->hexs_fantome.begin(), citeJoueur->hexs_fantome.end(),
+                                   [id](Hexagone *h)
+                                   { return h->getIndice() == id; });
+  if (IthexFantome == citeJoueur->hexs_fantome.end())
+  {
+    std::cout << "Erreur: Aucun hexagone avec l'ID " << id << " trouve.\n";
+    return false;
+  }
+
+  Hexagone* hexFantome = *IthexFantome;
+  return executerPlacementTuile(joueur, tuile, hexChantier, hexFantome);
+}
+
+bool Jeu::executerPlacementTuile(Joueur* joueur, Tuile* tuile, Hexagone* hexChantier, Hexagone* hexCite)
+{
+  // Vérifications préalables
+  if (!joueur || !tuile || !hexChantier || !hexCite) {
+    return false;
+  }
+
+  // Obtenir le coût de la tuile
+  int price = getTuilePrice(tuile);
+  if (price < 0) {
+    return false;
+  }
+
+  // Vérifier que le joueur a assez de pierres
+  if (joueur->getNbPierres() < price) {
+    return false;
+  }
+
+  CiteJoueur* citeJoueur = dynamic_cast<CiteJoueur*>(joueur->getCite());
+  if (!citeJoueur) {
+    return false;
+  }
+
+  // Effectuer le placement (hexCite doit être fourni)
+  bool success = citeJoueur->placerTuileFromHexRef(hexChantier, hexCite);
+
+
+  if (success) {
+    // Le placement a réussi -> déduire les pierres et retirer la tuile du chantier
+    joueur->setNbPierre(joueur->getNbPierres() - price);
+    joueur->MaJPierres();
+    // En mode Solo, l'Illustre Architecte récupère les pierres payées
+    if (this->getModeDeJeu() == ModeDeJeu::Solo && !joueurs.empty()) {
+      joueurs.back()->setNbPierre(joueurs.back()->getNbPierres() + price);
+    }
+    removeTuileFromChantier(tuile);
+  }
+
+  return success;
 }

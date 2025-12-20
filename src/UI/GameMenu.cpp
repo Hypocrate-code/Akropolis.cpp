@@ -13,7 +13,11 @@
 GameMenu::GameMenu(QWidget *parent)
     : QMainWindow(parent), selectedTuile(nullptr),
       tailleHexChantier(77), tailleHexCite(77),
-      selectedHex(nullptr), isPlacementMode(false),
+      selectedHexChantier(nullptr), selectedHexCite(nullptr),
+      isChantierSelectionMode(true),
+      isRotationMode(false),
+      isCiteSelectionMode(false),
+      tuilePrice(0),
       centralWidget(new QWidget(this)),
       mainLayout(new QVBoxLayout()),
       chantierWidget(new QWidget()),
@@ -113,13 +117,14 @@ void GameMenu::connectSignals()
     connect(confirmBtn, &QPushButton::clicked, this, &GameMenu::onConfirmPlacement);
     connect(cancelBtn, &QPushButton::clicked, this, &GameMenu::onCancelAction);
 
-
-
     connect(hexviewCite, &HexView::hexagonClicked, this, &GameMenu::onHexagonSelected);
-    // When a hexagon is clicked in the chantier view (for selection)
+    
+    // Clic sur un hex du chantier pour sélectionner une tuile
     connect(hexViewChantier, &HexView::hexagonClicked, this, [this](const Hexagone* hex) {
         qDebug() << "Chantier hexagon clicked";
-        // You can add logic here to handle chantier clicks if needed
+        if (isChantierSelectionMode && hex) {
+            onTuileSelected(hex);
+        }
     });
 }
 
@@ -216,101 +221,151 @@ void GameMenu::updateCite()
     }
 }
 
-void GameMenu::onTuileSelected(int index)
+void GameMenu::onTuileSelected(const Hexagone* hex)
 {
-    Jeu* j = Jeu::getInstance();
-    if (!j || index < 0 || index >= static_cast<int>(j->getChantier().size())) {
-        selectedTuile = nullptr;
-        rotateBtn->setEnabled(false);
-        statusLabel->setText("Sélection invalide");
+    if (!isChantierSelectionMode || !hex) {
         return;
     }
     
-    selectedTuile = j->getChantier()[index];
-    isPlacementMode = true;
+    Jeu* j = Jeu::getInstance();
+    Joueur* currentPlayer = j->getCurrentPlayer();
+    
+    if (!j || !currentPlayer) {
+        statusLabel->setText("Erreur: Jeu ou joueur invalide");
+        return;
+    }
+    
+    // Récupérer directement la tuile parente de l'hexagone
+    Tuile* tuile = hex->getTuileParent();
+    
+    if (!tuile) {
+        statusLabel->setText("Erreur: Tuile parente non trouvée");
+        return;
+    }
+    
+    selectedTuile = tuile;
+    selectedHexChantier = hex;
+    tuilePrice = j->getTuilePrice(tuile);
+    
+    // Vérifier si le joueur a assez de pierres
+    if (currentPlayer->getNbPierres() < tuilePrice) {
+        statusLabel->setText(
+            QString("Pas assez de pierres! Prix: %1, Vous avez: %2")
+                .arg(tuilePrice)
+                .arg(currentPlayer->getNbPierres())
+        );
+        selectedTuile = nullptr;
+        selectedHexChantier = nullptr;
+        return;
+    }
+    
+    // Passer en mode rotation/sélection de la cité
+    isChantierSelectionMode = false;
+    isRotationMode = true;
+    isCiteSelectionMode = true;  // Permettre aussi la sélection d'un hex de cité directement
     
     rotateBtn->setEnabled(true);
-    confirmBtn->setEnabled(true);
+    confirmBtn->setEnabled(false);  // Sera activé quand un hex de cité sera sélectionné
     cancelBtn->setEnabled(true);
     
     statusLabel->setText(
-        QString("Tuile %1 sélectionnée - Cliquez sur la cité pour placer")
-            .arg(index)
+        QString("Tuile sélectionnée (Prix: %1 pierre(s)) - Tournez si nécessaire, puis sélectionnez un hex de la cité")
+            .arg(tuilePrice)
     );
 }
 
 void GameMenu::onHexagonSelected(const Hexagone* hex)
 {
-    if (!isPlacementMode || !selectedTuile) {
+    if (!hex) {
         return;
     }
     
-    selectedHex = hex;
-    statusLabel->setText("Hexagone sélectionné - Confirmez le placement");
-    
-    confirmBtn->setEnabled(true);
+    // Mode sélection d'un hex de la cité pour le placement
+    if (isCiteSelectionMode && selectedTuile && selectedHexChantier) {
+        // Vérifier que c'est un hex fantôme
+        if (hex->getType() != Type::Fantome) {
+            statusLabel->setText("Erreur: Cet hexagone n'est pas un hex fantôme, c'est un " +
+                QString::fromStdString(
+                    (hex->getType() == Type::Carriere) ? "Carrière" :
+                    (hex->getType() == Type::Quartier) ? "Quartier" :
+                    (hex->getType() == Type::Place) ? "Place" : "Inconnu"
+                ));
+            return;
+        }
+        
+        selectedHexCite = hex;
+        statusLabel->setText("Hex de cité sélectionné - Confirmez le placement");
+        confirmBtn->setEnabled(true);
+        return;
+    }
 }
 
 void GameMenu::onConfirmPlacement()
 {
     Jeu* j = Jeu::getInstance();
     Joueur* currentPlayer = j->getCurrentPlayer();
-    if (!selectedTuile || !selectedHex || !currentPlayer) {
+    
+    if (!j || !currentPlayer) {
+        statusLabel->setText("Erreur: Jeu ou joueur invalide");
+        return;
+    }
+    
+    // Vérifier que nous avons sélectionné une tuile et un hex de placement
+    if (!selectedTuile || !selectedHexChantier || !selectedHexCite) {
         statusLabel->setText("Erreur: sélection incomplète");
         return;
     }
     
-    CiteJoueur* citeJoueur = dynamic_cast<CiteJoueur*>(currentPlayer->getCite());
-    if (!citeJoueur) {
-        statusLabel->setText("Erreur: cité joueur invalide");
-        return;
-    }
+    // Déléguer tout au Jeu (placement + déduction pierres + retrait chantier)
+    bool success = j->executerPlacementTuile(
+        currentPlayer,
+        selectedTuile,
+        const_cast<Hexagone*>(selectedHexChantier),
+        const_cast<Hexagone*>(selectedHexCite)
+    );
     
-    // Trouver l'hexagone de référence dans la tuile sélectionnée
-    const auto& hexagones = selectedTuile->get_hexagones();
-    for (const Hexagone* hex : hexagones) {
-        if (hex == selectedHex) {
-            bool success = citeJoueur->placerTuileFromHexRef(const_cast<Hexagone*>(hex));
-            
-            if (success) {
-                statusLabel->setText("Tuile placée avec succès!");
-                
-                // Retirer la tuile du chantier
-                j->removeTuileFromChantier(selectedTuile);
-                
-                // Mettre à jour l'affichage
-                selectedTuile = nullptr;
-                selectedHex = nullptr;
-                isPlacementMode = false;
-                
-                rotateBtn->setEnabled(false);
-                confirmBtn->setEnabled(false);
-                cancelBtn->setEnabled(false);
-                
-                updateDisplay();
-                
-                // Mettre à jour le chantier si nécessaire
-                if (j->getChantier().size() < 1) {
-                    j->mettreAJourChantier();
-                    updateChantier();
-                }
-            } else {
-                statusLabel->setText("Placement invalide - Vérifiez les connexions");
-            }
-            return;
+    if (success) {
+        QMessageBox::information(this, "Placement réussi", "La tuile a été placée avec succès dans votre cité.");
+        statusLabel->setText("Tuile placée avec succès!");
+        
+        // Réinitialiser les modes
+        selectedTuile = nullptr;
+        selectedHexChantier = nullptr;
+        selectedHexCite = nullptr;
+        isChantierSelectionMode = true;
+        isRotationMode = false;
+        isCiteSelectionMode = false;
+        tuilePrice = 0;
+        
+        rotateBtn->setEnabled(false);
+        confirmBtn->setEnabled(false);
+        cancelBtn->setEnabled(false);
+        
+        updateDisplay();
+        
+        // Mettre à jour le chantier si nécessaire
+        if (j->getChantier().size() < 1) {
+            j->mettreAJourChantier();
+            updateChantier();
         }
+    } else {
+        statusLabel->setText("Placement invalide - Vérifiez les connexions");
     }
 }
 
 void GameMenu::onRotateTuile()
 {
-    if (!selectedTuile) {
-        statusLabel->setText("Aucune tuile sélectionnée");
+    if (!selectedTuile || !isRotationMode) {
+        statusLabel->setText("Impossible de tourner - Aucune tuile en mode rotation");
         return;
     }
     
     selectedTuile->rotate();
-    statusLabel->setText("Tuile tournée");
+    statusLabel->setText("Tuile tournée - Sélectionnez un hex de la cité pour placer");
+    
+    // Rester en mode sélection de cité
+    isCiteSelectionMode = true;
+    rotateBtn->setEnabled(true);  // Permettre de tourner à nouveau si nécessaire
     
     // Redessiner le chantier pour montrer la rotation
     updateChantier();
@@ -319,14 +374,19 @@ void GameMenu::onRotateTuile()
 void GameMenu::onCancelAction()
 {
     selectedTuile = nullptr;
-    selectedHex = nullptr;
-    isPlacementMode = false;
+    selectedHexChantier = nullptr;
+    selectedHexCite = nullptr;
+    isChantierSelectionMode = true;
+    isRotationMode = false;
+    isCiteSelectionMode = false;
+    tuilePrice = 0;
     
     rotateBtn->setEnabled(false);
     confirmBtn->setEnabled(false);
     cancelBtn->setEnabled(false);
     
-    statusLabel->setText("Action annulée");
+    statusLabel->setText("Action annulée - Sélectionnez une tuile du chantier");
+    updateChantier();
 }
 
 Tuile* GameMenu::getCurrentTuile() const

@@ -21,11 +21,14 @@ Illu::Illu(uint32_t nb_p, const Tuile* tdD)
 
 void Joueur::MaJPierres(){
     int nlles_pierres = 0; 
-    if(!getCite()->getTuiles().empty()){
-        const Tuile*  tuile = getCite()->getTuiles().back(); 
+
+    if(!cite->getTuiles().empty()){
+        const Tuile*  tuile = cite->getTuiles().back(); 
         auto hexagones = tuile->get_hexagones(); 
         for(auto& hex : hexagones ){
             nlles_pierres += hex->gainPierre(); 
+            std::cout<<"Hexagone de type : "<< static_cast<int>(hex->getType())<<" et de couleur : "<<static_cast<int>(hex->getCouleur()) << std::endl;
+            std::cout << "  Vous gagnez "<< hex->gainPierre() <<" pierres de cette tuile.\n";
         }
         if(nlles_pierres!=0){
             setNbPierre(getNbPierres()+nlles_pierres); 
