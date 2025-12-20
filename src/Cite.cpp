@@ -110,7 +110,7 @@ void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc)
 }
 
 
-void Cite::afficher() const
+void CiteJoueur::afficher() const
 
 {
     //std::cout << "Nombre d'hexagone fantome: " << hexs_fantome.size() << std::endl;
@@ -343,7 +343,7 @@ void Cite::addTuile(const Tuile *t)
     tuiles.push_back(t);
 }
 
-void Cite::addTuile(Tuile *t)
+void CiteJoueur::addTuile(Tuile *t)
 {
     tuiles.push_back(t);
     t->cite = this;
@@ -550,6 +550,8 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
                 hex2Fan->setVoisins(nullptr);
 
             hexFantome->setVoisins(nullptr);
+            
+            
         }
     }
 
@@ -559,7 +561,7 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     // updateFantomeOfTuile(tl);
 }
 
-uint32_t CiteJoueur::compterPoints() const
+uint32_t CiteJoueur::compterPoints( int niveau_difficulte) const
 {
     uint32_t nb_place_bleue = 0;
     uint32_t nb_place_rouge = 0;
@@ -866,6 +868,68 @@ void Cite::release_hex_fantome()
         delete hex;
     }
     hexs_fantome.clear();
+}; 
+uint32_t CiteIllu::compterPoints( int niveau_difficulte) const {
+
+    uint32_t nb_carriere = 0;
+
+    uint32_t nb_place_bleue = 0, nb_place_rouge = 0, nb_place_verte = 0, nb_place_violet = 0, nb_place_jaune = 0;
+    uint32_t points_bleu = 0, points_rouge = 0, points_vert = 0, points_violet = 0, points_jaune = 0;
+
+    for (size_t i = 0; i < tuiles.size(); ++i) {
+        const auto& hexas = tuiles[i]->get_hexagones();
+        for (size_t j = 0; j < hexas.size(); ++j) {
+            Hexagone* h = hexas[j];
+            if (!h) continue; 
+
+            switch (h->getType()) {
+                case Type::Carriere:
+                    nb_carriere++;
+                    break;
+
+                case Type::Place:
+                    switch (h->getCouleur()) {
+                        case Couleur::Bleu:   nb_place_bleue++; break;
+                        case Couleur::Jaune:  nb_place_jaune++; break;
+                        case Couleur::Rouge:  nb_place_rouge++; break;
+                        case Couleur::Violet: nb_place_violet++; break;
+                        case Couleur::Vert:   nb_place_verte++; break;
+                    }
+                    break;
+
+                case Type::Quartier:
+                    switch (h->getCouleur()) {
+                        case Couleur::Bleu:   points_bleu++; break;
+                        case Couleur::Jaune:  points_jaune++; break;
+                        case Couleur::Rouge:  points_rouge++; break;
+                        case Couleur::Violet: points_violet++; break;
+                        case Couleur::Vert:   points_vert++; break;
+                    }
+                    break;
+            }
+        }
+    }
+    
+    uint32_t total =
+          points_bleu   * nb_place_bleue   * 1
+        + points_jaune  * nb_place_jaune   * 2
+        + points_rouge  * nb_place_rouge   * 2
+        + points_vert   * nb_place_verte   * 3
+        + points_violet * nb_place_violet  * 2;
+
+    switch (niveau_difficulte) {
+        case 0: return total;
+        case 1: return total + 2 * nb_carriere;
+        case 2: return total * 2;
+        default: return total; 
+    }
+}
+void CiteIllu::afficher()const{
+    std::cout << "\n======= Tuile Illu =======\n\n";
+    for (size_t i = 0; i < tuiles.size(); ++i) {
+        std::cout << "Tuile " << i << " : ";
+        tuiles[i]->afficherData();
+    }
 }
 
 void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
@@ -883,3 +947,4 @@ void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
         }
     }
 };
+

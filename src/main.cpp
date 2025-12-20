@@ -56,7 +56,31 @@ int main( int argc, char *argv[] ){
         // tl1.rotate();
         // c1.afficher();
 
+
+        std::cout << "\n=============================" << std::endl;
+        std::cout << "Bienvenue sur Akropolis.cpp !" << std::endl;
+        std::cout << "=============================" << std::endl << std::endl;
+        int nbJoueur;
+        std::cout << "Une partie est sur le point de commencer, combien êtes-vous :  ";
+        std::cin >> nbJoueur;
+        Jeu* j = Jeu::getInstance(nbJoueur);
+        j->Initialiser(nbJoueur);
+        if(j->getModeDeJeu()==ModeDeJeu::Solo){
+            std::cout<<"Choisissez le niveau de difficulté de l'illustre architecte (de 0 à 2) : \n"
+                    <<"0. Hippodamos (niveau Facile) : tous les Quartiers d’Hippodamos sont considérés comme étant au 1er niveau.\n"
+                    <<"1. Métagénès (niveau Moyen) : tous les Quartiers de Métagénès sont considérés comme étant au 1er niveau. Chaque Carrière de Métagénès lui rapporte 2 points supplémentaires.\n"
+                    <<"2. Callicratès (niveau Difficile) : tous les Quartiers de Callicratès sont considérés comme étant au 2e niveau.\n"; 
+            int niveau_difficulte=0; 
+            cin>>niveau_difficulte; 
+            j->set_niveau_difficulte(niveau_difficulte); 
+            }
+            
+
+      
+        j->Lancer();
+
         std::cout << std::endl << "Fin d'exécution d'Akropolis.cpp" << std::endl;
+        j->EndGame();
         return 0;
 
     

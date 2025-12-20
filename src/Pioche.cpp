@@ -1,20 +1,22 @@
 #include "Exception.hpp"
 #include "Pioche.hpp"
+#include "Jeu.hpp"
 #include <cstdlib> //rand
 #include <ctime>
 
-#include "Jeu.hpp"
+Pioche::Pioche(const Jeu& jeu) : jeuRef(jeu) {}
 
-Pioche::Pioche(const Jeu& jeu) {
-    // Initialise la graine du générateur aléatoire une seule fois
-    // pour que l'ordre des tuiles soit différent à chaque partie.
+void Pioche::init() {
+    // Cette méthode peut être utilisée pour réinitialiser ou mélanger la pioche si nécessaire.
+    // Actuellement, elle ne fait rien car la pioche est initialisée dans le constructeur.
+
     static bool seedInit = false;
     if (!seedInit) {
         srand(static_cast<unsigned>(time(nullptr)));
         seedInit = true;
     }
 
-    for (auto t : jeu.getTuilesCite()) {
+    for (auto t : jeuRef.getTuilesCite()) {
         if (t != nullptr)
             tuiles.push_back(t);
     }
