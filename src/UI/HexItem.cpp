@@ -59,9 +59,9 @@ HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObje
 
         if (hex->getType() == Type::Fantome){
             setOpacity(0.25);
-            //if (hex->getVoisinsBOT()){
-            //    setOpacity(0);
-            //}
+            if (hex->getVoisinsBOT()){
+                setOpacity(0);
+            }
         }
 
         setAcceptHoverEvents(true);
