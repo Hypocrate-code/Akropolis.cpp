@@ -31,6 +31,7 @@ set(MOC_HEADERS
     "include/UI/StartMenu.hpp" 
     "include/UI/HexView.hpp"
     "include/UI/HexItem.hpp"
+    "include/UI/GameMenu.hpp"
 )
 
 # Generate moc files manually

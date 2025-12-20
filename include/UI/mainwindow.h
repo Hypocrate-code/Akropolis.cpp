@@ -9,6 +9,7 @@
 //#include "UI/PlayerCountPage.hpp"
 //#include "UI/PlayerNamePage.hpp"
 #include "UI/StartMenu.hpp"
+#include "UI/GameMenu.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -32,6 +33,7 @@ private:
     QWidget *createEndPage();
 
     StartMenu* playerNumberInput;
+    GameMenu* gameMenu;
 
 
     //QVector<HexagonalButton*> m_hexButtons;

@@ -526,10 +526,11 @@ Tuile *Jeu::choisirTuileDuChantier(Joueur *joueur)
     // l'illustre architecte récupere les pierres
     this->joueurs.back()->setNbPierre(this->joueurs.back()->getNbPierres() + choix);
   }
-
+  
   Tuile *t = chantier[choix];
-  chantier.erase(chantier.begin() + choix);
-
+  removeTuileFromChantier(chantier[choix]);
+  
+  
   // Affichage du chantier restant pour vérification
   /*
   std::cout << "=== Chantier après choix ===\n";

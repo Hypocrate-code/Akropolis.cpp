@@ -63,13 +63,14 @@ class Jeu {
 
     inline ModeDeJeu getModeDeJeu() const {return mode; }; // A voir si utile, mode solo ?
     //void setGameMode(ModeDeJeu mdj) { mode = mdj; }
-
+    
     uint32_t getNbPlayers() const { return joueurs.size(); }
     void setMaxPlayers(uint32_t n) { joueurs.reserve(n); maxPlayers = n; }
     uint32_t getMaxPlayers() const { return maxPlayers; }
     void addJoueur(Joueur* j) { joueurs.push_back(j); }
     const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
-
+    
+    int getNiveauDeDifficulte() const { return niveauDeDifficulte; }
     void set_niveau_difficulte(int n){
       if(0<=n && n<=2){
         niveauDeDifficulte=n; }
@@ -79,9 +80,19 @@ class Jeu {
       }
     
     }
+
+    const std::vector<Tuile*>& getChantier() const { return chantier; }
+
     int choisirHexagoneDeReference(Tuile* t);
 
     void setQtDisplay(bool qt){ QtDisplay=qt; }
+
+    void removeTuileFromChantier(Tuile* t){
+      auto it = std::find(chantier.begin(), chantier.end(), t);
+      if(it != chantier.end()){
+        chantier.erase(it); 
+      }
+    }
 
   protected:
     Jeu();

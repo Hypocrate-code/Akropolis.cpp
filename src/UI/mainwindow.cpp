@@ -98,28 +98,35 @@ QWidget *MainWindow::createStartingGamePage()
 
 QWidget *MainWindow::createGamePage()
 {
+    
+    gameMenu = new GameMenu(this);
+    
+    QVBoxLayout *layout = new QVBoxLayout(gameMenu);
     // Create hexagon grid widget
-    QWidget *page = new QWidget();
-    QVBoxLayout *mainLayout = new QVBoxLayout(page);
+    //QWidget *page = new QWidget();
+    //QVBoxLayout *mainLayout = new QVBoxLayout(page);
     QVBoxLayout *btnContainer = new QVBoxLayout();
 
+
     QPushButton *btnEndScreen = new QPushButton("Finir partie (bouton temporaire)");
-    
     connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
         stackedWidget->setCurrentIndex(0); // 0 -> Accueil
     });
 
     btnContainer->addWidget(btnEndScreen);
-    mainLayout->addLayout(btnContainer);
+
+    layout->addLayout(btnContainer);
+
 
     // Création d'UNE vue de la scène graphique créée
-    HexView* view = new HexView(50, page);
-    view->setDrag(true);
+    //HexView* view = new HexView(50, page);
+    //view->setDrag(true);
     
-    mainLayout->addWidget(view);
+    //mainLayout->addWidget(view);
     // view->launchDrawRecursive(temp5, QPoint(350, 0));
 
-    return page;
+
+    return gameMenu;
 }
 
 QWidget *MainWindow::createEndPage()
