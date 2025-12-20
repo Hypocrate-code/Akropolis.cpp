@@ -11,20 +11,19 @@
 #include <QMessageBox>
 
 GameMenu::GameMenu(QWidget *parent)
-    : QMainWindow(parent), selectedTuile(nullptr), 
+    : QMainWindow(parent), selectedTuile(nullptr),
+      tailleHexChantier(77), tailleHexCite(77),
       selectedHex(nullptr), isPlacementMode(false),
       centralWidget(new QWidget(this)),
-      mainLayout(new QHBoxLayout()),
+      mainLayout(new QVBoxLayout()),
       chantierWidget(new QWidget()),
       chantierLayout(new QVBoxLayout()),
       chantierLabel(new QLabel("CHANTIER")),
-      hexViewChantier(new HexView(100, this)),
       chantierButtonsLayout(new QHBoxLayout()),
       citeWidget(new QWidget()),
       citeLayout(new QVBoxLayout()),
       citeLabel(new QLabel("CITÉ")),
       playerInfoLabel(new QLabel()),
-      hexviewCite(new HexView(100, this)),
       controlWidget(new QWidget()),
       controlLayout(new QHBoxLayout()),
       rotateBtn(new QPushButton("Tourner")),
@@ -33,6 +32,9 @@ GameMenu::GameMenu(QWidget *parent)
       finDePartieBtn(new QPushButton("Fin Partie")),
       statusLabel(new QLabel("Sélectionnez une tuile du chantier"))
 {
+      hexViewChantier = new HexView(tailleHexChantier, this);
+      hexviewCite = new HexView(tailleHexCite, this);
+
     setupUI();
     connectSignals();
     
@@ -47,36 +49,28 @@ GameMenu::~GameMenu()
 void GameMenu::setupUI()
 {
     setCentralWidget(centralWidget);
-    centralWidget->setLayout(mainLayout);
     
-    // ===== Configuration du panel CHANTIER (gauche) =====
-    chantierLabel->setStyleSheet("font-weight: bold; font-size: 14px;");
+    // ===== Configuration du panel CHANTIER (en haut) =====
     chantierLayout->addWidget(chantierLabel);
     
-    QScrollArea *chantierScroll = new QScrollArea();
-    chantierScroll->setWidget(hexViewChantier);
-    chantierScroll->setWidgetResizable(true);
-    chantierLayout->addWidget(chantierScroll, 1);
+    hexViewChantier->setMinimumSize(1200, 300);
+    hexViewChantier->setMaximumHeight(350);
+    chantierLayout->addWidget(hexViewChantier, 1);
     
     chantierLayout->addLayout(chantierButtonsLayout);
     chantierWidget->setLayout(chantierLayout);
-    chantierWidget->setMaximumWidth(400);
     
-    // ===== Configuration du panel CITÉ (droite) =====
-    citeLabel->setStyleSheet("font-weight: bold; font-size: 14px;");
-    playerInfoLabel->setStyleSheet("font-size: 12px; color: #555;");
+    // ===== Configuration du panel CITÉ (en bas) =====
     
     citeLayout->addWidget(citeLabel);
     citeLayout->addWidget(playerInfoLabel);
     
-    QScrollArea *citeScroll = new QScrollArea();
-    citeScroll->setWidget(hexviewCite);
-    citeScroll->setWidgetResizable(true);
-    citeLayout->addWidget(citeScroll, 1);
+    hexviewCite->setMinimumSize(1200, 400);
+    citeLayout->addWidget(hexviewCite, 1);
     
     citeWidget->setLayout(citeLayout);
     
-    // ===== Ajout des panels au layout principal =====
+    // ===== Ajout des panels au layout principal (vertical: chantier en haut, cité en bas) =====
     mainLayout->addWidget(chantierWidget, 0);
     mainLayout->addWidget(citeWidget, 1);
     
@@ -93,17 +87,24 @@ void GameMenu::setupUI()
     
     controlWidget->setLayout(controlLayout);
     
+    // ===== Style pour le status label =====
+    statusLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; font-size: 13px; border-top: 1px solid #ccc;");
+    statusLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    statusLabel->setMinimumHeight(35);
+    
     // ===== Création d'une layout verticale globale =====
     QVBoxLayout *globalLayout = new QVBoxLayout();
     globalLayout->addLayout(mainLayout, 1);
     globalLayout->addWidget(statusLabel);
     globalLayout->addWidget(controlWidget);
+    globalLayout->setSpacing(5);
+    globalLayout->setContentsMargins(5, 5, 5, 5);
     
     centralWidget->setLayout(globalLayout);
     
     // ===== Configuration de la fenêtre =====
     setWindowTitle("Akropolis - Partie en cours");
-    resize(1400, 800);
+    resize(1400, 900);
 }
 
 void GameMenu::connectSignals()
@@ -144,23 +145,20 @@ void GameMenu::updateChantier()
     // Vérifier si le chantier est vide
     if (j->getChantier().empty()) {
         j->mettreAJourChantier();
-
-        hexViewChantier->clearView();
         statusLabel->setText("Chantier vide - Attente de mise à jour...");
-        return;
     }
     
     // Nettoyer la scène précédente
     hexViewChantier->clearView();
     
     // Dessiner chaque tuile du chantier
-    for (size_t i = 0; i < j->getChantier().size(); ++i) {
+    for (uint32_t i = 0; i < j->getChantier().size(); ++i) {
         Tuile *tuile = j->getChantier()[i];
         if (tuile) {
             const auto& hexagones = tuile->get_hexagones();
             if (!hexagones.empty()) {
                 // Positionner les tuiles horizontalement
-                int xOffset = 150 + static_cast<int>(i) * 120;
+                uint32_t xOffset = i * tailleHexChantier*4;
                 hexViewChantier->launchDrawRecursive(hexagones[0], QPoint(xOffset, 100));
             }
         }
@@ -177,13 +175,13 @@ void GameMenu::updateCite()
     Jeu* j = Jeu::getInstance();
     Joueur* currentPlayer = j->getCurrentPlayer();
     if (!j || !currentPlayer){
-        QMessageBox::warning(this, "Erreur", "Jeu ou joueur courant non initialisé.");
+        statusLabel->setText("Jeu ou joueur non initialisé");
         return;
     } 
     
     Cite *cite = currentPlayer->getCite();
     if (!cite){
-        QMessageBox::warning(this, "Erreur", "Cité du joueur non trouvée.");
+        statusLabel->setText("Cité du joueur non trouvée.");
         return;
     }
     

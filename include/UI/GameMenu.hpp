@@ -43,16 +43,16 @@ private:
 
     // Main layouts
     QWidget* centralWidget;
-    QHBoxLayout *mainLayout;
+    QVBoxLayout *mainLayout;
 
-    // Left panel - Chantier
+    // Uper panel - Chantier
     QWidget *chantierWidget;
     QVBoxLayout *chantierLayout;
     QLabel *chantierLabel;
     HexView *hexViewChantier;
     QHBoxLayout *chantierButtonsLayout;
 
-    // Right panel - Cité
+    // Bot panel - Cité
     QWidget *citeWidget;
     QVBoxLayout *citeLayout;
     QLabel *citeLabel;
@@ -69,4 +69,7 @@ private:
 
     // Status bar
     QLabel *statusLabel;
+
+    uint32_t tailleHexChantier;
+    uint32_t tailleHexCite;
 };
