@@ -25,10 +25,12 @@ file(GLOB HEADERS "include/*.hpp" "include/UI/*.h")
 
 # Create list of headers that need MOC (those with Q_OBJECT)
 set(MOC_HEADERS 
-    "include/UI/HexagonalButton.hpp"
+    #"include/UI/HexagonalButton.hpp"
     "include/UI/mainwindow.h"
     "include/UI/GamePushButton.hpp"
     "include/UI/StartMenu.hpp" 
+    "include/UI/HexView.hpp"
+    "include/UI/HexItem.hpp"
 )
 
 # Generate moc files manually

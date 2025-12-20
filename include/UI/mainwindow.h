@@ -30,7 +30,7 @@ private:
 
     StartMenu* playerNumberInput;
 
-    QVector<HexagonalButton*> m_hexButtons;
+    //QVector<HexagonalButton*> m_hexButtons;
 };
 
 
