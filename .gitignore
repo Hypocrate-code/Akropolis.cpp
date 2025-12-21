@@ -24,3 +24,12 @@ Makefile
 .DS_Store
 
 debug.cpp
+
+.vscode
+russell/
+
+*.exe
+*.app
+
+
+CMakeLists.txt
