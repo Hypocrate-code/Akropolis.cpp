@@ -727,3 +727,119 @@ bool Jeu::executerPlacementTuile(Joueur* joueur, Tuile* tuile, Hexagone* hexChan
 
   return success;
 }
+
+// === Passe au joueur suivant ===
+void Jeu::nextPlayer()
+{
+  if (joueurs.empty()) {
+    return;
+  }
+
+  // Trouver l'index du joueur actuel
+  size_t currentIndex = 0;
+  for (size_t i = 0; i < joueurs.size(); ++i) {
+    if (joueurs[i] == currentPlayer) {
+      currentIndex = i;
+      break;
+    }
+  }
+
+  // Passer au joueur suivant
+  size_t nextIndex = (currentIndex + 1) % joueurs.size();
+  currentPlayer = joueurs[nextIndex];
+  
+  // Générer les hexagones fantômes pour le nouveau joueur (sauf Illustre)
+  if (currentPlayer->getNom() != "Illustre Architecte") {
+    currentPlayer->getCite()->generateAllHexFantome();
+  }
+}
+
+// === Exécute le tour de l'Illustre Architecte (pour Qt) ===
+void Jeu::executerTourIllu()
+{
+  // S'assurer qu'il y a des tuiles dans le chantier
+  if (chantier.empty()) {
+    mettreAJourChantier();
+  }
+
+  if (chantier.empty()) {
+    return;
+  }
+
+  // L'Illustre choisit la tuile avec au moins une place la moins chère
+  Tuile* chosenTuile = nullptr;
+  int chosenIndex = -1;
+
+  for (size_t i = 0; i < chantier.size(); ++i) {
+    Tuile* t = chantier[i];
+    bool hasPlace = false;
+    
+    for (auto* hex : t->get_hexagones()) {
+      if (hex->getType() == Type::Place) {
+        hasPlace = true;
+        break;
+      }
+    }
+
+    if (hasPlace && currentPlayer->getNbPierres() >= static_cast<int>(i)) {
+      chosenTuile = t;
+      chosenIndex = static_cast<int>(i);
+      break;
+    }
+  }
+
+  // Si pas de tuile avec place abordable, prendre la première (gratuite)
+  if (!chosenTuile && !chantier.empty()) {
+    chosenTuile = chantier[0];
+    chosenIndex = 0;
+  }
+
+  if (chosenTuile) {
+    // Déduire les pierres
+    if (chosenIndex > 0) {
+      currentPlayer->setNbPierre(currentPlayer->getNbPierres() - chosenIndex);
+    }
+
+    // Retirer la tuile du chantier
+    removeTuileFromChantier(chosenTuile);
+
+    // Ajouter la tuile à la cité de l'Illustre
+    CiteIllu* citeIllu = dynamic_cast<CiteIllu*>(currentPlayer->getCite());
+    if (citeIllu) {
+      citeIllu->addTuile(chosenTuile);
+    }
+
+    // Mettre à jour les pierres de l'Illustre
+    currentPlayer->MaJPierres();
+  }
+
+  std::cout << "nombre de tuiles dans cite illu : " << dynamic_cast<CiteIllu*>(currentPlayer->getCite())->getTuiles().size() << std::endl;
+}
+
+// === Vérifie si la partie est terminée ===
+bool Jeu::isGameOver() const
+{
+  // La partie se termine quand il ne reste qu'une tuile et que la pioche est vide
+  return (chantier.size() <= 1 && pioche.estVide());
+}
+
+// === Retourne le joueur avec le plus de points ===
+Joueur* Jeu::getWinner() const
+{
+  if (joueurs.empty()) {
+    return nullptr;
+  }
+
+  Joueur* winner = joueurs[0];
+  uint32_t maxPoints = winner->getCite()->compterPoints(niveauDeDifficulte);
+
+  for (size_t i = 1; i < joueurs.size(); ++i) {
+    uint32_t points = joueurs[i]->getCite()->compterPoints(niveauDeDifficulte);
+    if (points > maxPoints) {
+      maxPoints = points;
+      winner = joueurs[i];
+    }
+  }
+
+  return winner;
+}

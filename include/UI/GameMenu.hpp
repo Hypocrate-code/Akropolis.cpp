@@ -23,6 +23,7 @@ public:
     void updateDisplay();
     void updateChantier();
     void updateCite();
+    void updateCiteIllu();
 
 public slots:
     void onTuileSelected(const Hexagone* hex);
@@ -30,6 +31,8 @@ public slots:
     void onConfirmPlacement();
     void onRotateTuile();
     void onCancelAction();
+    void onContinuerTour();
+    void onFinDePartie();
 
 private:
     void setupUI();
@@ -69,6 +72,7 @@ private:
     QPushButton *rotateBtn;
     QPushButton *confirmBtn;
     QPushButton *cancelBtn;
+    QPushButton *continuerBtn;
     QPushButton *finDePartieBtn;
 
     // Status bar

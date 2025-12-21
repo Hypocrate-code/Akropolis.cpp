@@ -36,8 +36,9 @@ MainWindow::MainWindow()
     
     // Connect startMenu vers gameScreen
     connect(static_cast<StartMenu*>(startGameScreen), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
-        Jeu::getInstance()->InitialiserPartie(names, difficultyLevel);
-        //jeu->setDifficultyLevel(difficultyLevel);
+        Jeu* jeu = Jeu::getInstance();
+        jeu->setQtDisplay(true);  // Activer le mode Qt pour skip l'Illustre Architecte
+        jeu->InitialiserPartie(names, difficultyLevel);
         
         gameMenu->updateDisplay();
         // LANCER LA PARTIE ICI

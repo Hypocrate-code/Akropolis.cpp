@@ -108,6 +108,12 @@ class Jeu {
     // Retourne true si succès, false sinon
     bool executerPlacementTuile(Joueur* joueur, Tuile* tuile, Hexagone* hexChantier, Hexagone* hexCite);
 
+    // Gestion des tours pour Qt
+    void nextPlayer();  // Passe au joueur suivant
+    void executerTourIllu();  // Exécute le tour de l'Illustre Architecte (mode Qt)
+    bool isGameOver() const;  // Vérifie si la partie est terminée
+    Joueur* getWinner() const;  // Retourne le joueur avec le plus de points
+
   protected:
     Jeu();
 
