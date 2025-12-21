@@ -37,7 +37,8 @@ GameMenu::GameMenu(QWidget *parent)
     cancelBtn(new QPushButton("Annuler")),
     continuerBtn(new QPushButton("Continuer")),
     finDePartieBtn(new QPushButton("Fin Partie")),
-    statusLabel(new QLabel("Sélectionnez une tuile du chantier"))
+    statusLabel(new QLabel("Sélectionnez une tuile du chantier")),
+    dashboard(new Dashboard(this))
 {
     hexViewChantier = new HexView(tailleHexChantier, this);
     hexviewCite = new HexView(tailleHexCite, this);
@@ -64,9 +65,17 @@ void GameMenu::setupUI()
     citeLayout->addWidget(citeLabel);
     citeLayout->addWidget(playerInfoLabel);
     citeLayout->addWidget(hexviewCite);
+    
+    QHBoxLayout *chantierDashboardLayout = new QHBoxLayout();
+    QWidget *chantierWidget = new QWidget();
+    chantierWidget->setLayout(chantierLayout);
+    chantierDashboardLayout->addWidget(chantierWidget, 2);  // Chantier prends 2/3 de l'espace
+    chantierDashboardLayout->addWidget(dashboard, 1);        // Dashboard prend 1/3 de l'espace
+    chantierDashboardLayout->setSpacing(5);
+    chantierDashboardLayout->setContentsMargins(0, 0, 0, 0);
         
     // Ajout des sections au mainLayout
-    mainLayout->addLayout(chantierLayout, 1);
+    mainLayout->addLayout(chantierDashboardLayout, 1);
     mainLayout->addLayout(citeLayout, 1);
     
     // Configuration des widgets
@@ -130,6 +139,11 @@ void GameMenu::updateDisplay()
     Joueur* currentPlayer = j->getCurrentPlayer();
     if (!currentPlayer) {
         return;
+    }
+
+    // Update the dashboard
+    if (dashboard) {
+        dashboard->updateDisplay();
     }
 
     // Vérifier si c'est le tour de l'Illustre Architecte

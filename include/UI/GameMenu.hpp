@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include "UI/HexItem.hpp"
 #include "UI/HexView.hpp"
+#include "UI/Dashboard.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -79,6 +80,9 @@ private:
 
     // Status bar
     QLabel *statusLabel;
+
+    // Dashboard
+    Dashboard *dashboard;
 
     uint32_t tailleHexChantier;
     uint32_t tailleHexCite;
