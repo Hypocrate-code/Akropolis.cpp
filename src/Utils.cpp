@@ -2,7 +2,7 @@
 #include "Tuile.hpp"
 #include <QDebug>
 #include <QVector2D>
-
+#include <map>
 #include <iostream>
 
 namespace Utils
@@ -222,53 +222,92 @@ namespace Utils
     int radiusTexture = 231;
     float heightHexTexture = cos(M_PI/6) * 2 * radiusTexture;
     int widthHexTexture = 2 * radiusTexture;
+    
+    // Cache statique pour éviter de recharger assets.png à chaque appel
+    static QPixmap* baseTextureCache = nullptr;
+    static std::map<std::pair<Type, Couleur>, QPixmap> textureCache;
+    
     QPixmap get_texture(const Hexagone* hex) {
-        QPixmap baseTexture("../assets.png");
         Type type = hex->getType();
         Couleur couleur = hex->getCouleur();
-        QPixmap finalTexture;
+        
+        // Créer la clé de cache
+        auto cacheKey = std::make_pair(type, couleur);
+        
+        // Vérifier si la texture est déjà en cache
+        auto it = textureCache.find(cacheKey);
+        if (it != textureCache.end()) {
+            return it->second;
+        }
+        
+        // Charger l'image de base une seule fois
+        if (!baseTextureCache) {
+            baseTextureCache = new QPixmap("../assets.png");
+        }
+        
+        QPixmap extractedTexture;
         switch (type)
         {
             case Type::Quartier:
                 switch (couleur)
                 {
                     case Couleur::Rouge:
-                        return baseTexture.copy(widthHexTexture - (widthHexTexture - radiusTexture)/2, heightHexTexture/2, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(widthHexTexture - (widthHexTexture - radiusTexture)/2, heightHexTexture/2, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Bleu:
-                        return baseTexture.copy(widthHexTexture + radiusTexture, 0, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(widthHexTexture + radiusTexture, 0, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Jaune:
-                        return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(widthHexTexture + radiusTexture, heightHexTexture, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Violet:
-                        return baseTexture.copy(0, heightHexTexture*2, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(0, heightHexTexture*2, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Vert:
-                        return baseTexture.copy(0, heightHexTexture, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(0, heightHexTexture, widthHexTexture, heightHexTexture);
+                        break;
                     default:
-                        return baseTexture;
+                        extractedTexture = *baseTextureCache;
+                        break;
                 }
                 break;
             case Type::Place:
                 switch (couleur)
                 {
                     case Couleur::Rouge:
-                        return baseTexture.copy(0, 0, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(0, 0, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Bleu:
-                        return baseTexture.copy(widthHexTexture + (radiusTexture * 5/2), heightHexTexture/2, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(widthHexTexture + (radiusTexture * 5/2), heightHexTexture/2, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Jaune:
-                        return baseTexture.copy(widthHexTexture  + (radiusTexture * 5/2), heightHexTexture*3/2, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(widthHexTexture  + (radiusTexture * 5/2), heightHexTexture*3/2, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Violet:
-                        return baseTexture.copy(radiusTexture * 3/2, heightHexTexture * 5 / 2, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(radiusTexture * 3/2, heightHexTexture * 5 / 2, widthHexTexture, heightHexTexture);
+                        break;
                     case Couleur::Vert:
-                        return baseTexture.copy(radiusTexture * 3/2, heightHexTexture * 3/2, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(radiusTexture * 3/2, heightHexTexture * 3/2, widthHexTexture, heightHexTexture);
+                        break;
                     default:
-                        return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+                        extractedTexture = baseTextureCache->copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+                        break;
                 }
+                break;
             case Type::Fantome:
-                return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+                extractedTexture = baseTextureCache->copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+                break;
             case Type::Carriere:
-                return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*2, widthHexTexture, heightHexTexture);
+                extractedTexture = baseTextureCache->copy(widthHexTexture + radiusTexture, heightHexTexture*2, widthHexTexture, heightHexTexture);
+                break;
             default:
-                return baseTexture.copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+                extractedTexture = baseTextureCache->copy(widthHexTexture + radiusTexture, heightHexTexture*4, widthHexTexture, heightHexTexture);
+                break;
         }
+        
+        // Stocker dans le cache
+        textureCache[cacheKey] = extractedTexture;
+        return extractedTexture;
     }
 
 
