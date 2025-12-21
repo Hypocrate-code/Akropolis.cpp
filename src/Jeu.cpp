@@ -160,7 +160,7 @@ void Jeu::StartMenuC()
   int index_variante =0; 
   std::cout<<"Voici les differentes variantes disponibles : "<<std::endl; 
   std::cout<<" 0. Marches. Si vos Quartiers Marchands sont adjacents à une place Marche, leurs points sont doubles"<<std::endl; 
-  std::cout<<" 1. Jardins. INDISPONIBLE "<<std::endl; 
+  std::cout<<" 1. Jardins. Si vos Jardins sont adjacents à un lac (espace vide entouré), leurs points sont doublés"<<std::endl; 
   std::cout<<" 2. Casernes.Si vos Casernes ont 3 ou 4 espaces vides adjacents, leurs points sont doublés. "<<std::endl; 
   std::cout<<" 3. Habitations. Si votre groupe d’Habitations a une valeur de 10 ou plus, ses points sont doubles"<<std::endl;
   std::cout<<" 4. Temples. Si vos Temples sont placés sur un niveau superieur, leurs points sont doubles"<<std::endl;
@@ -174,10 +174,10 @@ void Jeu::StartMenuC()
       do{
         cout<<"Quelle variante voulez vous ajoutez ? "; 
         std::cin>>index_variante;
-        if (index_variante < 0 || index_variante> 2){
-          std::cout << "Numero de variante invalide. Dois être compris entre 0 et 4" << std::endl;
+        if (index_variante < 0 || index_variante> 4){   //toutes les variantes compris
+          std::cout << "Numero de variante invalide. Doit être compris entre 0 et 4" << std::endl;
         }
-    } while (index_variante < 0 || index_variante> 2);
+    } while (index_variante < 0 || index_variante> 4);
       variantes[index_variante] = 1; 
       cout<<"Merci. Cette variable a ete ajoute. En voulez vous d'autres ? o/n "; 
       cin>>reponse; 

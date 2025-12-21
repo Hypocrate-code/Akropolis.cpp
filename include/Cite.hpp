@@ -57,8 +57,8 @@ protected:
 
     static void updateHexSrcFromFan(Hexagone *src, Hexagone *fan);
 
-    
-
+    //liste de tuiles "lac"
+    std::vector<Hexagone*> obtenirTousLesLacs() const; 
 
    
 };

@@ -578,6 +578,13 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte, std::array<int,5>vari
     std::vector<const Hexagone *> habitations_visitees{};
     std::vector<uint32_t> points_hab{};
 
+    // Obtenir tous les lacs si la variante Jardins est active
+    std::vector<Hexagone*> lacs;
+    if (variantes[1] == 1) {
+        lacs = obtenirTousLesLacs();
+        std::cout << "Nombre de lacs détectés: " << lacs.size() << std::endl;
+    }
+
     // parcours des hexagones
     const Hexagone *start = tuiles.back()->get_hexagones().back();
     if (!start)
@@ -658,15 +665,41 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte, std::array<int,5>vari
                         }
                     }
                     if (cond == true) points_jaune += 1 * niveau * var;
-                    
-                   
-                        
+                      
                 }
+                // calcul points jardins : +1 pt pour chaque jardin
+                /*
+                if (h->getCouleur() == Couleur::Vert)
+                    {
+                        points_vert += 1 * niveau;
+                    }
+                */
+                
                 // calcul points jardins : +1 pt pour chaque jardin
                 if (h->getCouleur() == Couleur::Vert)
                 {
-                    points_vert += 1 * niveau;
+                    int var = 1;
+                    
+                    // Variante Jardins: doubler si adjacent à un lac
+                    if (variantes[1] == 1) {
+                        const std::array<Hexagone *, 6> voisins = h->getVoisins3D();
+                        
+                        // Vérifier si un des voisins est un lac
+                        for (int i = 0; i < 6; i++) {
+                            if (voisins[i] != nullptr) {
+                                // Vérifier si ce voisin est dans la liste des lacs
+                                if (std::find(lacs.begin(), lacs.end(), voisins[i]) != lacs.end()) {
+                                    var = 2;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    points_vert += 1 * niveau * var;
                 }
+
+
                 // calcul temples : +1 si est entièrement entouré
                 if (h->getCouleur() == Couleur::Violet)
                 {
@@ -821,36 +854,18 @@ void Cite::updateFantomeOfTuile(const Tuile *t)
 
             if (voisins[i] == nullptr) //si voisin est null alors il faut mettre un hex fantome
             {
-
                 //before creating a new fantome, check if one already exists in that direction
                 Hexagone* voisinHex = nullptr;
 
-                if (hexagones[j]->getVoisinsBOT() && hexagones[j]->getVoisinsBOT()->getVoisinIndice(i) )
+                if (hexagones[j]->getVoisinsBOT() && hexagones[j]->getVoisinsBOT()->getVoisinIndice(i))
                 {
                      voisinHex = hexagones[j]->getVoisinsBOT()->getVoisinIndice(i)->getVoisinIndice(6); // get TOP of BOT voisin
                      if (voisinHex && voisinHex->getType() == Type::Fantome){
                          hexagones[j]->setVoisinIndice(i, voisinHex);
-                            voisinHex->setVoisinIndice(opposite_index(int(i)), hexagones[j]);
-
-
-                            continue;
+                         voisinHex->setVoisinIndice(opposite_index(int(i)), hexagones[j]);
+                         continue;
                      }
-
-                    // std::cout << "Reused existing fantome for hex indice " << hexag
                 }
-                
-                //for (Hexagone* hexFan : hexs_fantome)
-                //{
-                //    Hexagone* voisinFan = hexFan->getVoisinIndice(Utils::opposite_index(int(i)));
-                //    if (voisinFan == hexagones[j])
-                //    {
-                //        // Link both ways
-                //        hexagones[j]->setVoisinIndice(i, hexFan);
-                //        hexFan->setVoisinIndice(Utils::opposite_index(int(i)), hexagones[j]);
-                //        fantomeExists = true;
-                //        break;
-                //    }
-               // }
 
                 Hexagone *newHex = create_new_hex_fantome();
 
@@ -861,42 +876,46 @@ void Cite::updateFantomeOfTuile(const Tuile *t)
                 // For TOP we stop here (no ring traversal with gauche/droite)
                 if (i == 6)
                 {
-
-                    // std::cout << "Created TOP fantome for hex indice " << hexagones[j]->getIndice() << std::endl;
-                    // hexagones[j]->afficherData();
                     continue;
                 }
 
                 // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA GAUCHE POUR CHERCHER LES LIAISONS
+                std::unordered_set<Hexagone*> visitesGauche; 
                 int k = indiceDeGauche(i);
                 Hexagone *voisinDeGauche = const_cast<Hexagone *>(hexagones[j]->getVoisinIndice(k));
-                while (voisinDeGauche != nullptr)
+                
+                while (voisinDeGauche != nullptr && !visitesGauche.count(voisinDeGauche))  
                 {
+                    visitesGauche.insert(voisinDeGauche);  
                     
                     k = indiceDeDroite(indiceDeDroite(k));
                     voisinDeGauche->setVoisinIndice(k, newHex);
+                    newHex->setVoisinIndice(opposite_index(k), voisinDeGauche);
+                    
                     k = indiceDeGauche(k);
                     voisinDeGauche = const_cast<Hexagone *>(voisinDeGauche->getVoisinIndice(k));
                 }
 
                 // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA DROITE POUR CHERCHER LES LIAISONS
+                std::unordered_set<Hexagone*> visitesDroite;  
                 k = indiceDeDroite(i);
                 Hexagone *voisinDeDroite = const_cast<Hexagone *>(hexagones[j]->getVoisinIndice(k));
-                while (voisinDeDroite != nullptr)
+                
+                while (voisinDeDroite != nullptr && !visitesDroite.count(voisinDeDroite)) 
                 {
+                    visitesDroite.insert(voisinDeDroite);  
+                    
                     k = indiceDeGauche(indiceDeGauche(k));
                     voisinDeDroite->setVoisinIndice(k, newHex);
+                    newHex->setVoisinIndice(opposite_index(k), voisinDeDroite);  
+                    
                     k = indiceDeDroite(k);
                     voisinDeDroite = const_cast<Hexagone *>(voisinDeDroite->getVoisinIndice(k));
                 }
             }
-            else{
-
-            }
         }
     }
 }
-
 void Cite::release_hex_fantome()
 {
     for (Hexagone *hex : hexs_fantome)
@@ -984,3 +1003,43 @@ void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
     }
 };
 
+std::vector<Hexagone*> Cite::obtenirTousLesLacs() const
+{
+    std::vector<Hexagone*> lacs;
+    std::unordered_set<Hexagone*> verifies;
+    
+    // Parcourir tous les hexagones fantômes
+    for (Hexagone* hexFantome : hexs_fantome) {
+        if (verifies.count(hexFantome)) {
+            continue;
+        }
+        verifies.insert(hexFantome);
+        
+        // Vérifier si c'est un lac (complètement entouré par des hexagones non-fantômes)
+        bool estLac = true;
+        const std::array<Hexagone*, 8>& voisins = hexFantome->getVoisins();
+        
+        for (int i = 0; i < 6; i++) {
+            if (voisins[i] == nullptr || 
+                voisins[i]->getType() == Type::Fantome || 
+                voisins[i]->getTuileParent() == nullptr) {
+                estLac = false;
+                break;
+            }
+        }
+        
+        if (estLac) {
+            lacs.push_back(hexFantome);
+        }
+    }
+    
+    if (!lacs.empty()) {
+        std::cout << "Lacs détectés (IDs): ";
+        for (auto* lac : lacs) {
+            std::cout << lac->getIndice() << " ";
+        }
+        std::cout << std::endl;
+    }
+    
+    return lacs;
+}
