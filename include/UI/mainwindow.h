@@ -25,7 +25,7 @@ public:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    QStackedWidget *stackedWidget;
+    QStackedWidget *mainLayout;
 
     QWidget *createHomePage();
     QWidget *createStartingGamePage();
