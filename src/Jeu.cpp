@@ -731,24 +731,6 @@ bool Jeu::executerPlacementTuile(Joueur* joueur, Tuile* tuile, Hexagone* hexChan
       joueurs.back()->setNbPierre(joueurs.back()->getNbPierres() + price);
     }
     removeTuileFromChantier(tuile);
-    
-    // DEBUG: Afficher tous les hexagones de niveau 1
-    std::cout << "\n=== DEBUG: Hexagones de niveau 1 après placement ===" << std::endl;
-    const auto& tuiles = citeJoueur->getTuiles();
-    for (const auto* t : tuiles) {
-      const auto& hexs = t->get_hexagones();
-      for (const auto* h : hexs) {
-        if (h && h->getNiveau() == 1) {
-          const Hexagone* voisinSE = h->getVoisinsSE();
-          std::string typeStr = Utils::type_to_string(h->getType());
-          std::string colorStr = Utils::color_to_string(h->getCouleur());
-          std::string voisinTypeStr = voisinSE ? Utils::type_to_string(voisinSE->getType()) : "null";
-          std::string voisinColorStr = voisinSE ? Utils::color_to_string(voisinSE->getCouleur()) : "null";
-          std::cout << "  Type: " << typeStr << " (" << colorStr << "), Voisin SE: " << voisinTypeStr << " (" << voisinColorStr << ")" << std::endl;
-        }
-      }
-    }
-    std::cout << "==================================================\n" << std::endl;
   }
 
   return success;

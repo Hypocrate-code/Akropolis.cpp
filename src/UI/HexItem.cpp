@@ -89,35 +89,37 @@ void HexItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     
     painter->setRenderHint(QPainter::Antialiasing);
     
-    // Dessiner les côtés 3D si l'hexagone a un voisin en dessous
-    if (m_hexagon && m_hexagon->getVoisinsBOT() && m_hexagon->getType() != Type::Fantome) {
+    if (m_hexagon && m_hexagon->getType() != Type::Fantome) {
         const int depthOffset = 8;
-        
-        // Dessiner les côtés: S(0) et SE(5) - les segments visibles du relief
-        int directions[] = {0, 5};
-        
-        for (int dir : directions) {
-            const Hexagone* voisin = m_hexagon->getVoisinIndice(dir);
-            
-            // Dessiner le côté si: 
-            // - pas de voisin, 
-            // - voisin fantôme,
-            // - voisin n'a pas de BOT (donc niveau inférieur ou pas d'étage)
-            bool drawSide = !voisin || 
-                           voisin->getType() == Type::Fantome;
-                           //!voisin->getVoisinsBOT();
-            
+
+        // Hex à sommet pointé vers l'est (flat-top):
+        // Indices des points: 0(E), 1(SE), 2(SW), 3(W), 4(NW), 5(NE)
+        //  - S  : [1]-[2]
+        //  - SE : [0]-[1]
+        struct SideInfo { int segStart; const Hexagone* voisin; };
+        SideInfo sides[] = {
+            {1, m_hexagon->getVoisinsS()},   // Sud -> segment [1]-[2]
+            {0, m_hexagon->getVoisinsSE()}   // Sud-Est -> segment [0]-[1]
+        };
+
+        for (const auto& side : sides) {
+            const Hexagone* voisin = side.voisin;
+
+            // Dessiner le côté si pas de voisin réel (null ou Fantome)
+            bool drawSide = (!voisin) || (voisin->getType() == Type::Fantome);
+
             if (drawSide) {
                 QPolygonF sideSegment;
-                
+                int segEnd = (side.segStart + 1) % 6;
+
                 // Ajouter les 2 points du segment
-                sideSegment << m_polygon[dir];
-                sideSegment << m_polygon[(dir + 1) % 6];
-                
-                // Ajouter les points décalés
-                sideSegment << m_polygon[(dir + 1) % 6] + QPointF(depthOffset, depthOffset);
-                sideSegment << m_polygon[dir] + QPointF(depthOffset, depthOffset);
-                
+                sideSegment << m_polygon[side.segStart];
+                sideSegment << m_polygon[segEnd];
+
+                // Ajouter les points décalés pour l'effet de profondeur
+                sideSegment << m_polygon[segEnd] + QPointF(depthOffset, depthOffset);
+                sideSegment << m_polygon[side.segStart] + QPointF(depthOffset, depthOffset);
+
                 // Dessiner le segment du côté
                 painter->setBrush(QColor(100, 100, 100));
                 painter->setPen(QPen(QColor(60, 60, 60), 1));
