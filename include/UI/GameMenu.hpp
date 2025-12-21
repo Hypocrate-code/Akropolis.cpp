@@ -25,6 +25,9 @@ public:
     void updateCite();
     void updateCiteIllu();
 
+signals:
+    void returnToMainMenu();
+
 public slots:
     void onTuileSelected(const Hexagone* hex);
     void onHexagonSelected(const Hexagone* hex);

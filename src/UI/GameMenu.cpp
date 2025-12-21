@@ -573,7 +573,6 @@ void GameMenu::onFinDePartie()
         return;
     }
     
-    // Demander confirmation
     QMessageBox::StandardButton reply = QMessageBox::question(
         this, 
         "Fin de partie", 
@@ -585,7 +584,6 @@ void GameMenu::onFinDePartie()
         return;
     }
     
-    // Afficher les résultats finaux
     QString message = "Partie terminée!\n\nRésultats finaux:\n\n";
     
     Joueur* winner = nullptr;
@@ -613,13 +611,7 @@ void GameMenu::onFinDePartie()
     
     QMessageBox::information(this, "Résultats finaux", message);
     
-    // Désactiver tous les contrôles
-    rotateBtn->setEnabled(false);
-    confirmBtn->setEnabled(false);
-    cancelBtn->setEnabled(false);
-    finDePartieBtn->setEnabled(false);
-    hexViewChantier->setEnabled(false);
-    hexviewCite->setEnabled(false);
+    j->EndGame();
     
-    statusLabel->setText("Partie terminée - Merci d'avoir joué!");
+    emit returnToMainMenu();
 }

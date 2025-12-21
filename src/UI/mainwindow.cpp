@@ -34,15 +34,17 @@ MainWindow::MainWindow()
 
     setCentralWidget(stackedWidget);
     
-    // Connect startMenu vers gameScreen
     connect(static_cast<StartMenu*>(startGameScreen), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
         Jeu* jeu = Jeu::getInstance();
-        jeu->setQtDisplay(true);  // Activer le mode Qt pour skip l'Illustre Architecte
+        jeu->setQtDisplay(true);
         jeu->InitialiserPartie(names, difficultyLevel);
         
         gameMenu->updateDisplay();
-        // LANCER LA PARTIE ICI
-        stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
+        stackedWidget->setCurrentIndex(2);
+    });
+    
+    connect(gameMenu, &GameMenu::returnToMainMenu, this, [this]() {
+        stackedWidget->setCurrentIndex(0);
     });
 
 

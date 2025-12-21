@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Set MinGW Qt path (MUST be MinGW version!)
-set(QT_MINGW_PATH "C:/Qt/6.10.1/mingw_64")
+set(QT_MINGW_PATH "C:/Qt/6.9.3/mingw_64")
 set(CMAKE_PREFIX_PATH "${QT_MINGW_PATH}")
 
 # Find Qt
