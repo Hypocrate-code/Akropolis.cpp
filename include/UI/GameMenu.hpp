@@ -13,7 +13,7 @@ class Jeu;
 class Joueur;
 class Tuile;
 
-class GameMenu : public QMainWindow
+class GameMenu : public QWidget
 {
     Q_OBJECT
 public:
@@ -49,18 +49,17 @@ private:
     int tuilePrice;                       // prix de la tuile sélectionnée
 
     // Main layouts
-    QWidget* centralWidget;
     QVBoxLayout *mainLayout;
 
     // Uper panel - Chantier
-    QWidget *chantierWidget;
+    QBoxLayout *chantierWidget;
     QVBoxLayout *chantierLayout;
     QLabel *chantierLabel;
     HexView *hexViewChantier;
     QHBoxLayout *chantierButtonsLayout;
 
     // Bot panel - Cité
-    QWidget *citeWidget;
+    QBoxLayout *citeWidget;
     QVBoxLayout *citeLayout;
     QLabel *citeLabel;
     QLabel *playerInfoLabel;

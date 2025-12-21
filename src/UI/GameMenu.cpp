@@ -11,34 +11,36 @@
 #include <QMessageBox>
 
 GameMenu::GameMenu(QWidget *parent)
-    : QMainWindow(parent), selectedTuile(nullptr),
-      tailleHexChantier(77), tailleHexCite(77),
-      selectedHexChantier(nullptr), selectedHexCite(nullptr),
-      isChantierSelectionMode(true),
-      isRotationMode(false),
-      isCiteSelectionMode(false),
-      tuilePrice(0),
-      centralWidget(new QWidget(this)),
-      mainLayout(new QVBoxLayout()),
-      chantierWidget(new QWidget()),
-      chantierLayout(new QVBoxLayout()),
-      chantierLabel(new QLabel("CHANTIER")),
-      chantierButtonsLayout(new QHBoxLayout()),
-      citeWidget(new QWidget()),
-      citeLayout(new QVBoxLayout()),
-      citeLabel(new QLabel("CITÉ")),
-      playerInfoLabel(new QLabel()),
-      controlWidget(new QWidget()),
-      controlLayout(new QHBoxLayout()),
-      rotateBtn(new QPushButton("Tourner")),
-      confirmBtn(new QPushButton("Confirmer")),
-      cancelBtn(new QPushButton("Annuler")),
-      continuerBtn(new QPushButton("Continuer")),
-      finDePartieBtn(new QPushButton("Fin Partie")),
-      statusLabel(new QLabel("Sélectionnez une tuile du chantier"))
+    // Constructeur et données fonctionnelles
+    : QWidget(parent), selectedTuile(nullptr),
+    tailleHexChantier(44), tailleHexCite(44),
+    selectedHexChantier(nullptr), selectedHexCite(nullptr),
+    isChantierSelectionMode(true),
+    isRotationMode(false),
+    isCiteSelectionMode(false),
+    tuilePrice(0),
+    
+    // Différents layouts mis en jeu
+    mainLayout(new QVBoxLayout()),
+    chantierLayout(new QVBoxLayout()),
+    citeLayout(new QVBoxLayout()),
+
+    // Elements d'interface
+    chantierLabel(new QLabel("CHANTIER")),
+    chantierButtonsLayout(new QHBoxLayout()),
+    citeLabel(new QLabel("CITÉ")),
+    playerInfoLabel(new QLabel()),
+    controlWidget(new QWidget()),
+    controlLayout(new QHBoxLayout()),
+    rotateBtn(new QPushButton("Tourner")),
+    confirmBtn(new QPushButton("Confirmer")),
+    cancelBtn(new QPushButton("Annuler")),
+    continuerBtn(new QPushButton("Continuer")),
+    finDePartieBtn(new QPushButton("Fin Partie")),
+    statusLabel(new QLabel("Sélectionnez une tuile du chantier"))
 {
-      hexViewChantier = new HexView(tailleHexChantier, this);
-      hexviewCite = new HexView(tailleHexCite, this);
+    hexViewChantier = new HexView(tailleHexChantier, this);
+    hexviewCite = new HexView(tailleHexCite, this);
 
     setupUI();
     connectSignals();
@@ -52,34 +54,22 @@ GameMenu::~GameMenu()
 }
 
 void GameMenu::setupUI()
-{
-    setCentralWidget(centralWidget);
-    
-    // Configuration du panel CHANTIER
+{    
+    // Ajout des éléments d'interface au layout CHANTIER
     chantierLayout->addWidget(chantierLabel);
-    
-    hexViewChantier->setMinimumSize(1200, 300);
-    hexViewChantier->setMaximumHeight(350);
-    chantierLayout->addWidget(hexViewChantier, 1);
-    
+    chantierLayout->addWidget(hexViewChantier);
     chantierLayout->addLayout(chantierButtonsLayout);
-    chantierWidget->setLayout(chantierLayout);
     
-    // Configuration du panel CITÉ
-    
+     // Ajout des éléments d'interface au layout CITE
     citeLayout->addWidget(citeLabel);
     citeLayout->addWidget(playerInfoLabel);
+    citeLayout->addWidget(hexviewCite);
+        
+    // Ajout des sections au mainLayout
+    mainLayout->addLayout(chantierLayout, 1);
+    mainLayout->addLayout(citeLayout, 1);
     
-    hexviewCite->setMinimumSize(1200, 400);
-    citeLayout->addWidget(hexviewCite, 1);
-    
-    citeWidget->setLayout(citeLayout);
-    
-    // Ajout des panels au layout principal
-    mainLayout->addWidget(chantierWidget, 0);
-    mainLayout->addWidget(citeWidget, 1);
-    
-    // Configuration des boutons de contrôle
+    // Configuration des widgets
     rotateBtn->setEnabled(false);
     confirmBtn->setEnabled(false);
     cancelBtn->setEnabled(false);
@@ -106,12 +96,10 @@ void GameMenu::setupUI()
     globalLayout->addWidget(controlWidget);
     globalLayout->setSpacing(5);
     globalLayout->setContentsMargins(5, 5, 5, 5);
-    
-    centralWidget->setLayout(globalLayout);
-    
+    setLayout(globalLayout);
+        
     // Configuration de la fenêtre
     setWindowTitle("Akropolis - Partie en cours");
-    resize(1400, 900);
 }
 
 void GameMenu::connectSignals()

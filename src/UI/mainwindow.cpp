@@ -18,34 +18,33 @@ MainWindow::MainWindow()
 {
 
     setWindowTitle("Akropolis");
-    resize(500, 500);
+    resize(400, 400);
     
-    stackedWidget = new QStackedWidget(this);  // attribut stackedWidget initialisé
+    mainLayout = new QStackedWidget(this);  // attribut mainLayout initialisé
 
     QWidget *homeScreen = createHomePage();
     QWidget *startGameScreen = createStartingGamePage();
     QWidget *gameScreen = createGamePage();
     QWidget *endScreen = createEndPage();
 
-    stackedWidget->addWidget(homeScreen);
-    stackedWidget->addWidget(startGameScreen);
-    stackedWidget->addWidget(gameScreen);
-    stackedWidget->addWidget(endScreen);
+    mainLayout->addWidget(homeScreen);
+    mainLayout->addWidget(startGameScreen);
+    mainLayout->addWidget(gameScreen);
+    mainLayout->addWidget(endScreen);
 
-    setCentralWidget(stackedWidget);
+    setCentralWidget(mainLayout);
     
     // Connect startMenu vers gameScreen
-    connect(static_cast<StartMenu*>(startGameScreen), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
+    connect(static_cast<StartMenu*>(playerNumberInput), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
+        std::cout << "Yest" << std::endl;
         Jeu* jeu = Jeu::getInstance();
         jeu->setQtDisplay(true);  // Activer le mode Qt pour skip l'Illustre Architecte
         jeu->InitialiserPartie(names, difficultyLevel);
         
         gameMenu->updateDisplay();
         // LANCER LA PARTIE ICI
-        stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
+        mainLayout->setCurrentIndex(2); // Aller à l'écran de jeu
     });
-
-
 
 }
 
@@ -73,7 +72,7 @@ QWidget *MainWindow::createHomePage()
     layout->addWidget(btnGameScreen);
 
     connect(btnGameScreen, &QPushButton::clicked, this, [this]() {
-        stackedWidget->setCurrentIndex(1);  // 1 -> Ecran de la partie
+        mainLayout->setCurrentIndex(1);  // 1 -> Ecran de la partie
     });
 
     return page;
@@ -81,47 +80,37 @@ QWidget *MainWindow::createHomePage()
 
 QWidget *MainWindow::createStartingGamePage()
 {
+    QWidget *page = new QWidget();
+    QVBoxLayout *layout = new QVBoxLayout(page);
+    playerNumberInput = new StartMenu(page);
     
-    playerNumberInput = new StartMenu(this);
-    QVBoxLayout *layout = new QVBoxLayout(playerNumberInput);
-
     QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
+    layout->addWidget(playerNumberInput);
     layout->addWidget(btnHomeScreen);
-    // layout->addWidget(btnEndScreen);
-
     connect(btnHomeScreen, &QPushButton::clicked, this, [this]() {
-        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
+        mainLayout->setCurrentIndex(0); // 0 -> Accueil
     });
-
-    // connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
-    //     stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
-    // });
-
-    return playerNumberInput;
+    
+    return page;
 }
 
 QWidget *MainWindow::createGamePage()
 {
     
     gameMenu = new GameMenu(this);
-    
-    QVBoxLayout *layout = new QVBoxLayout(gameMenu);
+    return gameMenu;
     // Create hexagon grid widget
     //QWidget *page = new QWidget();
     //QVBoxLayout *mainLayout = new QVBoxLayout(page);
-    QVBoxLayout *btnContainer = new QVBoxLayout();
+    // QVBoxLayout *btnContainer = new QVBoxLayout();
 
 
-    QPushButton *btnEndScreen = new QPushButton("Finir partie (bouton temporaire)");
-    connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
-    });
+    // QPushButton *btnEndScreen = new QPushButton("Finir partie (bouton temporaire)");
+    // connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
+    //     mainLayout->setCurrentIndex(0); // 0 -> Accueil
+    // });
 
-    btnContainer->addWidget(btnEndScreen);
-
-    layout->addLayout(btnContainer);
-
-
+    // btnContainer->addWidget(btnEndScreen);
     // Création d'UNE vue de la scène graphique créée
     //HexView* view = new HexView(50, page);
     //view->setDrag(true);
@@ -130,7 +119,6 @@ QWidget *MainWindow::createGamePage()
     // view->launchDrawRecursive(temp5, QPoint(350, 0));
 
 
-    return gameMenu;
 }
 
 QWidget *MainWindow::createEndPage()
@@ -152,7 +140,7 @@ QWidget *MainWindow::createEndPage()
     layout->addWidget(btnHomeScreen);
 
     connect(btnHomeScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
+        mainLayout->setCurrentIndex(0); // 0 -> Accueil
     });
 
     return page;
