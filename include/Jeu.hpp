@@ -32,16 +32,15 @@ class Jeu {
 
     void afficherTuiles() const;
     void afficherHexagones() const;
-    void tourJoueur(Joueur* joueur);
-    void tourIllu(Illu* illu); 
 
 
     // FONCTIONNES AFFICHAGE PARTIE EN MODE CONSOLE
     void StartMenuC();
-
+    void tourJoueur(Joueur* joueur);
+    void tourIllu(Illu* illu);
 
     // FONCTIONS APPELLES PAR QT ET CONSOLE:
-    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel);
+    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel, std::array<int, 5>variantes={});
 
     //void setDifficultyLevel(uint32_t level) { difficultyLevel = level; }
     //uint32_t getDifficultyLevel() const { return difficultyLevel; }
@@ -70,14 +69,12 @@ class Jeu {
     void addJoueur(Joueur* j) { joueurs.push_back(j); }
     const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
 
-    void set_niveau_difficulte(int n){
+    inline void set_niveau_difficulte(int n){
       if(0<=n && n<=2){
         niveauDeDifficulte=n; }
       else  {
           throw Exception("Niveau de difficulté invalide"); 
-      
       }
-    
     }
     int choisirHexagoneDeReference(Tuile* t);
 
@@ -87,7 +84,7 @@ class Jeu {
     Jeu();
 
     static Jeu* instance;
-    ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
+    ModeDeJeu mode;
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;
@@ -98,7 +95,8 @@ class Jeu {
 
     bool QtDisplay = true;
     int nombreTuilesChantier; 
-    int niveauDeDifficulte; 
+    int niveauDeDifficulte;
+    std::array<int, 5> variantes; 
 
 
 };
