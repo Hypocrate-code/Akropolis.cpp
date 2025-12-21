@@ -64,7 +64,7 @@ void Jeu::EndGame()
 // Fin opérations de singleton
 
 // Constructeur créant les tuilesCité de la partie
-Jeu::Jeu() : mode(ModeDeJeu::Solo), niveauDeDifficulte(0), pioche(*this)
+Jeu::Jeu() : mode(ModeDeJeu::Solo), niveauDeDifficulte(0), pioche(*this), nombreTuilesPioche(61), duree(Duree::Courte)
 {
 
   // Définition des différentes quantités d'hexagones dans chaque catégorie
@@ -215,16 +215,36 @@ void Jeu::StartMenuC()
       }
     } while (this->niveauDeDifficulte < 0 || this->niveauDeDifficulte > 2);
   }
-
-  j->InitialiserPartie(names, this->niveauDeDifficulte,variantes); // difficulté 0 par défaut en mode console
+  std::cout<<"Voulez vous faire une partie courte ? o/n";
+  std::cin>>reponse;
+  while(reponse != 'o' && reponse !='n'){
+      std::cout<<"\nreponse invalide réesayer ";
+      std::cin>>reponse;
+  }
+  Duree d=Duree::Courte;
+  if(reponse=='n'){
+      d=Duree::Longue;
+  }
+  j->InitialiserPartie(names, this->niveauDeDifficulte,variantes, d); // difficulté 0 par défaut en mode console
 }
 
-void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t difficultyLevel, std::array<int, 5> variantes)
+void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t difficultyLevel, std::array<int, 5> variantes, Duree d)
 {
   std::cout << "\n--- Initialisation de la partie ---\n";
   nombreTuilesChantier = names.size() + 2;
   niveauDeDifficulte = difficultyLevel;
-  this->variantes = variantes; 
+  this->variantes = variantes;
+  if(names.size()>1){
+      this->mode= ModeDeJeu::Multi;
+  }
+  //gestion de la duree de la partie --> si la duree est courte on doit modifier le nombre de tuile
+  this->duree= d;
+  if(duree==Duree::Courte){
+      nombreTuilesPioche = 12 * names.size() + 13;
+      if(mode==ModeDeJeu::Solo){
+          nombreTuilesPioche = 12 * 2 +13 ;
+      }
+  }
 
   for (size_t i = 0; i < names.size(); i++)
   {
@@ -328,13 +348,7 @@ void Jeu::Lancer()
       }
     }
   }
-  std::cout << "============== FIN DE PARTIE =====================\n";
-  std::cout << "AFFICHAGE DES SCORES \n";
-  for (auto &j : joueurs)
-  {
-    std::cout << j->getNom() << " : ";
-    std::cout << j->getCite()->compterPoints(niveauDeDifficulte, variantes) << " points" << std::endl;
-  }
+  this->AffFinDePartieC();
 }
 
 int Jeu::choisirHexagoneDeReference(Tuile *t)
@@ -613,4 +627,31 @@ Tuile *Jeu::choisirTuileDuChantier(Illu *illu)
   auto t = chantier[0];
   chantier.erase(chantier.begin());
   return t;
+}
+
+
+
+Joueur* Jeu::gagnant(){
+    Joueur* vainqueur = this->joueurs.back();
+    int points_vainqueurs  = this->joueurs.back()->getCite()->compterPoints(this->niveauDeDifficulte,this->variantes);
+    for(auto j : this->joueurs){
+        int points = j->getCite()->compterPoints(this->niveauDeDifficulte,this->variantes);
+        if(points>=points_vainqueurs){
+            vainqueur = j ;
+            points_vainqueurs ;
+        }
+    }
+    return vainqueur;
+}
+
+
+void Jeu::AffFinDePartieC(){
+    std::cout << "============== FIN DE PARTIE =====================\n";
+    std::cout<<"Le gagnant de la partie est le joueur "<<this->gagnant()->getNom() ;
+    std::cout<<"Voici les différents scores : "<<std::endl ;
+    for (auto &j : joueurs)
+    {
+        std::cout << j->getNom() << " : ";
+        std::cout << j->getCite()->compterPoints(niveauDeDifficulte, variantes) << " points" << std::endl;
+    }
 }

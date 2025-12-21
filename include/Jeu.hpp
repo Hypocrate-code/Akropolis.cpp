@@ -18,8 +18,12 @@ class Pioche;
 enum class ModeDeJeu {
   Multi,
   Solo,
-  PasCommence
 };
+enum class Duree {
+    Courte,
+    Longue
+};
+
 class Jeu {
 
   public:
@@ -38,10 +42,10 @@ class Jeu {
     void StartMenuC();
     void tourJoueur(Joueur* joueur);
     void tourIllu(Illu* illu);
-
+    void AffFinDePartieC();
     // FONCTIONS APPELLES PAR QT ET CONSOLE:
-    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel, std::array<int, 5>variantes={});
-
+    void InitialiserPartie(const std::vector<std::string>& names, uint32_t difficultyLevel, std::array<int, 5>variantes={}, Duree d=Duree::Courte);
+    Joueur* gagnant();
     //void setDifficultyLevel(uint32_t level) { difficultyLevel = level; }
     //uint32_t getDifficultyLevel() const { return difficultyLevel; }
 
@@ -60,10 +64,10 @@ class Jeu {
     Tuile* choisirTuileDuChantier(Joueur* joueur);
     Tuile* choisirTuileDuChantier(Illu* illu); 
 
-    inline ModeDeJeu getModeDeJeu() const {return mode; }; // A voir si utile, mode solo ?
-    //void setGameMode(ModeDeJeu mdj) { mode = mdj; }
+    inline ModeDeJeu getModeDeJeu() const {return mode; };
 
     uint32_t getNbPlayers() const { return joueurs.size(); }
+    int getnombreTuilesPioche()const{return nombreTuilesPioche; }
     void setMaxPlayers(uint32_t n) { joueurs.reserve(n); maxPlayers = n; }
     uint32_t getMaxPlayers() const { return maxPlayers; }
     void addJoueur(Joueur* j) { joueurs.push_back(j); }
@@ -86,7 +90,8 @@ class Jeu {
     Jeu();
 
     static Jeu* instance;
-    ModeDeJeu mode; // A voir pendant développement mode solo, initialiser Jeu avec mode solo
+    ModeDeJeu mode;
+    Duree duree;
     std::vector<Hexagone*> hexs;
     std::vector<TuileDepart *> tuilesDepart;
     std::vector<Joueur *> joueurs;
@@ -98,7 +103,8 @@ class Jeu {
     bool QtDisplay = true;
     int nombreTuilesChantier; 
     int niveauDeDifficulte;
-    std::array<int, 5> variantes; 
+    std::array<int, 5> variantes;
+    int nombreTuilesPioche;
 
 
 };

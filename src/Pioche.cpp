@@ -15,10 +15,12 @@ void Pioche::init() {
         srand(static_cast<unsigned>(time(nullptr)));
         seedInit = true;
     }
-
+    int i = 1;
     for (auto t : jeuRef.getTuilesCite()) {
-        if (t != nullptr)
+        if (t != nullptr && i<= jeuRef.getnombreTuilesPioche())
             tuiles.push_back(t);
+
+        i++;
     }
 }
 

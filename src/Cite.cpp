@@ -688,9 +688,12 @@ uint32_t CiteJoueur::compterPoints( int niveau_difficulte, std::array<int,5>vari
                             cond = false;
                         }
                     }
-                    if(variantes[2]==1) var = niveau; 
-                    if (cond)
-                        points_violet += 1 * niveau * var;
+                    if(variantes[2]==1){
+                        if(niveau>1){
+                            var = 2;
+                        }
+                    if (cond) points_violet += 1 * niveau * var;
+                }
                 }
                 // calcul habitation: on doit calculer les groupes d'habitations
                 if (h->getCouleur() == Couleur::Bleu)

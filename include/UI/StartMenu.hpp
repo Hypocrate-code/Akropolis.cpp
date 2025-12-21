@@ -7,6 +7,9 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <array>
+#include "Jeu.hpp"
+
+
 
 class StartMenu : public QWidget {
     Q_OBJECT
@@ -14,7 +17,7 @@ public:
     StartMenu(QWidget* parent = nullptr);
     ~StartMenu() override;
 signals:
-    void playerSelectionConfirmed(std::vector<std::string> players, uint32_t difficultyLevel, std::array<int,5>variantes);
+    void playerSelectionConfirmed(std::vector<std::string> players, uint32_t difficultyLevel, std::array<int,5>variantes, Duree d);
 
 private slots:
     void onConfirmClicked();
@@ -30,8 +33,11 @@ private:
     QComboBox* dificultyComboBox;
     
     QVBoxLayout* variantesLayout;
+
+    QHBoxLayout* longueurLayout;
     uint32_t playerCount;
     uint32_t dificultyLevel;
     std::array<int,5> variantes;
+    Duree duree;
     std::vector<QLineEdit*> playerButtons;
 };

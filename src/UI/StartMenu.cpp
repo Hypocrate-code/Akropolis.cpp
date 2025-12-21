@@ -12,7 +12,7 @@ StartMenu::StartMenu(QWidget* parent)
       incBtn(new QPushButton("Ajouter joueurs")),
     confirmBtn(new GamePushButton("Confirmer")), playerCount(1), dificultyLevel(0),variantes({}),
       lineEditLayout(new QVBoxLayout()), countInput(new QLineEdit()),
-    dificultyComboBox(new QComboBox()), variantesLayout(new QVBoxLayout)
+    dificultyComboBox(new QComboBox()), variantesLayout(new QVBoxLayout), longueurLayout(new QHBoxLayout)
 {
     QHBoxLayout* btnLayout = new QHBoxLayout();
 
@@ -54,12 +54,21 @@ StartMenu::StartMenu(QWidget* parent)
     QCheckBox* caserne = new QCheckBox("Variante caserne");
 
 
+
+
     variantesLayout->addWidget(var);
     variantesLayout->addWidget(marche);
     //variantesLayout->addWidget(jardin); //NON DISPO
     variantesLayout->addWidget(temple);
     variantesLayout->addWidget(habitations);
     variantesLayout->addWidget(caserne);
+
+    //Selection partie longue
+    QLabel* longueur = new QLabel("Voulez vous faire une partie longue ? ");
+    QCheckBox* longue = new QCheckBox("oui");
+    longueurLayout->addWidget(longueur);
+    longueurLayout->addWidget(longue);
+
 
     connect(dificultyComboBox, &QComboBox::currentIndexChanged, this, [this](int index) {
         dificultyLevel = static_cast<uint32_t>(index);
@@ -142,6 +151,13 @@ StartMenu::StartMenu(QWidget* parent)
         variantes[4] = checked ? 1 : 0;
     });
 
+    connect(longue, &QCheckBox::toggled, this, [this](bool checked) {
+        if(checked){
+            duree = Duree::Longue;
+        }else{
+            duree = Duree::Courte;
+        }
+    });
 
 
 
@@ -156,10 +172,12 @@ StartMenu::StartMenu(QWidget* parent)
     layout->addLayout(btnLayout);
     layout->addLayout(lineEditLayout);
 
-    // Ajoute la ligne difficulté (label + combobox), choix des variantes et le bouton Confirmer
+    // Ajoute la ligne difficulté (label + combobox), choix des variantes, choix duree et le bouton Confirmer
     layout->addWidget(difficultyRow);
     layout->addLayout(variantesLayout);
+    layout->addLayout(longueurLayout);
     layout->addWidget(confirmBtn);
+
 
     // Afficher la difficulté uniquement quand playerCount == 1
     difficultyRow->setVisible(playerCount == 1);
@@ -189,7 +207,7 @@ void StartMenu::onConfirmClicked()
         players.push_back(lineEdit->text().toStdString());
     }
     
-    emit playerSelectionConfirmed(players, dificultyLevel, variantes);
+    emit playerSelectionConfirmed(players, dificultyLevel, variantes, duree);
 }
 
 
