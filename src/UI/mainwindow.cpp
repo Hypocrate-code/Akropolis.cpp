@@ -1,24 +1,31 @@
 #include "UI/mainwindow.h"
 #include "UI/HexItem.hpp"
 #include <QVBoxLayout>
+<<<<<<< HEAD
 #include <QPushButton>
 #include <QLabel>
+=======
+>>>>>>> ee38a13 (Started interface stylisation)
 #include <QGridLayout>
 #include <QMessageBox>
 
 #include "UI/HexView.hpp"
+<<<<<<< HEAD
+=======
+#include "UI/AkrLabel.hpp"
+#include "UI/AkrTitle.hpp"
+>>>>>>> ee38a13 (Started interface stylisation)
 #include "Tuile.hpp"
 
 #include <QLineEdit>
 #include "Jeu.hpp"
-#include <UI/GamePushButton.hpp>
+#include "UI/AkrPushButton.hpp"
 
 MainWindow::MainWindow()
     : QMainWindow()
 {
 
     setWindowTitle("Akropolis");
-    resize(400, 400);
     
     mainLayout = new QStackedWidget(this);  // attribut mainLayout initialisé
 
@@ -62,19 +69,29 @@ QWidget *MainWindow::createHomePage()
     QWidget *page = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(page);
     
+<<<<<<< HEAD
     const QString text("Bienvenue sur Akropolis.cpp !"); 
     QLabel *label = new QLabel(text);
 
     // Stylisation à voir plus tard
     label->setAlignment(Qt::AlignCenter);
     label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
+=======
+    // const QString text("Bienvenue sur Akropolis.cpp !"); 
+    AkrTitle* label = new AkrTitle("Bienvenue sur Akropolis.cpp !");
+    label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    
+    AkrPushButton *btnGameScreen = new AkrPushButton("Jouer une partie");
+>>>>>>> ee38a13 (Started interface stylisation)
 
-    QPushButton *btnGameScreen = new QPushButton("Jouer une partie");
+    layout->addStretch();
+    layout->addWidget(label, 0, Qt::AlignCenter);
+    layout->addWidget(btnGameScreen, 0, Qt::AlignCenter);
+    // layout->setContentsMargins(20, 20, 20, 20);
+    layout->setSpacing(20);
+    layout->addStretch();
 
-    layout->addWidget(label);
-    layout->addWidget(btnGameScreen);
-
-    connect(btnGameScreen, &QPushButton::clicked, this, [this]() {
+    connect(btnGameScreen, &AkrPushButton::clicked, this, [this]() {
         mainLayout->setCurrentIndex(1);  // 1 -> Ecran de la partie
     });
 
@@ -86,11 +103,20 @@ QWidget *MainWindow::createStartingGamePage()
     QWidget *page = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(page);
     playerNumberInput = new StartMenu(page);
+
+    AkrPushButton *btnHomeScreen = new AkrPushButton("Retour à l'écran titre");
     
-    QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
+    QWidget* btnContainer = new QWidget();
+    QHBoxLayout* confirmBtnLayout = new QHBoxLayout(btnContainer);
+    
+    confirmBtnLayout->addStretch(1);
+    confirmBtnLayout->addWidget(btnHomeScreen, 2);
+    confirmBtnLayout->addStretch(1);
+
     layout->addWidget(playerNumberInput);
-    layout->addWidget(btnHomeScreen);
-    connect(btnHomeScreen, &QPushButton::clicked, this, [this]() {
+    layout->addWidget(btnContainer);
+
+    connect(btnHomeScreen, &AkrPushButton::clicked, this, [this]() {
         mainLayout->setCurrentIndex(0); // 0 -> Accueil
     });
     
@@ -108,8 +134,8 @@ QWidget *MainWindow::createGamePage()
     // QVBoxLayout *btnContainer = new QVBoxLayout();
 
 
-    // QPushButton *btnEndScreen = new QPushButton("Finir partie (bouton temporaire)");
-    // connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
+    // AkrPushButton *btnEndScreen = new AkrPushButton("Finir partie (bouton temporaire)");
+    // connect(btnEndScreen, &AkrPushButton::clicked, this, [=]() {
     //     mainLayout->setCurrentIndex(0); // 0 -> Accueil
     // });
 
@@ -130,19 +156,14 @@ QWidget *MainWindow::createEndPage()
     QWidget *page = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(page);
     
-    const QString text("Fin de la partie"); 
-    QLabel *label = new QLabel(text);
+    AkrTitle *label = new AkrTitle("Fin de la partie");
 
-    // Stylisation à voir plus tard
-    label->setAlignment(Qt::AlignCenter);
-    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
-
-    QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
+    AkrPushButton *btnHomeScreen = new AkrPushButton("Retour à l'écran titre");
 
     layout->addWidget(label);
     layout->addWidget(btnHomeScreen);
 
-    connect(btnHomeScreen, &QPushButton::clicked, this, [=]() {
+    connect(btnHomeScreen, &AkrPushButton::clicked, this, [=]() {
         mainLayout->setCurrentIndex(0); // 0 -> Accueil
     });
 

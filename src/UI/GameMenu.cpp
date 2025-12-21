@@ -26,22 +26,22 @@ GameMenu::GameMenu(QWidget *parent)
     citeLayout(new QVBoxLayout()),
 
     // Elements d'interface
-    chantierLabel(new QLabel("CHANTIER")),
+    chantierLabel(new AkrLabel("CHANTIER")),
     chantierButtonsLayout(new QHBoxLayout()),
-    citeLabel(new QLabel("CITÉ")),
-    playerInfoLabel(new QLabel()),
+    citeLabel(new AkrLabel("CITÉ")),
+    playerInfoLabel(new AkrLabel()),
     controlWidget(new QWidget()),
     controlLayout(new QHBoxLayout()),
-    rotateBtn(new QPushButton("Tourner")),
-    confirmBtn(new QPushButton("Confirmer")),
-    cancelBtn(new QPushButton("Annuler")),
-    continuerBtn(new QPushButton("Continuer")),
-    finDePartieBtn(new QPushButton("Fin Partie")),
-    statusLabel(new QLabel("Sélectionnez une tuile du chantier")),
-    dashboard(new Dashboard(this))
+    rotateBtn(new AkrPushButton("Tourner")),
+    confirmBtn(new AkrPushButton("Confirmer")),
+    cancelBtn(new AkrPushButton("Annuler")),
+    continuerBtn(new AkrPushButton("Continuer")),
+    finDePartieBtn(new AkrPushButton("Fin Partie")),
+    statusLabel(new AkrLabel("Sélectionnez une tuile du chantier"))
 {
     hexViewChantier = new HexView(tailleHexChantier, this);
-    hexviewCite = new HexView(tailleHexCite, this);
+    hexViewCite = new HexView(tailleHexCite, this);
+    hexViewCite->setDrag(true);
 
     setupUI();
     connectSignals();
@@ -64,7 +64,7 @@ void GameMenu::setupUI()
      // Ajout des éléments d'interface au layout CITE
     citeLayout->addWidget(citeLabel);
     citeLayout->addWidget(playerInfoLabel);
-    citeLayout->addWidget(hexviewCite);
+    citeLayout->addWidget(hexViewCite);
     
     QHBoxLayout *chantierDashboardLayout = new QHBoxLayout();
     QWidget *chantierWidget = new QWidget();
@@ -113,13 +113,13 @@ void GameMenu::setupUI()
 
 void GameMenu::connectSignals()
 {
-    connect(rotateBtn, &QPushButton::clicked, this, &GameMenu::onRotateTuile);
-    connect(confirmBtn, &QPushButton::clicked, this, &GameMenu::onConfirmPlacement);
-    connect(cancelBtn, &QPushButton::clicked, this, &GameMenu::onCancelAction);
-    connect(continuerBtn, &QPushButton::clicked, this, &GameMenu::onContinuerTour);
-    connect(finDePartieBtn, &QPushButton::clicked, this, &GameMenu::onFinDePartie);
+    connect(rotateBtn, &AkrPushButton::clicked, this, &GameMenu::onRotateTuile);
+    connect(confirmBtn, &AkrPushButton::clicked, this, &GameMenu::onConfirmPlacement);
+    connect(cancelBtn, &AkrPushButton::clicked, this, &GameMenu::onCancelAction);
+    connect(continuerBtn, &AkrPushButton::clicked, this, &GameMenu::onContinuerTour);
+    connect(finDePartieBtn, &AkrPushButton::clicked, this, &GameMenu::onFinDePartie);
 
-    connect(hexviewCite, &HexView::hexagonClicked, this, &GameMenu::onHexagonSelected);
+    connect(hexViewCite, &HexView::hexagonClicked, this, &GameMenu::onHexagonSelected);
     
     // Clic sur un hex du chantier pour sélectionner une tuile
     connect(hexViewChantier, &HexView::hexagonClicked, this, [this](const Hexagone* hex) {
@@ -158,7 +158,7 @@ void GameMenu::updateDisplay()
         continuerBtn->setEnabled(true);
         
         hexViewChantier->setEnabled(false);
-        hexviewCite->setEnabled(false);
+        hexViewCite->setEnabled(false);
         
         // Exécuter le tour de l'Illustre
         j->executerTourIllu();
@@ -182,7 +182,7 @@ void GameMenu::updateDisplay()
         continuerBtn->setVisible(false);
         
         hexViewChantier->setEnabled(true);
-        hexviewCite->setEnabled(true);
+        hexViewCite->setEnabled(true);
         
         updateChantier();
         updateCite();
@@ -253,7 +253,7 @@ void GameMenu::updateCite()
         return;
     }
     
-    hexviewCite->clearView();
+    hexViewCite->clearView();
     
     std::vector<const Tuile*> tuiles = cite->getTuiles();
     if (tuiles.empty()) {
@@ -265,7 +265,7 @@ void GameMenu::updateCite()
     if (firstTuile) {
         const auto& hexagones = firstTuile->get_hexagones();
         if (!hexagones.empty()) {
-            hexviewCite->launchDrawRecursive(
+            hexViewCite->launchDrawRecursive(
                 hexagones[0], 
                 QPoint(400, 200)
             );
@@ -286,7 +286,7 @@ void GameMenu::updateCiteIllu()
         return;
     }
     
-    hexviewCite->clearView();
+    hexViewCite->clearView();
     
     std::vector<const Tuile*> tuiles = cite->getTuiles();
     if (tuiles.empty()) {
@@ -295,7 +295,7 @@ void GameMenu::updateCiteIllu()
     
     uint32_t numTuiles = tuiles.size();
     uint32_t totalWidth = numTuiles * tailleHexCite * 4;
-    uint32_t viewportWidth = hexviewCite->width();
+    uint32_t viewportWidth = hexViewCite->width();
     int startX = (viewportWidth > totalWidth) ? (viewportWidth - totalWidth) / 2 : 50;
     
     for (size_t i = 0; i < tuiles.size(); ++i) {
@@ -304,7 +304,7 @@ void GameMenu::updateCiteIllu()
             const auto& hexagones = tuile->get_hexagones();
             if (!hexagones.empty()) {
                 uint32_t xOffset = startX + i * tailleHexCite * 4;
-                hexviewCite->launchDrawRecursive(hexagones[0], QPoint(xOffset, 200));
+                hexViewCite->launchDrawRecursive(hexagones[0], QPoint(xOffset, 200));
             }
         }
     }
@@ -427,15 +427,17 @@ void GameMenu::onConfirmPlacement()
         confirmBtn->setEnabled(false);
         confirmBtn->setVisible(false);
         cancelBtn->setEnabled(false);
-        cancelBtn->setVisible(false);
         
+<<<<<<< HEAD
+        // Vérifier si la partie est terminée
+=======
         // Afficher le bouton Continuer
         continuerBtn->setVisible(true);
         continuerBtn->setEnabled(true);
         
         // Désactiver les interactions pendant la visualisation
         hexViewChantier->setEnabled(false);
-        hexviewCite->setEnabled(false);
+        hexViewCite->setEnabled(false);
 
         // Mettre à jour l'affichage de la cité avec la tuile placée
         updateCite();
@@ -449,6 +451,7 @@ void GameMenu::onConfirmPlacement()
         );
 
         // Vérifier si la partie est terminée après ce placement
+>>>>>>> ee38a13 (Started interface stylisation)
         if (j->isGameOver()) {
             Joueur* winner = j->getWinner();
             QString message = "Partie terminée!\n\nRésultats:\n\n";
@@ -470,7 +473,12 @@ void GameMenu::onConfirmPlacement()
             continuerBtn->setEnabled(false);
             continuerBtn->setVisible(false);
             hexViewChantier->setEnabled(false);
+<<<<<<< HEAD
             hexviewCite->setEnabled(false);
+            
+=======
+            hexViewCite->setEnabled(false);
+>>>>>>> ee38a13 (Started interface stylisation)
             return;
         }
 
@@ -526,6 +534,8 @@ void GameMenu::onContinuerTour()
     if (!j) {
         return;
     }
+<<<<<<< HEAD
+=======
 
     // Cacher le bouton continuer désormais consommé
     continuerBtn->setVisible(false);
@@ -539,7 +549,7 @@ void GameMenu::onContinuerTour()
     confirmBtn->setEnabled(false);
     cancelBtn->setEnabled(false);
     hexViewChantier->setEnabled(true);
-    hexviewCite->setEnabled(true);
+    hexViewCite->setEnabled(true);
 
     // Réinitialiser les modes de sélection
     selectedTuile = nullptr;
@@ -549,6 +559,7 @@ void GameMenu::onContinuerTour()
     isRotationMode = false;
     isCiteSelectionMode = false;
     tuilePrice = 0;
+>>>>>>> ee38a13 (Started interface stylisation)
     
     // Vérifier si la partie est terminée
     if (j->isGameOver()) {
@@ -576,7 +587,7 @@ void GameMenu::onContinuerTour()
         cancelBtn->setEnabled(false);
         continuerBtn->setEnabled(false);
         hexViewChantier->setEnabled(false);
-        hexviewCite->setEnabled(false);
+        hexViewCite->setEnabled(false);
         
         return;
     }

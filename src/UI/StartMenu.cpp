@@ -1,42 +1,49 @@
 #include "UI/StartMenu.hpp"
+#include "UI/AkrPushButton.hpp"
 #include <QHBoxLayout>
-#include <QLabel>
+#include "UI/AkrLabel.hpp"
 #include <QComboBox>
 #include <QMessageBox>
-
 #include <iostream>
 
 StartMenu::StartMenu(QWidget* parent)
     : QWidget(parent), layout(new QVBoxLayout(this)),
-      decBtn(new QPushButton("Enlever joueurs")),
-      incBtn(new QPushButton("Ajouter joueurs")),
-      confirmBtn(new GamePushButton("Confirmer")), playerCount(1), dificultyLevel(0),
-      lineEditLayout(new QVBoxLayout()), countInput(new QLineEdit()),
+      decBtn(new AkrPushButton(" - ")),
+      incBtn(new AkrPushButton(" + ")),
+      confirmBtn(new AkrPushButton("Confirmer")), playerCount(1), dificultyLevel(0),
+      lineEditLayout(new QVBoxLayout()), countInput(new AkrLabel()),
       dificultyComboBox(new QComboBox())
 {
     QHBoxLayout* btnLayout = new QHBoxLayout();
 
     layout->setAlignment(Qt::AlignTop);
 
-    btnLayout->addWidget(new QLabel("Nombre de joueurs :"));
+    btnLayout->addStretch(2);
+    btnLayout->addWidget(new AkrLabel("Nombre de joueurs"));
+    btnLayout->addStretch(1);
     btnLayout->addWidget(decBtn);
-    btnLayout->addWidget(countInput);
 
     countInput->setText(QString::number(playerCount));
-    countInput->setFixedWidth(20);
-
+    countInput->setFixedWidth(50);
+    btnLayout->addWidget(countInput);
+    
     btnLayout->addWidget(incBtn);
+
+    btnLayout->addStretch(2);
 
     incBtn->setToolTip("Maximum 4 joueurs.");
 
-    incBtn->setFixedWidth(120);
-    decBtn->setFixedWidth(120);
+    incBtn->setFixedWidth(50);
+    decBtn->setFixedWidth(50);
 
     // Ligne de difficulté (label + combobox)
     QWidget* difficultyRow = new QWidget();
     QHBoxLayout* diffLayout = new QHBoxLayout(difficultyRow);
-    diffLayout->addWidget(new QLabel("Niveau de difficulté :"));
+    diffLayout->addStretch(2);
+    diffLayout->addWidget(new AkrLabel("Niveau de difficulté"));
+    diffLayout->addStretch(1);
     diffLayout->addWidget(dificultyComboBox);
+    diffLayout->addStretch(2);
 
     dificultyComboBox->addItem("Hippodamos (niveau Facile)");
     dificultyComboBox->addItem("Métagénès (niveau Moyen)");
@@ -54,11 +61,11 @@ StartMenu::StartMenu(QWidget* parent)
         "- Callicratès (niveau Difficile) : tous les Quartiers de Callicratès sont considérés comme étant au 2e niveau."
     );
 
-    connect(decBtn, &QPushButton::clicked, this, [this, difficultyRow]() {
+    connect(decBtn, &AkrPushButton::clicked, this, [this, difficultyRow]() {
         if (playerCount > 1) {
             playerCount--;
-            delete playerButtons.back();
-            playerButtons.pop_back();
+            delete playerWidget.back();
+            playerWidget.pop_back();
         }
         countInput->setText(QString::number(playerCount));
         if (playerCount == 1) {
@@ -66,7 +73,7 @@ StartMenu::StartMenu(QWidget* parent)
         }
     });
 
-    connect(incBtn, &QPushButton::clicked, this, [this, difficultyRow]() {
+    connect(incBtn, &AkrPushButton::clicked, this, [this, difficultyRow]() {
         if (playerCount >= 4) {
             return;
         }
@@ -74,50 +81,91 @@ StartMenu::StartMenu(QWidget* parent)
         if (playerCount >= 2) {
             difficultyRow->setVisible(false);
         }
+
+        QWidget* container = new QWidget();
+
+        QHBoxLayout* newPlayerLine = new QHBoxLayout(container);
+
+        AkrLabel* label = new AkrLabel(("Joueur " + std::to_string(playerCount)).c_str());
+        newPlayerLine->addStretch(4);
+        newPlayerLine->addWidget(label);
+        newPlayerLine->addStretch(1);
+
+        
         QLineEdit* newPlayerEdit = new QLineEdit();
-        newPlayerEdit->setPlaceholderText("Nom Joueur " + QString::number(playerCount));
-        playerButtons.push_back(newPlayerEdit);
-        lineEditLayout->addWidget(newPlayerEdit);
-
+        
+        newPlayerEdit->setPlaceholderText("Entrez un pseudo");
+        playerWidget.push_back(container);
         countInput->setText(QString::number(playerCount));
+        
+        newPlayerLine->addWidget(newPlayerEdit);
+        newPlayerLine->addStretch(4);
+
+        lineEditLayout->addWidget(container);
+
     });
 
-    connect(countInput, &QLineEdit::textChanged, this, [this](const QString& text) {
-        bool ok;
-        uint32_t val = text.toUInt(&ok);
-        if (val > 4) {
-            val = 4;
-            countInput->setText(QString::number(val));
-        }
-        if (val < 1) {
-            val = 1;
-            countInput->setText(QString::number(val));
-        }
-        if (ok) {
-            while (playerCount < val) {
-                incBtn->click();
-            }
-            while (playerCount > val) {
-                decBtn->click();
-            }
-        }
-    });
+    // connect(countInput, &QLineEdit::textChanged, this, [this](const QString& text) {
+    //     bool ok;
+    //     uint32_t val = text.toUInt(&ok);
+    //     if (val > 4) {
+    //         val = 4;
+    //         countInput->setText(QString::number(val));
+    //     }
+    //     if (val < 1) {
+    //         val = 1;
+    //         countInput->setText(QString::number(val));
+    //     }
+    //     if (ok) {
+    //         while (playerCount < val) {
+    //             incBtn->click();
+    //         }
+    //         while (playerCount > val) {
+    //             decBtn->click();
+    //         }
+    //     }
+    // });
 
-    connect(confirmBtn, &QPushButton::clicked, this, &StartMenu::onConfirmClicked);
+    connect(confirmBtn, &AkrPushButton::clicked, this, &StartMenu::onConfirmClicked);
 
-    // Champ du premier joueur (min = 1)
+
+    QWidget* container = new QWidget();
+
+    QHBoxLayout* newPlayerLine = new QHBoxLayout(container);
+
+    AkrLabel* label = new AkrLabel(("Joueur " + std::to_string(playerCount)).c_str());
+    newPlayerLine->addStretch(4);
+    newPlayerLine->addWidget(label);
+    newPlayerLine->addStretch(1);
+    
     QLineEdit* firstPlayerEdit = new QLineEdit();
-    firstPlayerEdit->setPlaceholderText("Nom Joueur 1");
-    playerButtons.push_back(firstPlayerEdit);
-    lineEditLayout->addWidget(firstPlayerEdit);
+    
+    firstPlayerEdit->setPlaceholderText("Entrez un pseudo");
+    playerWidget.push_back(container);
+    
+    newPlayerLine->addWidget(firstPlayerEdit);
+    newPlayerLine->addStretch(4);
+
+    lineEditLayout->addWidget(container);
 
     layout->addLayout(btnLayout);
+    layout->addStretch();
     layout->addLayout(lineEditLayout);
+    layout->addStretch();
 
     // Ajoute la ligne difficulté (label + combobox) et le bouton Confirmer
     layout->addWidget(difficultyRow);
-    layout->addWidget(confirmBtn);
-
+    
+    QWidget* confirmBtnContainer = new QWidget();
+    
+    QHBoxLayout* confirmBtnLayout = new QHBoxLayout(confirmBtnContainer);
+    
+    confirmBtnLayout->addStretch(1);
+    confirmBtnLayout->addWidget(confirmBtn, 2);
+    confirmBtnLayout->addStretch(1);
+    
+    layout->addWidget(confirmBtnContainer);
+    
     // Afficher la difficulté uniquement quand playerCount == 1
     difficultyRow->setVisible(playerCount == 1);
 
@@ -129,13 +177,15 @@ StartMenu::~StartMenu() = default;
 
 void StartMenu::onConfirmClicked()
 {
-    if (playerButtons.size() != playerCount) {
+
+    if (playerWidget.size() != playerCount) {
         //popup
         QMessageBox::warning(this, "Erreur", "Le nombre de joueurs ne correspond pas au nombre de champs de texte.");
         return;
     }
     std::vector<std::string> players;
-    for (const auto& lineEdit : playerButtons) {
+    for (const auto& element : playerWidget) {
+        QLineEdit* lineEdit = element->findChild<QLineEdit*>();
         if (lineEdit->text().isEmpty()) {
             QMessageBox::warning(this, "Erreur", "Veuillez remplir tous les noms des joueurs.");
             return;

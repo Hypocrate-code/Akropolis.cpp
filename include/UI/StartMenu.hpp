@@ -2,8 +2,8 @@
 #include <string>
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QPushButton>
-#include "UI/GamePushButton.hpp"
+#include "UI/AkrPushButton.hpp"
+#include "UI/AkrLabel.hpp"
 #include <QLineEdit>
 #include <QComboBox>
 
@@ -18,11 +18,11 @@ signals:
 private slots:
     void onConfirmClicked();
 private:
-    QPushButton* decBtn;
-    QPushButton* incBtn;
-    QLineEdit* countInput;
+    AkrPushButton* decBtn;
+    AkrPushButton* incBtn;
+    AkrLabel* countInput;
 
-    GamePushButton* confirmBtn;
+    AkrPushButton* confirmBtn;
     QVBoxLayout* layout;
     QVBoxLayout* lineEditLayout;
     
@@ -31,5 +31,5 @@ private:
     
     uint32_t playerCount;
     uint32_t dificultyLevel;
-    std::vector<QLineEdit*> playerButtons;
+    std::vector<QWidget*> playerWidget;
 };

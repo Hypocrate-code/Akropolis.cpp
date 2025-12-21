@@ -7,7 +7,6 @@
 #include "Exception.hpp"
 #include "Jeu.hpp"
 #include <QApplication>
-#include <QLabel>
 
 #include "UI/mainwindow.h"
 
@@ -35,9 +34,16 @@ int main(int argc, char *argv[])
         {
 
             QApplication a(argc, argv);
+            a.setStyleSheet(R"(
+                QWidget {
+                    background-color: rgba(244, 244, 244, 1);
+                    color: rgba(2, 17, 42, 1);
+                }
+            )");
+
             MainWindow w;
             w.show();
-
+            w.setWindowState(Qt::WindowMaximized);
             return a.exec();
         }
 

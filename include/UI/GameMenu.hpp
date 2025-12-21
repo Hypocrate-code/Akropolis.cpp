@@ -6,9 +6,8 @@
 #include "UI/Dashboard.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include "UI/GamePushButton.hpp"
+#include "UI/AkrLabel.hpp"
+#include "UI/AkrPushButton.hpp"
 
 class Jeu;
 class Joueur;
@@ -58,28 +57,28 @@ private:
     // Uper panel - Chantier
     QBoxLayout *chantierWidget;
     QVBoxLayout *chantierLayout;
-    QLabel *chantierLabel;
+    AkrLabel *chantierLabel;
     HexView *hexViewChantier;
     QHBoxLayout *chantierButtonsLayout;
 
     // Bot panel - Cité
     QBoxLayout *citeWidget;
     QVBoxLayout *citeLayout;
-    QLabel *citeLabel;
-    QLabel *playerInfoLabel;
-    HexView *hexviewCite;
+    AkrLabel *citeLabel;
+    AkrLabel *playerInfoLabel;
+    HexView *hexViewCite;
 
     // Bottom panel - Control buttons
     QWidget *controlWidget;
     QHBoxLayout *controlLayout;
-    QPushButton *rotateBtn;
-    QPushButton *confirmBtn;
-    QPushButton *cancelBtn;
-    QPushButton *continuerBtn;
-    QPushButton *finDePartieBtn;
+    AkrPushButton *rotateBtn;
+    AkrPushButton *confirmBtn;
+    AkrPushButton *cancelBtn;
+    AkrPushButton *continuerBtn;
+    AkrPushButton *finDePartieBtn;
 
     // Status bar
-    QLabel *statusLabel;
+    AkrLabel *statusLabel;
 
     // Dashboard
     Dashboard *dashboard;
