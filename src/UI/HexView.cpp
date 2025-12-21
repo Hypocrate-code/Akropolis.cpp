@@ -43,7 +43,13 @@ void HexView::launchDrawRecursive(const Hexagone* hex, QPoint centre) {
         if (!h || seen.count(h)) continue;
         seen.insert(h);
 
-        HexItem* item = new HexItem(h, pos, radiusHex);
+        // Calculer l'offset 3D basé sur le niveau
+        int niveau = h->getNiveau();
+        const int offsetPerLevel = 8; // Décalage par niveau pour effet isométrique
+        QPoint pos3D = pos - QPoint(offsetPerLevel * (niveau - 1), offsetPerLevel * (niveau - 1));
+
+        HexItem* item = new HexItem(h, pos3D, radiusHex);
+        item->setZValue(niveau * 10); // Z-order basé sur le niveau pour un bon rendu 3D
         scene->addItem(item);
         connect(item, &HexItem::hexagonClicked, this, &HexView::onHexItemClicked);
 
@@ -63,19 +69,17 @@ void HexView::drawTuile(const Tuile* tuile, QPoint centerPos) {
     const auto& hexagones = tuile->get_hexagones();
     if (hexagones.size() < 3) return;
     
-    // Récupérer le masque binaire des voisins (bit 7=S, bit 6=SO, ..., bit 2=SE)
-    uint8_t mask = hexagones[0]->getVoisinsNonFantomeBin();
-    int directions[2], idx = 0;
-    for (int dir = 0; dir < 6 && idx < 2; ++dir) {
-        if (mask & (1 << (7 - dir))) directions[idx++] = dir;
-    }
+    // Calculer la position de chaque hexagone en cherchant sa direction depuis hex0
+    QPoint positions[3] = {QPoint(0, 0), QPoint(0, 0), QPoint(0, 0)};
     
-    // Calculer positions relatives
-    QPoint positions[3] = {
-        QPoint(0, 0),
-        Utils::getCentreVoisin(QPoint(0, 0), directions[0], radiusHex),
-        Utils::getCentreVoisin(QPoint(0, 0), directions[1], radiusHex)
-    };
+    for (int i = 1; i < 3; ++i) {
+        for (int dir = 0; dir < 6; ++dir) {
+            if (hexagones[0]->getVoisinIndice(dir) == hexagones[i]) {
+                positions[i] = Utils::getCentreVoisin(QPoint(0, 0), dir, radiusHex);
+                break;
+            }
+        }
+    }
     
     // Centrer sur le barycentre
     QPoint center((positions[0].x() + positions[1].x() + positions[2].x()) / 3,

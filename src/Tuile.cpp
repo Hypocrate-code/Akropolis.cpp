@@ -7,7 +7,7 @@
 #include "Utils.hpp"
 
 using namespace Utils;
-Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c)
+Hexagone::Hexagone(Type t, Couleur c) : type(t), couleur(c), parent(nullptr)
 {
     if ((type == Type::Carriere && couleur != Couleur::nulle) || (type != Type::Carriere && type != Type::Fantome && couleur == Couleur::nulle))
     {
@@ -249,6 +249,11 @@ std::array<Hexagone*, 6> Hexagone::getVoisins3D() const{
 }
 
 int Hexagone::getNiveau()const{
+    if (getTuileParent())
+        return getTuileParent()->get_hauteur();
+    else
+        return 0;
+    /*
     const Hexagone*copie= this ; 
     int niveau =1;  
         while(copie->getVoisinsBOT()!=nullptr){
@@ -257,6 +262,7 @@ int Hexagone::getNiveau()const{
 
         }
     return niveau; 
+    */
 };
 
 

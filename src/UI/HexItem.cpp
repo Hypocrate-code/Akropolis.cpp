@@ -88,14 +88,53 @@ void HexItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     Q_UNUSED(widget);
     
     painter->setRenderHint(QPainter::Antialiasing);
+    
+    // Dessiner les côtés 3D si l'hexagone a un voisin en dessous
+    if (m_hexagon && m_hexagon->getVoisinsBOT() && m_hexagon->getType() != Type::Fantome) {
+        const int depthOffset = 8;
+        
+        // Dessiner les côtés: S(0) et SE(5) - les segments visibles du relief
+        int directions[] = {0, 5};
+        
+        for (int dir : directions) {
+            const Hexagone* voisin = m_hexagon->getVoisinIndice(dir);
+            
+            // Dessiner le côté si: 
+            // - pas de voisin, 
+            // - voisin fantôme,
+            // - voisin n'a pas de BOT (donc niveau inférieur ou pas d'étage)
+            bool drawSide = !voisin || 
+                           voisin->getType() == Type::Fantome;
+                           //!voisin->getVoisinsBOT();
+            
+            if (drawSide) {
+                QPolygonF sideSegment;
+                
+                // Ajouter les 2 points du segment
+                sideSegment << m_polygon[dir];
+                sideSegment << m_polygon[(dir + 1) % 6];
+                
+                // Ajouter les points décalés
+                sideSegment << m_polygon[(dir + 1) % 6] + QPointF(depthOffset, depthOffset);
+                sideSegment << m_polygon[dir] + QPointF(depthOffset, depthOffset);
+                
+                // Dessiner le segment du côté
+                painter->setBrush(QColor(100, 100, 100));
+                painter->setPen(QPen(QColor(60, 60, 60), 1));
+                painter->drawPolygon(sideSegment);
+            }
+        }
+    }
+    
+    // Dessiner l'hexagone principal avec un contour
     painter->setBrush(m_normal);
-    painter->setPen(Qt::NoPen);
+    painter->setPen(QPen(QColor(80, 80, 80), 2)); // Contour gris foncé de 2px
     painter->drawPolygon(m_polygon);
 
     // Lightweight hover highlight overlay (green tint)
     if (hovered) {
         painter->setBrush(QColor(0, 255, 0, 70));
-        painter->setPen(Qt::NoPen);
+        painter->setPen(QPen(QColor(0, 180, 0), 2));
         painter->drawPolygon(m_polygon);
     }
 }
