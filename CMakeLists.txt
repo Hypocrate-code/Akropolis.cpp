@@ -27,12 +27,14 @@ file(GLOB HEADERS "include/*.hpp" "include/UI/*.h")
 set(MOC_HEADERS 
     #"include/UI/HexagonalButton.hpp"
     "include/UI/mainwindow.h"
-    "include/UI/GamePushButton.hpp"
     "include/UI/StartMenu.hpp" 
     "include/UI/HexView.hpp"
     "include/UI/HexItem.hpp"
     "include/UI/GameMenu.hpp"
     "include/UI/Dashboard.hpp"
+    "include/UI/AkrLabel.hpp"
+    "include/UI/AkrPushButton.hpp"
+    "include/UI/AkrTitle.hpp"
 )
 
 # Generate moc files manually

@@ -56,3 +56,36 @@ void HexView::launchDrawRecursive(const Hexagone* hex, QPoint centre) {
         }
     }
 }
+
+void HexView::drawTuile(const Tuile* tuile, QPoint centerPos) {
+    if (!tuile) return;
+    
+    const auto& hexagones = tuile->get_hexagones();
+    if (hexagones.size() < 3) return;
+    
+    // Récupérer le masque binaire des voisins (bit 7=S, bit 6=SO, ..., bit 2=SE)
+    uint8_t mask = hexagones[0]->getVoisinsNonFantomeBin();
+    int directions[2], idx = 0;
+    for (int dir = 0; dir < 6 && idx < 2; ++dir) {
+        if (mask & (1 << (7 - dir))) directions[idx++] = dir;
+    }
+    
+    // Calculer positions relatives
+    QPoint positions[3] = {
+        QPoint(0, 0),
+        Utils::getCentreVoisin(QPoint(0, 0), directions[0], radiusHex),
+        Utils::getCentreVoisin(QPoint(0, 0), directions[1], radiusHex)
+    };
+    
+    // Centrer sur le barycentre
+    QPoint center((positions[0].x() + positions[1].x() + positions[2].x()) / 3,
+                  (positions[0].y() + positions[1].y() + positions[2].y()) / 3);
+    QPoint offset = centerPos - center;
+    
+    // Afficher les 3 hexagones
+    for (int i = 0; i < 3; ++i) {
+        HexItem* item = new HexItem(hexagones[i], positions[i] + offset, radiusHex);
+        scene->addItem(item);
+        connect(item, &HexItem::hexagonClicked, this, &HexView::onHexItemClicked);
+    }
+}

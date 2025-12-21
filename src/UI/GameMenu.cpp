@@ -228,11 +228,8 @@ void GameMenu::updateChantier()
     for (uint32_t i = 0; i < numTuiles; ++i) {
         Tuile *tuile = j->getChantier()[i];
         if (tuile) {
-            const auto& hexagones = tuile->get_hexagones();
-            if (!hexagones.empty()) {
-                uint32_t xOffset = startX + i * tailleHexChantier * 4;
-                hexViewChantier->launchDrawRecursive(hexagones[0], QPoint(xOffset, 100));
-            }
+            uint32_t xOffset = startX + i * tailleHexChantier * 4;
+            hexViewChantier->drawTuile(tuile, QPoint(xOffset, 100));
         }
     }
     
