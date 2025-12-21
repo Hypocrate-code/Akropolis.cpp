@@ -2,10 +2,11 @@
 #include <string>
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QPushButton>
-#include "UI/GamePushButton.hpp"
+#include "UI/AkrPushButton.hpp"
+#include "UI/AkrLabel.hpp"
 #include <QLineEdit>
 #include <QComboBox>
+#include <array>
 
 class StartMenu : public QWidget {
     Q_OBJECT
@@ -13,23 +14,24 @@ public:
     StartMenu(QWidget* parent = nullptr);
     ~StartMenu() override;
 signals:
-    void playerSelectionConfirmed(std::vector<std::string> players, uint32_t difficultyLevel);
+    void playerSelectionConfirmed(std::vector<std::string> players, uint32_t difficultyLevel, std::array<int,5>variantes);
 
 private slots:
     void onConfirmClicked();
 private:
-    QPushButton* decBtn;
-    QPushButton* incBtn;
-    QLineEdit* countInput;
+    AkrPushButton* decBtn;
+    AkrPushButton* incBtn;
+    AkrLabel* countInput;
 
-    GamePushButton* confirmBtn;
+    AkrPushButton* confirmBtn;
     QVBoxLayout* layout;
     QVBoxLayout* lineEditLayout;
     
     QComboBox* dificultyComboBox;
     
-    
+    QVBoxLayout* variantesLayout;
     uint32_t playerCount;
     uint32_t dificultyLevel;
-    std::vector<QLineEdit*> playerButtons;
+    std::vector<QWidget*> playerWidget;
+    std::array<int,5> variantes;
 };

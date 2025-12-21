@@ -4,10 +4,12 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include "UI/HexItem.hpp"
+#include <QCloseEvent>
 
 //#include "UI/PlayerCountPage.hpp"
 //#include "UI/PlayerNamePage.hpp"
 #include "UI/StartMenu.hpp"
+#include "UI/GameMenu.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -19,9 +21,11 @@ public:
 
 // private slots:
     // void onHexagonClicked();
+//overide on close
+    void closeEvent(QCloseEvent *event) override;
 
 private:
-    QStackedWidget *stackedWidget;
+    QStackedWidget *mainLayout;
 
     QWidget *createHomePage();
     QWidget *createStartingGamePage();
@@ -29,8 +33,10 @@ private:
     QWidget *createEndPage();
 
     StartMenu* playerNumberInput;
+    GameMenu* gameMenu;
 
-    QVector<HexagonalButton*> m_hexButtons;
+
+    //QVector<HexagonalButton*> m_hexButtons;
 };
 
 

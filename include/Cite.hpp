@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <array>
 
 
 class Tuile;
@@ -19,13 +20,16 @@ public:
     Cite(const Tuile* tuileDeDepart);
     ~Cite() = default;
 
-    virtual bool placerTuileFromHexRef(Hexagone* hex) = 0; // return true si la Tuile a été placé
-    void addTuile(Tuile* t);
+    std::vector<const Tuile*>getTuiles(){return  tuiles;}
+    //virtual bool placerTuileC(Hexagone* hex) = 0; // return true si la Tuile a été placé
+    virtual bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome) = 0; // return true si la Tuile a été placé
     void addTuile(const Tuile* t);
 
-    virtual uint32_t compterPoints() const = 0;
 
-    void afficher() const;
+
+    virtual uint32_t compterPoints( int niveau_difficulte=0, std::array<int, 5> variantes = {}) const = 0;
+
+    virtual void afficher() const =0;
     void QTDraw() const;
     std::vector<Hexagone*> hexs_fantome;
     Hexagone* create_new_hex_fantome();
@@ -33,6 +37,7 @@ public:
 
     void generateAllHexFantome();
     void updateFantomeOfTuile(const Tuile* t);
+
 
     // Dessines les hexagones recursivement, les hexagones deja dessine sont dans drawnHexagones.
     static void draw_hex_recursive_filtered(Hexagone *hex, int x, int y, strCalc &calc,
@@ -44,7 +49,6 @@ public:
 protected:
 
     std::vector<const Tuile*> tuiles;
-
     static void print_hex(Hexagone*hex, int x, int y, strCalc& calc);
     static void increase_calc_size_H(strCalc& calc, uint32_t size);
     static void increase_calc_size_V(strCalc& calc, uint32_t size);
@@ -54,7 +58,10 @@ protected:
 
     static void updateHexSrcFromFan(Hexagone *src, Hexagone *fan);
 
-    
+    //liste de tuiles "lac"
+    std::vector<Hexagone*> obtenirTousLesLacs() const; 
+
+   
 };
 
 class CiteJoueur : public Cite {
@@ -62,15 +69,23 @@ public:
 
     CiteJoueur(const Tuile* tuileDeDepart);
     ~CiteJoueur()=default;
+    // Version Qt: hex fantôme directement fourni
+    bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome);
+    uint32_t compterPoints( int niveau_difficulte=0, std::array<int, 5> variantes = {}) const override;
+    void afficher()const override; 
+    void addTuile(Tuile* t);
 
-    bool placerTuileFromHexRef(Hexagone* hex) override;
-    uint32_t compterPoints() const override;
 
 };
 
 class CiteIllu : public Cite{
-    public:
 
-    private:
+    
+public:
+    CiteIllu(const Tuile* tuileDeDepart):Cite(tuileDeDepart){};
+    bool placerTuileFromHexRef(Hexagone* hex, Hexagone* hexFantome)override{return false; };
+    uint32_t compterPoints( int niveau_difficulte=0, std::array<int, 5> variantes = {}) const override;
+    void afficher()const override;  
+private:
 
 };

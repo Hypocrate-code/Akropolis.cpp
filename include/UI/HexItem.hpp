@@ -1,47 +1,63 @@
 #ifndef HEXITEM_HPP
 #define HEXITEM_HPP
-#include <QGraphicsPolygonItem>
+#include <QGraphicsObject>
 #include <QGraphicsView>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsColorizeEffect>
+#include <QPainterPath>
 #include "Utils.hpp"
 
-class HexItem : public QGraphicsPolygonItem
+class Hexagone;
+
+class HexItem : public QGraphicsObject
 {
+    Q_OBJECT
+
 public:
 
     HexItem(const Hexagone* hex, QPoint center, int radius);
+    
+    // Required overrides for QGraphicsObject
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;  // For proper hexagon click detection
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    
+    const Hexagone* getHexagon() const { return m_hexagon; }
+
+signals:
+    void hexagonClicked(const Hexagone* hex);
 
 protected:
 
-    // Effets visuels hover
-
+    // Hover visual handled in paint() with lightweight overlay
     void hoverEnterEvent(QGraphicsSceneHoverEvent*) override
     {
-        effect->setStrength(0.2);
+        hovered = true;
+        update();
     }
 
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override
     {
-        effect->setStrength(0);
+        hovered = false;
+        update();
     }
 
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
         if (event->button() == Qt::LeftButton) {
-            emitClicked();
+            emit hexagonClicked(m_hexagon);
         }
-        QGraphicsPolygonItem::mousePressEvent(event);
+        QGraphicsObject::mousePressEvent(event);
     }
 
 private:
     QBrush m_normal;
-    QBrush m_hover;
-    QGraphicsColorizeEffect* effect;
-
+    const Hexagone* m_hexagon;
+    QPolygonF m_polygon;
+    bool hovered = false;
+    
     void emitClicked()
     {
-        qDebug() << "Hex clicked";
+        emit hexagonClicked(m_hexagon);
     }
 };
 

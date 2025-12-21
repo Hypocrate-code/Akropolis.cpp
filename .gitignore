@@ -30,3 +30,6 @@ russell/
 
 *.exe
 *.app
+
+
+CMakeLists.txt

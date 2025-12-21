@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="/">
+    <file>assets/fonts/Doto/static/Doto-Black.ttf</file>
+    <file>assets/fonts/Doto/static/Doto-SemiBold.ttf</file>
+    <file>assets/fonts/Doto/static/Doto-Regular.ttf</file>
+    <file>assets/fonts/Jost/static/Jost-Bold.ttf</file>
+    <file>assets/fonts/Jost/static/Jost-SemiBold.ttf</file>
+    <file>assets/fonts/Jost/static/Jost-Regular.ttf</file>
+  </qresource>
+</RCC>

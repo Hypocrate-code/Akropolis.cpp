@@ -1,49 +1,50 @@
 #include "UI/mainwindow.h"
 #include "UI/HexItem.hpp"
 #include <QVBoxLayout>
-#include <QPushButton>
-#include <QLabel>
 #include <QGridLayout>
 #include <QMessageBox>
 
 #include "UI/HexView.hpp"
+#include "UI/AkrLabel.hpp"
+#include "UI/AkrTitle.hpp"
 #include "Tuile.hpp"
 
 #include <QLineEdit>
 #include "Jeu.hpp"
-#include <UI/GamePushButton.hpp>
+#include "UI/AkrPushButton.hpp"
 
 MainWindow::MainWindow()
     : QMainWindow()
 {
 
     setWindowTitle("Akropolis");
-    resize(500, 500);
     
-    stackedWidget = new QStackedWidget(this);  // attribut stackedWidget initialisé
-
+    mainLayout = new QStackedWidget(this);  // attribut mainLayout initialisé
     QWidget *homeScreen = createHomePage();
     QWidget *startGameScreen = createStartingGamePage();
     QWidget *gameScreen = createGamePage();
     QWidget *endScreen = createEndPage();
 
-    stackedWidget->addWidget(homeScreen);
-    stackedWidget->addWidget(startGameScreen);
-    stackedWidget->addWidget(gameScreen);
-    stackedWidget->addWidget(endScreen);
+    mainLayout->addWidget(homeScreen);
+    mainLayout->addWidget(startGameScreen);
+    mainLayout->addWidget(gameScreen);
+    mainLayout->addWidget(endScreen);
 
-    setCentralWidget(stackedWidget);
+    setCentralWidget(mainLayout);
     
     // Connect startMenu vers gameScreen
-    connect(static_cast<StartMenu*>(startGameScreen), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
+    connect(static_cast<StartMenu*>(playerNumberInput), &StartMenu::playerSelectionConfirmed, this, [this](std::vector<std::string> names, uint32_t difficultyLevel) {
         Jeu* jeu = Jeu::getInstance();
-
-        jeu->createPlayers(names);
-        jeu->setGameMode(names.size() == 1 ? ModeDeJeu::Solo : ModeDeJeu::Multi);
-        //jeu->setDifficultyLevel(difficultyLevel);
+        jeu->setQtDisplay(true);
+        jeu->InitialiserPartie(names, difficultyLevel);
         
+        gameMenu->updateDisplay();
         // LANCER LA PARTIE ICI
-        stackedWidget->setCurrentIndex(2); // Aller à l'écran de jeu
+        mainLayout->setCurrentIndex(2); // Aller à l'écran de jeu
+    });
+
+    connect(gameMenu, &GameMenu::returnToMainMenu, this, [this]() {
+        mainLayout->setCurrentIndex(0);
     });
 
 }
@@ -59,20 +60,21 @@ QWidget *MainWindow::createHomePage()
     QWidget *page = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(page);
     
-    const QString text("Bienvenue sur Akropolis.cpp !"); 
-    QLabel *label = new QLabel(text);
+    // const QString text("Bienvenue sur Akropolis.cpp !"); 
+    AkrTitle* label = new AkrTitle("Bienvenue sur Akropolis.cpp !");
+    label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    
+    AkrPushButton *btnGameScreen = new AkrPushButton("Jouer une partie");
 
-    // Stylisation à voir plus tard
-    label->setAlignment(Qt::AlignCenter);
-    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
+    layout->addStretch();
+    layout->addWidget(label, 0, Qt::AlignCenter);
+    layout->addWidget(btnGameScreen, 0, Qt::AlignCenter);
+    // layout->setContentsMargins(20, 20, 20, 20);
+    layout->setSpacing(20);
+    layout->addStretch();
 
-    QPushButton *btnGameScreen = new QPushButton("Jouer une partie");
-
-    layout->addWidget(label);
-    layout->addWidget(btnGameScreen);
-
-    connect(btnGameScreen, &QPushButton::clicked, this, [this]() {
-        stackedWidget->setCurrentIndex(1);  // 1 -> Ecran de la partie
+    connect(btnGameScreen, &AkrPushButton::clicked, this, [this]() {
+        mainLayout->setCurrentIndex(1);  // 1 -> Ecran de la partie
     });
 
     return page;
@@ -80,49 +82,54 @@ QWidget *MainWindow::createHomePage()
 
 QWidget *MainWindow::createStartingGamePage()
 {
+    QWidget *page = new QWidget();
+    QVBoxLayout *layout = new QVBoxLayout(page);
+    playerNumberInput = new StartMenu(page);
+
+    AkrPushButton *btnHomeScreen = new AkrPushButton("Retour à l'écran titre");
     
-    playerNumberInput = new StartMenu(this);
-    QVBoxLayout *layout = new QVBoxLayout(playerNumberInput);
+    QWidget* btnContainer = new QWidget();
+    QHBoxLayout* confirmBtnLayout = new QHBoxLayout(btnContainer);
+    
+    confirmBtnLayout->addStretch(1);
+    confirmBtnLayout->addWidget(btnHomeScreen, 2);
+    confirmBtnLayout->addStretch(1);
 
-    QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
-    layout->addWidget(btnHomeScreen);
-    // layout->addWidget(btnEndScreen);
+    layout->addWidget(playerNumberInput);
+    layout->addWidget(btnContainer);
 
-    connect(btnHomeScreen, &QPushButton::clicked, this, [this]() {
-        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
+    connect(btnHomeScreen, &AkrPushButton::clicked, this, [this]() {
+        mainLayout->setCurrentIndex(0); // 0 -> Accueil
     });
-
-    // connect(btnGameScreen, &QPushButton::clicked, this, [=]() {
-    //     stackedWidget->setCurrentIndex(2);  // 2 -> Ecran de la partie
-    // });
-
-    return playerNumberInput;
+    
+    return page;
 }
 
 QWidget *MainWindow::createGamePage()
 {
+    
+    gameMenu = new GameMenu(this);
+    return gameMenu;
     // Create hexagon grid widget
-    QWidget *page = new QWidget();
-    QVBoxLayout *mainLayout = new QVBoxLayout(page);
-    QVBoxLayout *btnContainer = new QVBoxLayout();
+    //QWidget *page = new QWidget();
+    //QVBoxLayout *mainLayout = new QVBoxLayout(page);
+    // QVBoxLayout *btnContainer = new QVBoxLayout();
 
-    QPushButton *btnEndScreen = new QPushButton("Finir partie (bouton temporaire)");
-    
-    connect(btnEndScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
-    });
 
-    btnContainer->addWidget(btnEndScreen);
-    mainLayout->addLayout(btnContainer);
+    // AkrPushButton *btnEndScreen = new AkrPushButton("Finir partie (bouton temporaire)");
+    // connect(btnEndScreen, &AkrPushButton::clicked, this, [=]() {
+    //     mainLayout->setCurrentIndex(0); // 0 -> Accueil
+    // });
 
+    // btnContainer->addWidget(btnEndScreen);
     // Création d'UNE vue de la scène graphique créée
-    HexView* view = new HexView(50, page);
-    view->setDrag(true);
+    //HexView* view = new HexView(50, page);
+    //view->setDrag(true);
     
-    mainLayout->addWidget(view);
+    //mainLayout->addWidget(view);
     // view->launchDrawRecursive(temp5, QPoint(350, 0));
 
-    return page;
+
 }
 
 QWidget *MainWindow::createEndPage()
@@ -131,20 +138,15 @@ QWidget *MainWindow::createEndPage()
     QWidget *page = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(page);
     
-    const QString text("Fin de la partie"); 
-    QLabel *label = new QLabel(text);
+    AkrTitle *label = new AkrTitle("Fin de la partie");
 
-    // Stylisation à voir plus tard
-    label->setAlignment(Qt::AlignCenter);
-    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
-
-    QPushButton *btnHomeScreen = new QPushButton("Retour à l'écran titre");
+    AkrPushButton *btnHomeScreen = new AkrPushButton("Retour à l'écran titre");
 
     layout->addWidget(label);
     layout->addWidget(btnHomeScreen);
 
-    connect(btnHomeScreen, &QPushButton::clicked, this, [=]() {
-        stackedWidget->setCurrentIndex(0); // 0 -> Accueil
+    connect(btnHomeScreen, &AkrPushButton::clicked, this, [=]() {
+        mainLayout->setCurrentIndex(0); // 0 -> Accueil
     });
 
     return page;
@@ -159,3 +161,11 @@ QWidget *MainWindow::createEndPage()
 //             QString("Clicked: %1").arg(button->toolTip()));
 //     }
 // }
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    // Handle any cleanup before closing
+    Jeu::getInstance()->EndGame();
+    event->accept(); // Accept the close event
+}

@@ -1,14 +1,19 @@
 // #include "UI/HexagonalButton.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include "UI/HexItem.hpp"
+#include "Tuile.hpp"
+#include <QPainter>
+#include <QPainterPath>
+#include "Utils.hpp"
+#include <iostream>
 
 
-QPolygon QCreateHexagon(QPointF center, qreal radius)
+QPolygonF QCreateHexagon(QPointF center, qreal radius)
 {
-    QPolygon hex;
+    QPolygonF hex;
     for (int i = 0; i < 6; ++i) {
         qreal angle = M_PI / 3 * i;
-        hex << QPoint(
+        hex << QPointF(
             center.x() + radius * cos(angle),
             center.y() + radius * sin(angle)
         );
@@ -16,14 +21,24 @@ QPolygon QCreateHexagon(QPointF center, qreal radius)
     return hex;
 }
 
-HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsPolygonItem()
-    {
-        QPolygonF poly = QCreateHexagon(center, radius);
+HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsObject(), m_hexagon(hex)
+    {   
+        //if (hex && hex->getVoisinsTOP() && hex->getVoisinsTOP()->getType() == Type::Fantome) {
+        //    m_hexagon = hex->getVoisinsTOP();
+        //}
+        m_polygon = QCreateHexagon(center, radius);
 
         // Import de la texture
-        QPixmap texture(Utils::get_texture(hex));
+        if (!m_hexagon) return;
+
+        QPixmap texture;// = Utils::get_texture(m_hexagon);
+
+        if (hex->getType() == Type::Fantome && hex->getVoisinsBOT()) 
+            texture = Utils::get_texture(hex->getVoisinsBOT());
+        else
+            texture = Utils::get_texture(hex);
         
-        QRectF bounds = poly.boundingRect();
+        QRectF bounds = m_polygon.boundingRect();
         // Mise à l'échelle de la texture
         QPixmap scaled = texture.scaled(
             bounds.size().toSize(),
@@ -41,17 +56,46 @@ HexItem::HexItem(const Hexagone* hex, QPoint center, int radius) : QGraphicsPoly
 
         m_normal = brush;
         
-        setPolygon(poly);
-        setBrush(m_normal);
-        setPen(QPen(Qt::transparent));
-        
-        effect = new QGraphicsColorizeEffect;
-        effect->setColor(Qt::green);
-        effect->setStrength(0);
-        setGraphicsEffect(effect);
+
+        if (hex->getType() == Type::Fantome){
+            setOpacity(0.25);
+            if (hex->getVoisinsBOT()){
+                setOpacity(0);
+            }
+        }
 
         setAcceptHoverEvents(true);
         setAcceptedMouseButtons(Qt::LeftButton);
 
         setCursor(Qt::PointingHandCursor);
     }
+
+QRectF HexItem::boundingRect() const
+{
+    return m_polygon.boundingRect().adjusted(-1, -1, 1, 1);
+}
+
+QPainterPath HexItem::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(m_polygon);
+    return path;
+}
+
+void HexItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setBrush(m_normal);
+    painter->setPen(Qt::NoPen);
+    painter->drawPolygon(m_polygon);
+
+    // Lightweight hover highlight overlay (green tint)
+    if (hovered) {
+        painter->setBrush(QColor(0, 255, 0, 70));
+        painter->setPen(Qt::NoPen);
+        painter->drawPolygon(m_polygon);
+    }
+}

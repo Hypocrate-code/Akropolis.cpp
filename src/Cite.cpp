@@ -110,7 +110,7 @@ void Cite::add_hex_data(Hexagone *hex, int x, int y, strCalc &calc)
 }
 
 
-void Cite::afficher() const
+void CiteJoueur::afficher() const
 
 {
     //std::cout << "Nombre d'hexagone fantome: " << hexs_fantome.size() << std::endl;
@@ -343,13 +343,11 @@ void Cite::addTuile(const Tuile *t)
     tuiles.push_back(t);
 }
 
-void Cite::addTuile(Tuile *t)
+void CiteJoueur::addTuile(Tuile *t)
 {
     tuiles.push_back(t);
     t->cite = this;
-    // remove the old fantomes then update..
-    //...
-    // updateFantomeOfTuile(t);
+
     release_hex_fantome();
     generateAllHexFantome();
 }
@@ -359,60 +357,14 @@ CiteJoueur::CiteJoueur(const Tuile *tuileDeDepart) : Cite{tuileDeDepart}
     // generateAllHexFantome();
 }
 
-bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
+bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex, Hexagone *hexFantome)
 {
-
-    // std::cout << "\n\n/======== DEBUG PLACER TUILE =========/\n";
-    std::cout << "Tu vas placer la tuile avec le hexagone de reference : "
-              << hex->getType() << " "
-              << hex->getCouleur() << "\n";
+    // Version Qt : hex fantôme directement fourni
     Tuile *owner = hex->getTuileParent();
-    if (!owner)
+    if (!owner || !hexFantome)
     {
-        std::cout << "Erreur: L'hexagone de reference n'appartient a aucune tuile.\n";
-        return 0;
+        return false;
     }
-    // hex->afficherData();
-    //   owner->rotate();
-    //   hex->afficherData();
-
-    int id;
-    bool idValide = false;
-
-    while (!idValide)
-    {
-        std::cout << "Entrez le numero d'hexagone ou vous voulez placer la tuile : ";
-        std::cin >> id;
-
-        for (auto *hex : hexs_fantome)
-        {
-            if (hex->getIndice() == id)
-            {
-                idValide = true;
-                break;
-            }
-        }
-
-        if (!idValide)
-        {
-            std::cout << "ID invalide. Veuillez entrer un numero correct.\n";
-        }
-    }
-    // std::cout << "ID: " << id << "\n";
-
-    auto IthexFantome = std::find_if(hexs_fantome.begin(), hexs_fantome.end(),
-                                     [id](Hexagone *h)
-                                     { return h->getIndice() == id; });
-    if (IthexFantome == hexs_fantome.end())
-    {
-        std::cout << "Erreur: Aucun hexagone avec l'ID " << id << " trouve.\n";
-        return 0;
-    }
-
-    Hexagone *hexFantome = *IthexFantome;
-    // std::cout << "Hexagone fantome selectionne : "
-    //           << hexFantome->getType() << " "
-    //           << hexFantome->getCouleur() << "\n";
 
     uint32_t FanVoisinsBin = hexFantome->getVoisinsNonFantomeBin();
     uint32_t SrcVoisinsBin = hex->getVoisinsNonFantomeBin();
@@ -421,34 +373,17 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
 
     if (res != 0) // AND condition
     {
-        std::cout << "Impossible de placer la tuile ici\n";
-        return 0;
+        return false;
     }
 
-    // etablir les connextions entre les hexagones de la tuile et les hexagones fantomes
-
-    // std::cout << "Voisins binaires de l'hexagone fantome: " << std::bitset<8>(FanVoisinsBin) << "\n";
-    // std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisinsBin) << "\n";
-
-    // Voisins binaires de l'hexagone fantome: 00100000
-    // Voisins binaires de l'hexagone dest: 10000100
-
-    // for each bits equal to 1 in fantome
-
-    // std::cout << "Details de l'hexagone fantome:\n";
-    // hexFantome->afficherData();
-
-    // lambda pour ajoouter les donner a lex
-
-    // std::cout << "Voisins binaires de l'hexagone src: " << std::bitset<8>(SrcVoisinsBin) << "\n";
-
+    // Variables pour l'algorithme
     Hexagone *hex1 = nullptr;
-    Hexagone *hex1Fan = nullptr; // lhex fantome qui va etre remplacer par hex1
+    Hexagone *hex1Fan = nullptr;
     Hexagone *hex1Bot = nullptr;
     uint32_t hex1DirFromHex0 = -1;
 
     Hexagone *hex2 = nullptr;
-    Hexagone *hex2Fan = nullptr; // hex fantome qui va etre remplacer par hex2
+    Hexagone *hex2Fan = nullptr;
     Hexagone *hex2Bot = nullptr;
     uint32_t hex2DirFromHex0 = -1;
 
@@ -456,9 +391,6 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     {
         if (SrcVoisinsBin & (0b10000000 >> i))
         {
-            // std::cout << "hex a connecter: " << i << "\n";
-            //  on a trouvé la direction dun voisin, il faut lupdate avec les donnees de la tuile fantome
-            //  comme on a la direction on peut trouver la tuile fantome associe
             if (!hex1)
             {
                 hex1 = hex->getVoisinIndice(i);
@@ -481,18 +413,9 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
             }
         }
     }
-    // std::cout << "ici hex1fan et 2fan " << hex1Fan << " " << hex2Fan << std::endl;
-    // std::cout << "ici bot 1 et bot 2" << hex1Bot << " " << hex2Bot << std::endl;
-
-    // if (hex1Fan)
-    //     hex1Fan->afficherData();
-    //
-    // if (hex2Fan)
-    //     hex2Fan->afficherData();
 
     if (!hexFantome->getVoisinsBOT()) // on est sur la couche 0.
     {
-        std::cout << "placement a l'etage 0" << std::endl;
         updateHexSrcFromFan(hex, hexFantome);
         if (hex1Fan)
             updateHexSrcFromFan(hex1, hex1Fan);
@@ -501,26 +424,13 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     }
     else
     { // on est pas sur la couche 0
-
-        // check du dessous
-        // if (hex1Fan && hex2Fan)
-        //{ // on a 2 hexagones fantome a la place de la futur place alors facile. on a juste a verifier si en dessous on a bien 2 tuiles differente et on place
-        // on a bien 2 hex fantom
-        // alors on peut faire lechange
-
-        // maintenant verifier si on a bien 2 tuiles different en dessous;
-        //            std::cout << "need to check for 2 dif tuiles" << std::endl;
-        //        }
-
         if ((hex1Bot && hex1Bot->getType() == Type::Fantome) || (hex2Bot && hex2Bot->getType() == Type::Fantome))
         { //  ici on passe par les hexgaone du desous, car au dessus il y a surement de l'air.
             std::cout << "Impossible de placer la Tuile ici. Un ou les hexagones du dessous nexiste pas" << std::endl;
             return 0;
         }
         else
-        { // on a bien 2 hexagones en desous (qui ne sont pas de l'air ou des fantomes)
-            
-            // test pour debug au cas ou
+        {
             if (!hex1Bot->getVoisinsTOP() || !hex2Bot->getVoisinsTOP())
             {
                 std::cout << "gros problem dans lalgo, jai rien compris" << std::endl;
@@ -532,14 +442,10 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
                 std::cout << "Impossible de placer la Tuile ici. Les 3 hexagones du dessous appartiennent a la meme tuile." << std::endl;
                 return 0;
             }
-            std::cout << "Les deux hexagones du dessous ne sont pas de l'air ou fantome, PLacement de la Tuile" << std::endl;
 
             updateHexSrcFromFan(hex, hexFantome);
-            // std::cout << "done hex " << std::endl;
             updateHexSrcFromFan(hex1, hex1Bot->getVoisinIndice(6)); // get TOP
-            // std::cout << "done hex 1" << std::endl;
             updateHexSrcFromFan(hex2, hex2Bot->getVoisinIndice(6));
-            // std::cout << "done hex 2" << std::endl;
             hex1->getTuileParent()->set_hauteur(
                 1 + hex1Bot->getTuileParent()->get_hauteur()); // update la hauteur de la tuile
 
@@ -559,7 +465,7 @@ bool CiteJoueur::placerTuileFromHexRef(Hexagone *hex)
     // updateFantomeOfTuile(tl);
 }
 
-uint32_t CiteJoueur::compterPoints() const
+uint32_t CiteJoueur::compterPoints( int niveau_difficulte, std::array<int,5>variantes) const
 {
     uint32_t nb_place_bleue = 0;
     uint32_t nb_place_rouge = 0;
@@ -575,6 +481,13 @@ uint32_t CiteJoueur::compterPoints() const
 
     std::vector<const Hexagone *> habitations_visitees{};
     std::vector<uint32_t> points_hab{};
+
+    // Obtenir tous les lacs si la variante Jardins est active
+    std::vector<Hexagone*> lacs;
+    if (variantes[1] == 1) {
+        lacs = obtenirTousLesLacs();
+        std::cout << "Nombre de lacs détectés: " << lacs.size() << std::endl;
+    }
 
     // parcours des hexagones
     const Hexagone *start = tuiles.back()->get_hexagones().back();
@@ -633,6 +546,7 @@ uint32_t CiteJoueur::compterPoints() const
                 {
                     const std::array<Hexagone *, 6> voisins = h->getVoisins3D();
                     bool cond = true;
+                    int var = 1; 
                     for (int i = 0; i < 6; i++)
                     {
 
@@ -644,19 +558,58 @@ uint32_t CiteJoueur::compterPoints() const
                             }
                         }
                     }
-                    if (cond == true)
-                        points_jaune += 1 * niveau;
+                    //variante si on a une place jaune, on double les points
+                     if(variantes[0]==1){
+                         for (int i = 0; i < 6; i++){
+                                if (voisins[i] != nullptr){
+                                    if (voisins[i]->getCouleur() == Couleur::Jaune && voisins[i]->getType() == Type::Place){
+                                        var=2; 
+                                }
+                            }
+                        }
+                    }
+                    if (cond == true) points_jaune += 1 * niveau * var;
+                      
                 }
+                // calcul points jardins : +1 pt pour chaque jardin
+                /*
+                if (h->getCouleur() == Couleur::Vert)
+                    {
+                        points_vert += 1 * niveau;
+                    }
+                */
+                
                 // calcul points jardins : +1 pt pour chaque jardin
                 if (h->getCouleur() == Couleur::Vert)
                 {
-                    points_vert += 1 * niveau;
+                    int var = 1;
+                    
+                    // Variante Jardins: doubler si adjacent à un lac
+                    if (variantes[1] == 1) {
+                        const std::array<Hexagone *, 6> voisins = h->getVoisins3D();
+                        
+                        // Vérifier si un des voisins est un lac
+                        for (int i = 0; i < 6; i++) {
+                            if (voisins[i] != nullptr) {
+                                // Vérifier si ce voisin est dans la liste des lacs
+                                if (std::find(lacs.begin(), lacs.end(), voisins[i]) != lacs.end()) {
+                                    var = 2;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    points_vert += 1 * niveau * var;
                 }
+
+
                 // calcul temples : +1 si est entièrement entouré
                 if (h->getCouleur() == Couleur::Violet)
                 {
 
                     const std::array<Hexagone *, 6> &voisins = h->getVoisins3D();
+                    int var =1; 
 
                     // on vérifie si entierment entouré au niveau 0
                     bool cond = true;
@@ -672,8 +625,9 @@ uint32_t CiteJoueur::compterPoints() const
                             cond = false;
                         }
                     }
+                    if(variantes[2]==1) var = niveau; 
                     if (cond)
-                        points_violet += 1 * niveau;
+                        points_violet += 1 * niveau * var;
                 }
                 // calcul habitation: on doit calculer les groupes d'habitations
                 if (h->getCouleur() == Couleur::Bleu)
@@ -716,7 +670,7 @@ uint32_t CiteJoueur::compterPoints() const
                 {
                     bool cond = false;
                     const std::array<Hexagone *, 6> &voisins = h->getVoisins3D();
-
+                    int var = 1; 
                     for (int i = 0; i < 6; i++)
                     {
                         if (voisins[i] != nullptr)
@@ -729,8 +683,24 @@ uint32_t CiteJoueur::compterPoints() const
                             cond = true;
                         }
                     }
-                    if (cond)
-                        points_rouge += 1 * niveau;
+                    if(variantes[4]==1){
+                        int cases_vides = 0; 
+                        for (int i = 0; i < 6; i++){
+                            if (voisins[i] != nullptr){
+                                if (voisins[i]->getType() == Type::Fantome)
+                                    cases_vides++; 
+                            }
+                        else
+                        {
+                            cases_vides++; 
+                        }
+
+                    }
+                    if(cases_vides>=3){
+                        var = 2; 
+                    }
+                    }
+                    if (cond) points_rouge += 1 * niveau * var;
                 }
             }
         }
@@ -746,6 +716,11 @@ uint32_t CiteJoueur::compterPoints() const
     if (!habitations_visitees.empty())
     {
         points_bleu = *std::max_element(points_hab.begin(), points_hab.end());
+        if(variantes[3]==1){
+            if(points_bleu>=10){
+                points_bleu=points_bleu*2; 
+            }
+        }
     }
 
     //std::cout << "printing points : " << points_bleu * nb_place_bleue * 1 << " . " << points_jaune * nb_place_jaune * 2 << " . " << points_rouge * nb_place_rouge * 2 << " . " << points_vert * nb_place_verte * 3 << " . " << points_violet * nb_place_violet * 2 << std::endl;
@@ -783,36 +758,18 @@ void Cite::updateFantomeOfTuile(const Tuile *t)
 
             if (voisins[i] == nullptr) //si voisin est null alors il faut mettre un hex fantome
             {
-
                 //before creating a new fantome, check if one already exists in that direction
                 Hexagone* voisinHex = nullptr;
 
-                if (hexagones[j]->getVoisinsBOT() && hexagones[j]->getVoisinsBOT()->getVoisinIndice(i) )
+                if (hexagones[j]->getVoisinsBOT() && hexagones[j]->getVoisinsBOT()->getVoisinIndice(i))
                 {
                      voisinHex = hexagones[j]->getVoisinsBOT()->getVoisinIndice(i)->getVoisinIndice(6); // get TOP of BOT voisin
                      if (voisinHex && voisinHex->getType() == Type::Fantome){
                          hexagones[j]->setVoisinIndice(i, voisinHex);
-                            voisinHex->setVoisinIndice(opposite_index(int(i)), hexagones[j]);
-
-
-                            continue;
+                         voisinHex->setVoisinIndice(opposite_index(int(i)), hexagones[j]);
+                         continue;
                      }
-
-                    // std::cout << "Reused existing fantome for hex indice " << hexag
                 }
-                
-                //for (Hexagone* hexFan : hexs_fantome)
-                //{
-                //    Hexagone* voisinFan = hexFan->getVoisinIndice(Utils::opposite_index(int(i)));
-                //    if (voisinFan == hexagones[j])
-                //    {
-                //        // Link both ways
-                //        hexagones[j]->setVoisinIndice(i, hexFan);
-                //        hexFan->setVoisinIndice(Utils::opposite_index(int(i)), hexagones[j]);
-                //        fantomeExists = true;
-                //        break;
-                //    }
-               // }
 
                 Hexagone *newHex = create_new_hex_fantome();
 
@@ -823,42 +780,46 @@ void Cite::updateFantomeOfTuile(const Tuile *t)
                 // For TOP we stop here (no ring traversal with gauche/droite)
                 if (i == 6)
                 {
-
-                    // std::cout << "Created TOP fantome for hex indice " << hexagones[j]->getIndice() << std::endl;
-                    // hexagones[j]->afficherData();
                     continue;
                 }
 
                 // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA GAUCHE POUR CHERCHER LES LIAISONS
+                std::unordered_set<Hexagone*> visitesGauche; 
                 int k = indiceDeGauche(i);
                 Hexagone *voisinDeGauche = const_cast<Hexagone *>(hexagones[j]->getVoisinIndice(k));
-                while (voisinDeGauche != nullptr)
+                
+                while (voisinDeGauche != nullptr && !visitesGauche.count(voisinDeGauche))  
                 {
+                    visitesGauche.insert(voisinDeGauche);  
                     
                     k = indiceDeDroite(indiceDeDroite(k));
                     voisinDeGauche->setVoisinIndice(k, newHex);
+                    newHex->setVoisinIndice(opposite_index(k), voisinDeGauche);
+                    
                     k = indiceDeGauche(k);
                     voisinDeGauche = const_cast<Hexagone *>(voisinDeGauche->getVoisinIndice(k));
                 }
 
                 // PARCOURS AUTOUR DE L'HEX FANTOME PAR LA DROITE POUR CHERCHER LES LIAISONS
+                std::unordered_set<Hexagone*> visitesDroite;  
                 k = indiceDeDroite(i);
                 Hexagone *voisinDeDroite = const_cast<Hexagone *>(hexagones[j]->getVoisinIndice(k));
-                while (voisinDeDroite != nullptr)
+                
+                while (voisinDeDroite != nullptr && !visitesDroite.count(voisinDeDroite)) 
                 {
+                    visitesDroite.insert(voisinDeDroite);  
+                    
                     k = indiceDeGauche(indiceDeGauche(k));
                     voisinDeDroite->setVoisinIndice(k, newHex);
+                    newHex->setVoisinIndice(opposite_index(k), voisinDeDroite);  
+                    
                     k = indiceDeDroite(k);
                     voisinDeDroite = const_cast<Hexagone *>(voisinDeDroite->getVoisinIndice(k));
                 }
             }
-            else{
-
-            }
         }
     }
 }
-
 void Cite::release_hex_fantome()
 {
     for (Hexagone *hex : hexs_fantome)
@@ -866,6 +827,68 @@ void Cite::release_hex_fantome()
         delete hex;
     }
     hexs_fantome.clear();
+}; 
+uint32_t CiteIllu::compterPoints( int niveau_difficulte, std::array<int,5> variantes) const {
+
+    uint32_t nb_carriere = 0;
+
+    uint32_t nb_place_bleue = 0, nb_place_rouge = 0, nb_place_verte = 0, nb_place_violet = 0, nb_place_jaune = 0;
+    uint32_t points_bleu = 0, points_rouge = 0, points_vert = 0, points_violet = 0, points_jaune = 0;
+
+    for (size_t i = 0; i < tuiles.size(); ++i) {
+        const auto& hexas = tuiles[i]->get_hexagones();
+        for (size_t j = 0; j < hexas.size(); ++j) {
+            Hexagone* h = hexas[j];
+            if (!h) continue; 
+
+            switch (h->getType()) {
+                case Type::Carriere:
+                    nb_carriere++;
+                    break;
+
+                case Type::Place:
+                    switch (h->getCouleur()) {
+                        case Couleur::Bleu:   nb_place_bleue++; break;
+                        case Couleur::Jaune:  nb_place_jaune++; break;
+                        case Couleur::Rouge:  nb_place_rouge++; break;
+                        case Couleur::Violet: nb_place_violet++; break;
+                        case Couleur::Vert:   nb_place_verte++; break;
+                    }
+                    break;
+
+                case Type::Quartier:
+                    switch (h->getCouleur()) {
+                        case Couleur::Bleu:   points_bleu++; break;
+                        case Couleur::Jaune:  points_jaune++; break;
+                        case Couleur::Rouge:  points_rouge++; break;
+                        case Couleur::Violet: points_violet++; break;
+                        case Couleur::Vert:   points_vert++; break;
+                    }
+                    break;
+            }
+        }
+    }
+    
+    uint32_t total =
+          points_bleu   * nb_place_bleue   * 1
+        + points_jaune  * nb_place_jaune   * 2
+        + points_rouge  * nb_place_rouge   * 2
+        + points_vert   * nb_place_verte   * 3
+        + points_violet * nb_place_violet  * 2;
+
+    switch (niveau_difficulte) {
+        case 0: return total;
+        case 1: return total + 2 * nb_carriere;
+        case 2: return total * 2;
+        default: return total; 
+    }
+}
+void CiteIllu::afficher()const{
+    std::cout << "\n======= Tuile Illu =======\n\n";
+    for (size_t i = 0; i < tuiles.size(); ++i) {
+        std::cout << "Tuile " << i << " : ";
+        tuiles[i]->afficherData();
+    }
 }
 
 void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
@@ -883,3 +906,44 @@ void Cite::updateHexSrcFromFan(Hexagone *src, Hexagone *fan)
         }
     }
 };
+
+std::vector<Hexagone*> Cite::obtenirTousLesLacs() const
+{
+    std::vector<Hexagone*> lacs;
+    std::unordered_set<Hexagone*> verifies;
+    
+    // Parcourir tous les hexagones fantômes
+    for (Hexagone* hexFantome : hexs_fantome) {
+        if (verifies.count(hexFantome)) {
+            continue;
+        }
+        verifies.insert(hexFantome);
+        
+        // Vérifier si c'est un lac (complètement entouré par des hexagones non-fantômes)
+        bool estLac = true;
+        const std::array<Hexagone*, 8>& voisins = hexFantome->getVoisins();
+        
+        for (int i = 0; i < 6; i++) {
+            if (voisins[i] == nullptr || 
+                voisins[i]->getType() == Type::Fantome || 
+                voisins[i]->getTuileParent() == nullptr) {
+                estLac = false;
+                break;
+            }
+        }
+        
+        if (estLac) {
+            lacs.push_back(hexFantome);
+        }
+    }
+    
+    if (!lacs.empty()) {
+        std::cout << "Lacs détectés (IDs): ";
+        for (auto* lac : lacs) {
+            std::cout << lac->getIndice() << " ";
+        }
+        std::cout << std::endl;
+    }
+    
+    return lacs;
+}
