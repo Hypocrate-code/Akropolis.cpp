@@ -398,67 +398,69 @@ void GameMenu::onConfirmPlacement()
     );
     
     if (success) {
-        statusLabel->setText("Tuile placée avec succès!");
+        statusLabel->setText("Tuile placée avec succès! Visualisez votre cité avant de continuer.");
         
-        // Réinitialiser les modes
+        // Réinitialiser les sélections et bloquer les actions de placement
         selectedTuile = nullptr;
         selectedHexChantier = nullptr;
         selectedHexCite = nullptr;
-        isChantierSelectionMode = true;
+        isChantierSelectionMode = false;
         isRotationMode = false;
         isCiteSelectionMode = false;
         tuilePrice = 0;
         
         rotateBtn->setEnabled(false);
+        rotateBtn->setVisible(false);
         confirmBtn->setEnabled(false);
+        confirmBtn->setVisible(false);
         cancelBtn->setEnabled(false);
+        cancelBtn->setVisible(false);
         
-        // Vérifier si la partie est terminée
+        // Afficher le bouton Continuer
+        continuerBtn->setVisible(true);
+        continuerBtn->setEnabled(true);
+        
+        // Désactiver les interactions pendant la visualisation
+        hexViewChantier->setEnabled(false);
+        hexviewCite->setEnabled(false);
+
+        // Mettre à jour l'affichage de la cité avec la tuile placée
+        updateCite();
+
+        uint32_t points = currentPlayer->getCite()->compterPoints(j->getNiveauDeDifficulte());
+        playerInfoLabel->setText(
+            QString("Tour de: %1 | Pierres: %2 | Points: %3")
+                .arg(QString::fromStdString(currentPlayer->getNom()))
+                .arg(currentPlayer->getNbPierres())
+                .arg(points)
+        );
+
+        // Vérifier si la partie est terminée après ce placement
         if (j->isGameOver()) {
-            // Afficher le gagnant
             Joueur* winner = j->getWinner();
             QString message = "Partie terminée!\n\nRésultats:\n\n";
-            
             for (const auto& joueur : j->getJoueurs()) {
                 if (joueur->getNom() != "Illustre Architecte") {
-                    uint32_t points = joueur->getCite()->compterPoints(j->getNiveauDeDifficulte());
+                    uint32_t pts = joueur->getCite()->compterPoints(j->getNiveauDeDifficulte());
                     message += QString("%1: %2 points\n")
                         .arg(QString::fromStdString(joueur->getNom()))
-                        .arg(points);
+                        .arg(pts);
                 }
             }
-            
             if (winner) {
                 message += QString("\nGagnant: %1")
                     .arg(QString::fromStdString(winner->getNom()));
             }
-            
             QMessageBox::information(this, "Fin de partie", message);
-            
+
             // Désactiver tous les contrôles
-            rotateBtn->setEnabled(false);
-            confirmBtn->setEnabled(false);
-            cancelBtn->setEnabled(false);
+            continuerBtn->setEnabled(false);
+            continuerBtn->setVisible(false);
             hexViewChantier->setEnabled(false);
             hexviewCite->setEnabled(false);
-            
             return;
         }
-        
-        // Passer au joueur suivant
-        j->nextPlayer();
-        
-        // Mettre à jour le chantier si nécessaire
-        if (j->getChantier().size() < 1) {
-            j->mettreAJourChantier();
-        }
-        
-        updateDisplay();
-        
-        QMessageBox::information(this, "Tour terminé", 
-            QString("Tuile placée avec succès!\n\nC'est maintenant au tour de: %1")
-                .arg(QString::fromStdString(j->getCurrentPlayer()->getNom())));
-        
+
     } else {
         statusLabel->setText("Placement invalide - Vérifiez les connexions");
     }
@@ -511,6 +513,29 @@ void GameMenu::onContinuerTour()
     if (!j) {
         return;
     }
+
+    // Cacher le bouton continuer désormais consommé
+    continuerBtn->setVisible(false);
+    continuerBtn->setEnabled(false);
+    
+    // Réactiver les contrôles pour le prochain tour
+    rotateBtn->setVisible(true);
+    confirmBtn->setVisible(true);
+    cancelBtn->setVisible(true);
+    rotateBtn->setEnabled(false);
+    confirmBtn->setEnabled(false);
+    cancelBtn->setEnabled(false);
+    hexViewChantier->setEnabled(true);
+    hexviewCite->setEnabled(true);
+
+    // Réinitialiser les modes de sélection
+    selectedTuile = nullptr;
+    selectedHexChantier = nullptr;
+    selectedHexCite = nullptr;
+    isChantierSelectionMode = true;
+    isRotationMode = false;
+    isCiteSelectionMode = false;
+    tuilePrice = 0;
     
     // Vérifier si la partie est terminée
     if (j->isGameOver()) {
