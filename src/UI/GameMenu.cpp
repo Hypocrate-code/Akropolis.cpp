@@ -25,6 +25,8 @@ GameMenu::GameMenu(QWidget *parent)
     chantierLayout(new QVBoxLayout()),
     citeLayout(new QVBoxLayout()),
 
+    dashboard(new Dashboard()),
+
     // Elements d'interface
     chantierLabel(new AkrLabel("CHANTIER")),
     chantierButtonsLayout(new QHBoxLayout()),
@@ -56,6 +58,7 @@ GameMenu::~GameMenu()
 
 void GameMenu::setupUI()
 {    
+
     // Ajout des éléments d'interface au layout CHANTIER
     chantierLayout->addWidget(chantierLabel);
     chantierLayout->addWidget(hexViewChantier);
@@ -69,6 +72,7 @@ void GameMenu::setupUI()
     QHBoxLayout *chantierDashboardLayout = new QHBoxLayout();
     QWidget *chantierWidget = new QWidget();
     chantierWidget->setLayout(chantierLayout);
+        
     chantierDashboardLayout->addWidget(chantierWidget, 2);  // Chantier prends 2/3 de l'espace
     chantierDashboardLayout->addWidget(dashboard, 1);        // Dashboard prend 1/3 de l'espace
     chantierDashboardLayout->setSpacing(5);
@@ -428,9 +432,6 @@ void GameMenu::onConfirmPlacement()
         confirmBtn->setVisible(false);
         cancelBtn->setEnabled(false);
         
-<<<<<<< HEAD
-        // Vérifier si la partie est terminée
-=======
         // Afficher le bouton Continuer
         continuerBtn->setVisible(true);
         continuerBtn->setEnabled(true);
@@ -451,7 +452,6 @@ void GameMenu::onConfirmPlacement()
         );
 
         // Vérifier si la partie est terminée après ce placement
->>>>>>> ee38a13 (Started interface stylisation)
         if (j->isGameOver()) {
             Joueur* winner = j->getWinner();
             QString message = "Partie terminée!\n\nRésultats:\n\n";
@@ -473,12 +473,7 @@ void GameMenu::onConfirmPlacement()
             continuerBtn->setEnabled(false);
             continuerBtn->setVisible(false);
             hexViewChantier->setEnabled(false);
-<<<<<<< HEAD
-            hexviewCite->setEnabled(false);
-            
-=======
             hexViewCite->setEnabled(false);
->>>>>>> ee38a13 (Started interface stylisation)
             return;
         }
 
@@ -534,8 +529,6 @@ void GameMenu::onContinuerTour()
     if (!j) {
         return;
     }
-<<<<<<< HEAD
-=======
 
     // Cacher le bouton continuer désormais consommé
     continuerBtn->setVisible(false);
@@ -559,7 +552,6 @@ void GameMenu::onContinuerTour()
     isRotationMode = false;
     isCiteSelectionMode = false;
     tuilePrice = 0;
->>>>>>> ee38a13 (Started interface stylisation)
     
     // Vérifier si la partie est terminée
     if (j->isGameOver()) {

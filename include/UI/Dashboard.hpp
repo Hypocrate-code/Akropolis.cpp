@@ -1,7 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QLabel>
+#include "UI/AkrLabel.hpp"
 #include <QList>
 
 class Joueur;
@@ -22,10 +22,10 @@ private:
     void setupUI();
 
     QVBoxLayout *mainLayout;
-    QLabel *titleLabel;
-    QLabel *currentPlayerLabel;
-    QLabel *playerScoresLabel;
-    QLabel *gameStatsLabel;
+    AkrLabel *titleLabel;
+    AkrLabel *currentPlayerLabel;
+    AkrLabel *playerScoresLabel;
+    AkrLabel *gameStatsLabel;
     QWidget *scrollWidget;
     QVBoxLayout *scrollLayout;
 };

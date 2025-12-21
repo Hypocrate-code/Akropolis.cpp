@@ -1,20 +1,12 @@
 #include "UI/mainwindow.h"
 #include "UI/HexItem.hpp"
 #include <QVBoxLayout>
-<<<<<<< HEAD
-#include <QPushButton>
-#include <QLabel>
-=======
->>>>>>> ee38a13 (Started interface stylisation)
 #include <QGridLayout>
 #include <QMessageBox>
 
 #include "UI/HexView.hpp"
-<<<<<<< HEAD
-=======
 #include "UI/AkrLabel.hpp"
 #include "UI/AkrTitle.hpp"
->>>>>>> ee38a13 (Started interface stylisation)
 #include "Tuile.hpp"
 
 #include <QLineEdit>
@@ -28,7 +20,6 @@ MainWindow::MainWindow()
     setWindowTitle("Akropolis");
     
     mainLayout = new QStackedWidget(this);  // attribut mainLayout initialisé
-
     QWidget *homeScreen = createHomePage();
     QWidget *startGameScreen = createStartingGamePage();
     QWidget *gameScreen = createGamePage();
@@ -69,20 +60,11 @@ QWidget *MainWindow::createHomePage()
     QWidget *page = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(page);
     
-<<<<<<< HEAD
-    const QString text("Bienvenue sur Akropolis.cpp !"); 
-    QLabel *label = new QLabel(text);
-
-    // Stylisation à voir plus tard
-    label->setAlignment(Qt::AlignCenter);
-    label->setStyleSheet("font-family: Helvetica; font-size: 20px; font-weight: bold;");
-=======
     // const QString text("Bienvenue sur Akropolis.cpp !"); 
     AkrTitle* label = new AkrTitle("Bienvenue sur Akropolis.cpp !");
     label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     
     AkrPushButton *btnGameScreen = new AkrPushButton("Jouer une partie");
->>>>>>> ee38a13 (Started interface stylisation)
 
     layout->addStretch();
     layout->addWidget(label, 0, Qt::AlignCenter);

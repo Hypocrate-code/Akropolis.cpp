@@ -8,10 +8,10 @@
 Dashboard::Dashboard(QWidget *parent)
     : QWidget(parent),
     mainLayout(new QVBoxLayout()),
-    titleLabel(new QLabel("TABLEAU DE BORD")),
-    currentPlayerLabel(new QLabel()),
-    playerScoresLabel(new QLabel()),
-    gameStatsLabel(new QLabel()),
+    titleLabel(new AkrLabel("TABLEAU DE BORD")),
+    currentPlayerLabel(new AkrLabel()),
+    playerScoresLabel(new AkrLabel()),
+    gameStatsLabel(new AkrLabel()),
     scrollWidget(new QWidget()),
     scrollLayout(new QVBoxLayout())
 {

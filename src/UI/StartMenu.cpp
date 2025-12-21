@@ -2,15 +2,15 @@
 #include "UI/AkrPushButton.hpp"
 #include <QHBoxLayout>
 #include "UI/AkrLabel.hpp"
+#include "UI/AkrCheckBox.hpp"
 #include <QComboBox>
 #include <QMessageBox>
-#include <QCheckBox>
 #include <iostream>
 
 StartMenu::StartMenu(QWidget* parent)
     : QWidget(parent), layout(new QVBoxLayout(this)),
-      decBtn(new AkrPushButton("Enlever joueurs")),
-      incBtn(new AkrPushButton("Ajouter joueurs")),
+      decBtn(new AkrPushButton(" - ")),
+      incBtn(new AkrPushButton(" + ")),
     confirmBtn(new AkrPushButton("Confirmer")), playerCount(1), dificultyLevel(0), variantes({}),
       lineEditLayout(new QVBoxLayout()), countInput(new AkrLabel),
     dificultyComboBox(new QComboBox()), variantesLayout(new QVBoxLayout)
@@ -54,12 +54,12 @@ StartMenu::StartMenu(QWidget* parent)
 
 
     //Selection de variantes (label + checks boxs)
-    QLabel* var = new QLabel("Variantes règles : ");
-    QCheckBox* marche = new QCheckBox("Variante marché");
-    //QCheckBox* jardin = new QCheckBox("Variante jardin NON DISPO");
-    QCheckBox* temple = new QCheckBox("Variante temple");
-    QCheckBox* habitations = new QCheckBox("Variante habitations");
-    QCheckBox* caserne = new QCheckBox("Variante caserne");
+    AkrLabel* var = new AkrLabel("Variantes règles : ");
+    AkrCheckBox* marche = new AkrCheckBox("Variante Marchés");
+    //AkrCheckBox* jardin = new AkrCheckBox("Variante jardin NON DISPO");
+    AkrCheckBox* temple = new AkrCheckBox("Variante Temples");
+    AkrCheckBox* habitations = new AkrCheckBox("Variante Habitations");
+    AkrCheckBox* caserne = new AkrCheckBox("Variante Casernes");
 
 
     variantesLayout->addWidget(var);
@@ -199,16 +199,20 @@ StartMenu::StartMenu(QWidget* parent)
     // Ajoute la ligne difficulté (label + combobox), choix des variantes et le bouton Confirmer
     layout->addWidget(difficultyRow);
     
-    QWidget* confirmBtnContainer = new QWidget();
+    QHBoxLayout *centeringVariantes = new QHBoxLayout();
+    centeringVariantes->addStretch();
+    centeringVariantes->addLayout(variantesLayout);
+    centeringVariantes->addStretch();
+
+    layout->addLayout(centeringVariantes);
+        
+    QHBoxLayout* confirmBtnLayout = new QHBoxLayout();
     
-    layout->addLayout(variantesLayout);
-    QHBoxLayout* confirmBtnLayout = new QHBoxLayout(confirmBtnContainer);
-    
+    confirmBtn->setMinimumWidth(244);
     confirmBtnLayout->addStretch(1);
     confirmBtnLayout->addWidget(confirmBtn, 2);
     confirmBtnLayout->addStretch(1);
-    
-    layout->addWidget(confirmBtnContainer);
+    layout->addLayout(confirmBtnLayout);
     
     // Afficher la difficulté uniquement quand playerCount == 1
     difficultyRow->setVisible(playerCount == 1);
