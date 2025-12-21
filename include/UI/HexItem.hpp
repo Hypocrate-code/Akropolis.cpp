@@ -45,7 +45,6 @@ protected:
     {
         if (event->button() == Qt::LeftButton) {
             emit hexagonClicked(m_hexagon);
-            qDebug() << "Hex clicked";
         }
         QGraphicsObject::mousePressEvent(event);
     }

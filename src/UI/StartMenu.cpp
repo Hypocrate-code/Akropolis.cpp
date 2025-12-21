@@ -129,7 +129,6 @@ StartMenu::~StartMenu() = default;
 
 void StartMenu::onConfirmClicked()
 {
-    std::cout << "Confirm clicked with " << playerCount << " players." << std::endl;
     if (playerButtons.size() != playerCount) {
         //popup
         QMessageBox::warning(this, "Erreur", "Le nombre de joueurs ne correspond pas au nombre de champs de texte.");

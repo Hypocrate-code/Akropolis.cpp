@@ -114,7 +114,6 @@ void GameMenu::connectSignals()
     
     // Clic sur un hex du chantier pour sélectionner une tuile
     connect(hexViewChantier, &HexView::hexagonClicked, this, [this](const Hexagone* hex) {
-        qDebug() << "Chantier hexagon clicked";
         if (isChantierSelectionMode && hex) {
             onTuileSelected(hex);
         }

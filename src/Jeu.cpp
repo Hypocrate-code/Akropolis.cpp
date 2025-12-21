@@ -31,7 +31,6 @@ Jeu *Jeu::getInstance()
 
 void Jeu::EndGame()
 {
-  std::cout << "destructor called\n";
   for (auto &tuile : tuilesCite)
   {
     delete tuile;
@@ -194,7 +193,6 @@ void Jeu::StartMenuC()
 
 void Jeu::InitialiserPartie(const std::vector<std::string> &names, uint32_t difficultyLevel)
 {
-  std::cout << "\n--- Initialisation de la partie ---\n";
   nombreTuilesChantier = names.size() + 2;
   niveauDeDifficulte = difficultyLevel;
 
@@ -813,7 +811,6 @@ void Jeu::executerTourIllu()
     currentPlayer->MaJPierres();
   }
 
-  std::cout << "nombre de tuiles dans cite illu : " << dynamic_cast<CiteIllu*>(currentPlayer->getCite())->getTuiles().size() << std::endl;
 }
 
 // === Vérifie si la partie est terminée ===
