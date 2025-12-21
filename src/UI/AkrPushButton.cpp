@@ -1,11 +1,12 @@
-
 #include "UI/AkrPushButton.hpp"
+#include <QFontDatabase>
 
 AkrPushButton::AkrPushButton(QWidget *parent)
     : QPushButton(parent)
 {
     updateStyle();
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setCursor(Qt::PointingHandCursor);
 }
 
 AkrPushButton::AkrPushButton(const QString &text, QWidget *parent)
@@ -14,12 +15,14 @@ AkrPushButton::AkrPushButton(const QString &text, QWidget *parent)
 {
     updateStyle();
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setCursor(Qt::PointingHandCursor);
 }
 AkrPushButton::AkrPushButton(const QIcon& icon, const QString &text, QWidget *parent)
     : QPushButton(icon, text, parent)
 {
     updateStyle();
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setCursor(Qt::PointingHandCursor);
 }
 AkrPushButton::~AkrPushButton()
 {
@@ -27,15 +30,11 @@ AkrPushButton::~AkrPushButton()
 
 void AkrPushButton::updateStyle()
 {
-    if (idFont != -1) {
-        QString family = QFontDatabase::applicationFontFamilies(idFont).at(0);
-        QFont font(family, 14);
-        font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
-        this->setFont(font);
-    }
-    else {
-        this->setStyleSheet("font-family: Helvetica; font-size: 14px; font-weight: bold;");
-    }
+    QString family = QFontDatabase::applicationFontFamilies(0).at(0);
+    QFont font(family, 14);
+    font.setWeight(QFont::Medium);
+    font.setLetterSpacing(QFont::AbsoluteSpacing, 1);
+    this->setFont(font);
 
     QString style = R"(
         QPushButton {

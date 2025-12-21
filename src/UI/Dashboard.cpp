@@ -8,7 +8,7 @@
 Dashboard::Dashboard(QWidget *parent)
     : QWidget(parent),
     mainLayout(new QVBoxLayout()),
-    titleLabel(new AkrLabel("TABLEAU DE BORD")),
+    titleLabel(new AkrTitle("TABLEAU DE BORD")),
     currentPlayerLabel(new AkrLabel()),
     playerScoresLabel(new AkrLabel()),
     gameStatsLabel(new AkrLabel()),

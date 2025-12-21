@@ -1,6 +1,5 @@
 #pragma once
 #include <QPushButton>
-#include <QFontDatabase>
 
 class AkrPushButton : public QPushButton
 {
@@ -13,6 +12,4 @@ public:
 
     void updateStyle();
 
-private:
-    int idFont = QFontDatabase::addApplicationFont(":assets/fonts/Jost/static/Jost-SemiBold.ttf");
 };

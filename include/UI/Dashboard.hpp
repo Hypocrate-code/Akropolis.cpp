@@ -2,6 +2,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include "UI/AkrLabel.hpp"
+#include "UI/AkrTitle.hpp"
 #include <QList>
 
 class Joueur;
@@ -22,7 +23,7 @@ private:
     void setupUI();
 
     QVBoxLayout *mainLayout;
-    AkrLabel *titleLabel;
+    AkrTitle *titleLabel;
     AkrLabel *currentPlayerLabel;
     AkrLabel *playerScoresLabel;
     AkrLabel *gameStatsLabel;

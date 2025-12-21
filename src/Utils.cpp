@@ -6,7 +6,7 @@
 #include <iostream>
 
 namespace Utils
-{
+{    
     int indiceDeDroite(int direction) {
 
 
@@ -222,6 +222,7 @@ namespace Utils
     int radiusTexture = 231;
     float heightHexTexture = cos(M_PI/6) * 2 * radiusTexture;
     int widthHexTexture = 2 * radiusTexture;
+    
     
     // Cache statique pour éviter de recharger assets.png à chaque appel
     static QPixmap* baseTextureCache = nullptr;

@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include "UI/AkrLabel.hpp"
+#include "UI/AkrTitle.hpp"
 #include "UI/AkrPushButton.hpp"
 
 class Jeu;
@@ -52,19 +53,19 @@ private:
     int tuilePrice;                       // prix de la tuile sélectionnée
 
     // Main layouts
-    QVBoxLayout *mainLayout;
+    QHBoxLayout *mainLayout;
 
     // Uper panel - Chantier
     QBoxLayout *chantierWidget;
     QVBoxLayout *chantierLayout;
-    AkrLabel *chantierLabel;
+    AkrTitle *chantierLabel;
     HexView *hexViewChantier;
     QHBoxLayout *chantierButtonsLayout;
 
     // Bot panel - Cité
     QBoxLayout *citeWidget;
     QVBoxLayout *citeLayout;
-    AkrLabel *citeLabel;
+    AkrTitle *citeLabel;
     AkrLabel *playerInfoLabel;
     HexView *hexViewCite;
 

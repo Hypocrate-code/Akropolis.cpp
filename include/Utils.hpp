@@ -2,6 +2,8 @@
 #include <string>
 #include <QPixmap>
 #include <QPoint>
+#include <QFontDatabase>
+
 
 #define DEBUG
 
@@ -11,6 +13,7 @@ enum class Type;
 class Hexagone;
 namespace Utils
 {
+
     char get_color_char(Couleur color);
     QPixmap get_texture(const Hexagone* hex);
     QPoint getCentreVoisin(QPoint originalCenter, int direction, int radius = 100);

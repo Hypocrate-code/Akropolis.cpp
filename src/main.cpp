@@ -41,6 +41,14 @@ int main(int argc, char *argv[])
                 }
             )");
 
+            int idFontJostRegular = QFontDatabase::addApplicationFont(":assets/fonts/Jost/static/Jost-Regular.ttf");
+            int idFontJostMedium = QFontDatabase::addApplicationFont(":assets/fonts/Jost/static/Jost-Medium.ttf");
+            int idFontJostBlack = QFontDatabase::addApplicationFont(":assets/fonts/Jost/static/Jost-Bold.ttf");
+
+            if (idFontJostMedium == -1 || idFontJostRegular == -1 || idFontJostBlack == -1) {
+               qWarning() << "Erreur lors du chargement des polices";
+            }
+
             MainWindow w;
             w.show();
             w.setWindowState(Qt::WindowMaximized);

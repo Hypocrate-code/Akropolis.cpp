@@ -21,16 +21,16 @@ GameMenu::GameMenu(QWidget *parent)
     tuilePrice(0),
     
     // Différents layouts mis en jeu
-    mainLayout(new QVBoxLayout()),
+    mainLayout(new QHBoxLayout()),
     chantierLayout(new QVBoxLayout()),
     citeLayout(new QVBoxLayout()),
 
     dashboard(new Dashboard()),
 
     // Elements d'interface
-    chantierLabel(new AkrLabel("CHANTIER")),
+    chantierLabel(new AkrTitle("CHANTIER")),
     chantierButtonsLayout(new QHBoxLayout()),
-    citeLabel(new AkrLabel("CITÉ")),
+    citeLabel(new AkrTitle("CITÉ")),
     playerInfoLabel(new AkrLabel()),
     controlWidget(new QWidget()),
     controlLayout(new QHBoxLayout()),
@@ -58,7 +58,7 @@ GameMenu::~GameMenu()
 
 void GameMenu::setupUI()
 {    
-
+    
     // Ajout des éléments d'interface au layout CHANTIER
     chantierLayout->addWidget(chantierLabel);
     chantierLayout->addWidget(hexViewChantier);
@@ -69,18 +69,20 @@ void GameMenu::setupUI()
     citeLayout->addWidget(playerInfoLabel);
     citeLayout->addWidget(hexViewCite);
     
-    QHBoxLayout *chantierDashboardLayout = new QHBoxLayout();
+    QVBoxLayout *viewsLayout = new QVBoxLayout();
     QWidget *chantierWidget = new QWidget();
     chantierWidget->setLayout(chantierLayout);
         
-    chantierDashboardLayout->addWidget(chantierWidget, 2);  // Chantier prends 2/3 de l'espace
-    chantierDashboardLayout->addWidget(dashboard, 1);        // Dashboard prend 1/3 de l'espace
-    chantierDashboardLayout->setSpacing(5);
-    chantierDashboardLayout->setContentsMargins(0, 0, 0, 0);
+    // chantierDashboardLayout->addWidget(chantierWidget, 2);  // Chantier prends 2/3 de l'espace
+    // chantierDashboardLayout->addWidget(dashboard, 1);        // Dashboard prend 1/3 de l'espace
+    // chantierDashboardLayout->setSpacing(5);
+    // chantierDashboardLayout->setContentsMargins(0, 0, 0, 0);
         
     // Ajout des sections au mainLayout
-    mainLayout->addLayout(chantierDashboardLayout, 1);
-    mainLayout->addLayout(citeLayout, 1);
+    viewsLayout->addWidget(chantierWidget, 1);
+    viewsLayout->addLayout(citeLayout, 2);
+    mainLayout->addLayout(viewsLayout, 3);
+    mainLayout->addWidget(dashboard, 1);
     
     // Configuration des widgets
     rotateBtn->setEnabled(false);
@@ -98,9 +100,15 @@ void GameMenu::setupUI()
     controlWidget->setLayout(controlLayout);
     
     // Style pour le status label
-    statusLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; font-size: 13px; border-top: 1px solid #ccc;");
+    statusLabel->setStyleSheet("padding: 8px; border-top: 1px solid #090e33ff;");
     statusLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     statusLabel->setMinimumHeight(35);
+    
+    QString statusLabelFam = QFontDatabase::applicationFontFamilies(0).at(0);
+    QFont statusLabelFont(statusLabelFam, 15);
+    statusLabelFont.setWeight(QFont::Medium);
+    statusLabelFont.setLetterSpacing(QFont::AbsoluteSpacing, .5);
+    statusLabel->setFont(statusLabelFont);
     
     // Layout global
     QVBoxLayout *globalLayout = new QVBoxLayout();

@@ -4,6 +4,7 @@
 #include <utility>
 #include <unordered_set>
 #include <stack>
+#include <QWheelEvent>
 
 HexView::HexView(int radius, QWidget* parent) : QGraphicsView(parent), radiusHex(radius)
 {
@@ -92,4 +93,13 @@ void HexView::drawTuile(const Tuile* tuile, QPoint centerPos) {
         scene->addItem(item);
         connect(item, &HexItem::hexagonClicked, this, &HexView::onHexItemClicked);
     }
+}
+void HexView::wheelEvent(QWheelEvent *event)
+{
+    const double scaleFactor = 1.15;
+
+    if (event->angleDelta().y() > 0)
+        scale(scaleFactor, scaleFactor);
+    else
+        scale(1.0 / scaleFactor, 1.0 / scaleFactor);
 }

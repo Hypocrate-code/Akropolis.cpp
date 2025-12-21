@@ -24,7 +24,7 @@ public:
     void drawTuile(const class Tuile* tuile, QPoint centerPos);
     const void setDrag(bool isDraggable) {isDraggable ? setDragMode(QGraphicsView::ScrollHandDrag) : setDragMode(QGraphicsView::NoDrag);};
     void clearView() {scene->clear();};
-
+    void wheelEvent(QWheelEvent *event) override;
     // ~HexView();
 
 signals:

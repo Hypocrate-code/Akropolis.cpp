@@ -16,12 +16,13 @@ StartMenu::StartMenu(QWidget* parent)
     dificultyComboBox(new QComboBox()), variantesLayout(new QVBoxLayout)
 {
     QHBoxLayout* btnLayout = new QHBoxLayout();
-
+    
+    layout->addStretch();
     layout->setAlignment(Qt::AlignTop);
 
-    btnLayout->addStretch(2);
+    btnLayout->addStretch();
     btnLayout->addWidget(new AkrLabel("Nombre de joueurs"));
-    btnLayout->addStretch(1);
+    btnLayout->addSpacing(24);
     btnLayout->addWidget(decBtn);
 
     countInput->setText(QString::number(playerCount));
@@ -30,7 +31,7 @@ StartMenu::StartMenu(QWidget* parent)
     
     btnLayout->addWidget(incBtn);
 
-    btnLayout->addStretch(2);
+    btnLayout->addStretch();
 
     incBtn->setToolTip("Maximum 4 joueurs.");
 
@@ -42,19 +43,17 @@ StartMenu::StartMenu(QWidget* parent)
     // Ligne de difficulté (label + combobox)
     QWidget* difficultyRow = new QWidget();
     QHBoxLayout* diffLayout = new QHBoxLayout(difficultyRow);
-    diffLayout->addStretch(2);
+    diffLayout->addStretch();
     diffLayout->addWidget(new AkrLabel("Niveau de difficulté"));
-    diffLayout->addStretch(1);
+    diffLayout->addSpacing(24);
     diffLayout->addWidget(dificultyComboBox);
-    diffLayout->addStretch(2);
+    diffLayout->addStretch();
 
     dificultyComboBox->addItem("Hippodamos (niveau Facile)");
     dificultyComboBox->addItem("Métagénès (niveau Moyen)");
     dificultyComboBox->addItem("Callicratès (niveau Difficile)");
 
 
-    //Selection de variantes (label + checks boxs)
-    AkrLabel* var = new AkrLabel("Variantes règles : ");
     AkrCheckBox* marche = new AkrCheckBox("Variante Marchés");
     //AkrCheckBox* jardin = new AkrCheckBox("Variante jardin NON DISPO");
     AkrCheckBox* temple = new AkrCheckBox("Variante Temples");
@@ -62,7 +61,6 @@ StartMenu::StartMenu(QWidget* parent)
     AkrCheckBox* caserne = new AkrCheckBox("Variante Casernes");
 
 
-    variantesLayout->addWidget(var);
     variantesLayout->addWidget(marche);
     //variantesLayout->addWidget(jardin); //NON DISPO
     variantesLayout->addWidget(temple);
@@ -107,9 +105,10 @@ StartMenu::StartMenu(QWidget* parent)
         QHBoxLayout* newPlayerLine = new QHBoxLayout(container);
 
         AkrLabel* label = new AkrLabel(("Joueur " + std::to_string(playerCount)).c_str());
-        newPlayerLine->addStretch(4);
+        newPlayerLine->addStretch();
         newPlayerLine->addWidget(label);
-        newPlayerLine->addStretch(1);
+        newPlayerLine->addSpacing(24);
+
 
         
         QLineEdit* newPlayerEdit = new QLineEdit();
@@ -119,7 +118,7 @@ StartMenu::StartMenu(QWidget* parent)
         countInput->setText(QString::number(playerCount));
         
         newPlayerLine->addWidget(newPlayerEdit);
-        newPlayerLine->addStretch(4);
+        newPlayerLine->addStretch();
 
         lineEditLayout->addWidget(container);
 
@@ -177,9 +176,9 @@ StartMenu::StartMenu(QWidget* parent)
     QHBoxLayout* newPlayerLine = new QHBoxLayout(container);
 
     AkrLabel* label = new AkrLabel(("Joueur " + std::to_string(playerCount)).c_str());
-    newPlayerLine->addStretch(4);
+    newPlayerLine->addStretch();
     newPlayerLine->addWidget(label);
-    newPlayerLine->addStretch(1);
+    newPlayerLine->addSpacing(24);
     
     QLineEdit* firstPlayerEdit = new QLineEdit();
     
@@ -187,7 +186,7 @@ StartMenu::StartMenu(QWidget* parent)
     playerWidget.push_back(container);
     
     newPlayerLine->addWidget(firstPlayerEdit);
-    newPlayerLine->addStretch(4);
+    newPlayerLine->addStretch();
 
     lineEditLayout->addWidget(container);
 
@@ -204,11 +203,13 @@ StartMenu::StartMenu(QWidget* parent)
     centeringVariantes->addLayout(variantesLayout);
     centeringVariantes->addStretch();
 
+    layout->addStretch();
     layout->addLayout(centeringVariantes);
+    layout->addStretch();
         
     QHBoxLayout* confirmBtnLayout = new QHBoxLayout();
     
-    confirmBtn->setMinimumWidth(244);
+    confirmBtn->setMinimumWidth(224);
     confirmBtnLayout->addStretch(1);
     confirmBtnLayout->addWidget(confirmBtn, 2);
     confirmBtnLayout->addStretch(1);

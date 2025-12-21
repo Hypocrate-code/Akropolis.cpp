@@ -3,37 +3,27 @@
 
 AkrCheckBox::AkrCheckBox(QString t) : QCheckBox(t)
 {
-    if (idFont != -1) {
-        QString family = QFontDatabase::applicationFontFamilies(idFont).at(0);
-        QFont font(family, 14);
-        font.setLetterSpacing(QFont::AbsoluteSpacing, .5);
-        this->setFont(font);
-    }
-    else {
-        this->setStyleSheet("font-family: Helvetica; font-size: 14px;");
-    }
-    // Stylisation à voir plus tard
-
+    setCursor(Qt::PointingHandCursor);
+    QString family = QFontDatabase::applicationFontFamilies(0).at(0);
+    QFont font(family, 14);
+    font.setLetterSpacing(QFont::AbsoluteSpacing, .5);
+    font.setWeight(QFont::Normal);
+    this->setFont(font);
     this->setStyleSheet(R"(
         QCheckBox {
             spacing: 8px;
         }
         QCheckBox::indicator {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(9, 37, 84, 1);
+            border-radius: 3px;
         }
         QCheckBox::indicator:unchecked {
-            border: 2px solid rgba(36, 32, 112, 1);
             background-color: white;
-            border-radius: 3px;
         }
         QCheckBox::indicator:checked {
-            border: 2px solid #214ff3ff;
-            background-color: #2196F3;
-            border-radius: 3px;
-        }
-        QCheckBox::indicator:hover {
-            border: 2px solid #2196F3;
+            background-color: rgba(155, 189, 248, 1);
         }
     )");
 }
